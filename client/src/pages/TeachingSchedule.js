@@ -1,7 +1,14 @@
 import TeacherLayout from '../layouts/TeacherLayout';
 import { User, ChevronDown, Plus } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
+
 
 export default function TeachingSchedule() {
+    const navigate = useNavigate();
+    const handleAttendanceClick = (classId) => {
+        navigate(`/student-attendance-list?classId=${classId}`);
+    };
+
     return (
         <TeacherLayout>
             {/* Schedule content goes here */}
@@ -74,6 +81,7 @@ export default function TeachingSchedule() {
                                     <button
                                         className="bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded align-middle hover:bg-blue-700 transition"
                                         type="button"
+                                        onClick={() => handleAttendanceClick('1')}
                                     >
                                         Take attendance
                                     </button>
@@ -118,6 +126,7 @@ export default function TeachingSchedule() {
                                     <button
                                         className="bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded align-middle hover:bg-blue-700 transition"
                                         type="button"
+                                        onClick={() => handleAttendanceClick('1')}
                                     >
                                         Take attendance
                                     </button>
