@@ -16,7 +16,7 @@ app.use("/api/users", require("./routes/user.route"));
 app.use("/api/courses", require("./routes/course.route"));
 app.use("/api/classes", require("./routes/class.route"));
 
-const PORT = process.env.PORT || 9999;
+const PORT = 9999;
 const HOSTNAME = "localhost";
 
 app.listen(PORT, HOSTNAME, () => {
