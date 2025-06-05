@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Search, Edit, Eye, Trash2 } from "lucide-react";
+import { Plus, Search, Edit, Eye, Trash2, FileDown, X } from "lucide-react";
 import AdminLayout from "../../layouts/AdminLayout";
 
 const initialCourses = [
@@ -55,15 +55,24 @@ export default function Courses() {
     const matchesStatus = status === "all" || course.status === status;
     return matchesSearch && matchesLevel && matchesStatus;
   });
-
+  const handleClearFilters = () => {
+    setSearch("");
+    setLevel("all");
+    setStatus("all");
+  };
   return (
     <AdminLayout>
       <div className="w-full p-8 bg-gray-50 min-h-screen">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Courses</h2>
-          <button className="flex items-center gap-2 px-5 py-2 bg-blue-500 text-white rounded-md font-semibold shadow hover:bg-blue-600">
-            <Plus className="w-5 h-5" /> Add Course
-          </button>
+          <div className="flex items-center gap-2">
+            <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md font-semibold shadow hover:bg-green-700">
+              <FileDown className="w-5 h-5" /> Export
+            </button>
+            <button className="flex items-center gap-2 px-5 py-2 bg-blue-500 text-white rounded-md font-semibold shadow hover:bg-blue-600">
+              <Plus className="w-5 h-5" /> Add Course
+            </button>
+          </div>
         </div>
         <div className="bg-white rounded-xl shadow p-6 mb-6">
           <div className="grid grid-cols-1  md:grid md:grid-cols-4 md:gap-4">
@@ -106,6 +115,15 @@ export default function Courses() {
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
+            </div>
+            <div className="col-span-1 md:col-span-1 flex justify-end">
+              <button
+                onClick={handleClearFilters}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm text-gray-700 font-medium border border-gray-300 rounded-md shadow-sm transition duration-150"
+              >
+                <X className="w-4 h-4" />
+                Clear Filters
+              </button>
             </div>
           </div>
         </div>
