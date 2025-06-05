@@ -5,7 +5,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const items = [
     { icon: <Calendar size={20} />, text: "Teaching Schedule", link: "/teaching-schedule" },    
-    { icon: <Megaphone size={20} />, text: "Class Notification", link: "/notifications" },
+    { icon: <Megaphone size={20} />, text: "Notification", link: "/notifications" },
     { icon: <ClipboardEdit size={20} />, text: "Courses", link: "/courses" }, 
     { icon: <MessageCircle size={20} />, text: "Feedback", link: "/feedback" },
   ];

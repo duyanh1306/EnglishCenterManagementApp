@@ -3,7 +3,7 @@ import { Bell, Menu} from "lucide-react"; // Lucide: bộ icon Tailwind-friendly
 
 const Navbar = ({ user = { name: "John Doe", avatarUrl: "" }, onLogout, onToggleSidebar }) => {
     return (
-        <div className="w-full bg-white px-4 py-2 shadow-md flex items-center justify-between">
+        <div className="w-full bg-gray-300 px-4 py-2 shadow-md flex items-center justify-between">
             {/* Left: Toggle + Title */}
             <div className="flex items-center gap-4">
                 <button onClick={onToggleSidebar} className="p-2 rounded hover:bg-gray-100">
