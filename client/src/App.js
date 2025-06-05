@@ -14,7 +14,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route path="/" element={<TeachingSchedule />} />
+        <Route path="/" element={<TeachingSchedule />} />
         <Route path="/teaching-schedule" element={<TeachingSchedule />} />
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/notifications" element={<ClassNotifications />} />
@@ -23,7 +23,7 @@ function App() {
           path="/student-attendance-list"
           element={<StudentAttendanceList />}
         />
-        <Route path="/student-list" element={<StudentList />} /> */}
+        <Route path="/student-list" element={<StudentList />} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/courses" element={<CourseManagement />} />
         <Route path="/admin/classes" element={<ClassesManagement />} />
