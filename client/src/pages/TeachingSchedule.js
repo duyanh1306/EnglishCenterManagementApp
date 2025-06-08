@@ -6,25 +6,25 @@ import ScheduleService from '../services/ScheduleService';
 export default function TeachingSchedule() {
     const navigate = useNavigate();
 
-    const handleAttendanceClick = (classId) => {
-        navigate(`/student-attendance-list?classId=${classId}`);
+    const handleAttendanceClick = (classItem, date) => {
+        navigate(`/student-attendance-list?classId=${classItem.id}&date=${date}&className=${classItem.name}`);
     };
 
-    // Get schedule data from your service
-    const slots = ScheduleService.getSlots(); // used to get class details
+    // Get schedule details and slots using data from ScheduleService
+    const scheduleItems = ScheduleService.getSchedule();
+    const slots = ScheduleService.getSlots();
 
-    // Group slots by slotNumber (each slotNumber will form one row)
-    const groupedSlots = {};
-    slots.forEach(slot => {
-        const { slotNumber } = slot;
-        if (!groupedSlots[slotNumber]) {
-            groupedSlots[slotNumber] = [];
+    // Group schedule items by slotId so that each row represents one slot
+    const groupedSchedule = {};
+    scheduleItems.forEach(item => {
+        const { slotId } = item;
+        if (!groupedSchedule[slotId]) {
+            groupedSchedule[slotId] = [];
         }
-        groupedSlots[slotNumber].push(slot);
+        groupedSchedule[slotId].push(item);
     });
 
-    // To display the table, we use a header for Time, Monday - Sunday.
-    // We'll assume Monday is day 1 and Sunday is day 0.
+    // Define weekdays (Monday is 1 and Sunday is 0)
     const weekdays = [
         { label: "Monday", targetDay: 1 },
         { label: "Tuesday", targetDay: 2 },
@@ -64,7 +64,7 @@ export default function TeachingSchedule() {
                     <table className="min-w-full bg-white shadow-md rounded-lg border border-gray-200">
                         <thead>
                             <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                                <th className="py-3 px-4 text-left border border-gray-200">Time</th>
+                                <th className="py-3 px-4 text-center border border-gray-200">Time</th>
                                 {weekdays.map(day => (
                                     <th key={day.label} className="py-3 px-4 text-center border border-gray-200">
                                         {day.label}
@@ -73,63 +73,74 @@ export default function TeachingSchedule() {
                             </tr>
                         </thead>
                         <tbody className="text-gray-700 text-sm">
-                            {Object.keys(groupedSlots).map(slotNumber => (
-                                <tr key={slotNumber} className="border-b last:border-none">
-                                    {/* First cell shows the slot number */}
-                                    <td className="py-4 px-4 font-semibold text-gray-500 border border-gray-200">
-                                        Slot {slotNumber}
-                                    </td>
-                                    {weekdays.map(day => {
-                                        // Find a slot in this slotNumber group that matches the day
-                                        const slotForDay = groupedSlots[slotNumber].find(slot => {
-                                            const date = new Date(slot.time);
-                                            return date.getDay() === day.targetDay;
-                                        });
-                                        return (
-                                            <td key={day.label} className="py-2 px-2 border border-gray-200">
-                                                {slotForDay ? (
-                                                    <>
-                                                        <div>
-                                                            <span className="pr-2">Class:</span>
-                                                            <span className="text-blue-700 underline cursor-pointer">
-                                                                {ScheduleService.getClassNameById(slotForDay.classId)}
-                                                            </span>
-                                                        </div>
-                                                        <div>
-                                                            <span className="text-sm font-semibold py-0.5 rounded mt-1 inline-block">
-                                                                {new Date(slotForDay.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} at {slotForDay.roomId}
-                                                            </span>
-                                                        </div>
-                                                        {slotForDay.meeting && (
+                            {slots.map(slot => {
+                                const slotNumber = slot.id;
+                                const itemsForSlot = groupedSchedule[slotNumber] || [];
+                                return (
+                                    <tr key={slotNumber} className="border-b last:border-none">
+                                        {/* First cell shows the slot time */}
+                                        <td className="py-4 px-4 font-semibold text-gray-500 border border-gray-200">
+                                            <div className={`text-lg text-gray-800 text-center`}>Slot {slotNumber}</div>
+                                            <div className='text-center'>{slot.from} - {slot.to}</div>
+                                        </td>
+                                        {weekdays.map(day => {
+                                            // Find a schedule item in this slot group that matches the weekday
+                                            const scheduleForDay = itemsForSlot.find(item => {
+                                                const date = new Date(item.date);
+                                                return date.getDay() === day.targetDay;
+                                            });
+                                            return (
+                                                <td key={day.label} className="py-2 px-2 border border-gray-200">
+                                                    {scheduleForDay ? (
+                                                        <>
                                                             <div>
-                                                                <span className="bg-green-300 text-xs font-semibold py-0.5 px-2 rounded">
-                                                                    Online
+                                                                <span className="pr-2 font-semibold">Class:</span>
+                                                                <span className="text-blue-800 cursor-pointer">
+                                                                    {scheduleForDay.class.name}
                                                                 </span>
+                                                            </div>
+                                                            <div>
+                                                                <span className="pr-2 font-semibold">Course:</span>
+                                                                <span className="text-blue-800 cursor-pointer">
+                                                                    {scheduleForDay.course.name}
+                                                                </span>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-sm text-gray-500 font-semibold py-0.5 rounded mt-1 inline-block">
+                                                                    {scheduleForDay.date} in {scheduleForDay.room.name}
+                                                                </span>
+                                                            </div>
+                                                            {scheduleForDay.meeting && (
+                                                                <div>
+                                                                    <span className="bg-green-300 text-xs font-semibold py-0.5 px-2 rounded">
+                                                                        Online
+                                                                    </span>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="p-0 ml-0.5 bg-transparent border-none text-blue-800 underline cursor-pointer"
+                                                                        onClick={() => window.open(scheduleForDay.meeting, '_blank')}
+                                                                    >
+                                                                        Click to join meeting
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                            <div>
                                                                 <button
+                                                                    className="bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded align-middle hover:bg-blue-700 transition"
                                                                     type="button"
-                                                                    className="p-0 m-0 bg-transparent border-none text-blue-800 underline cursor-pointer"
-                                                                    onClick={() => window.open(slotForDay.meeting, '_blank')}
+                                                                    onClick={() => handleAttendanceClick(scheduleForDay.class, scheduleForDay.date)}
                                                                 >
-                                                                    Click to join meeting
+                                                                    Take attendance
                                                                 </button>
                                                             </div>
-                                                        )}
-                                                        <div>
-                                                            <button
-                                                                className="bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded align-middle hover:bg-blue-700 transition"
-                                                                type="button"
-                                                                onClick={() => handleAttendanceClick(slotForDay.classId)}
-                                                            >
-                                                                Take attendance
-                                                            </button>
-                                                        </div>
-                                                    </>
-                                                ) : null}
-                                            </td>
-                                        )
-                                    })}
-                                </tr>
-                            ))}
+                                                        </>
+                                                    ) : null}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

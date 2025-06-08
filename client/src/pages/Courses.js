@@ -8,11 +8,14 @@ export default function Courses() {
   const [courses] = useState(CourseService.getCourses());
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
+  const levels = CourseService.getLevels();
+  const [level, setLevel] = useState('all');
 
   const filteredCourses = courses.filter(course => {
     const matchesSearch = course.name.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = status === 'all' || course.status === status;
-    return matchesSearch && matchesStatus;
+    const matchesLevel = level === 'all' || course.level === level;
+    return matchesSearch && matchesStatus && matchesLevel;
   });
 
   return (
@@ -53,6 +56,21 @@ export default function Courses() {
                 <option value="inactive">Inactive</option>
               </select>
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Level</label>
+              <select
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+                value={level}
+                onChange={e => setLevel(e.target.value)}
+              >
+                <option value="all">All Levels</option>
+                {levels.map(level => (
+                  <option key={level.id} value={level.name}>
+                    {level.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
         <div className="">
@@ -60,8 +78,7 @@ export default function Courses() {
             <thead>
               <tr className="text-left text-gray-600 border-b">
                 <th className="py-3 px-4">Course Name</th>
-                <th className="py-3 px-4">Slots</th>
-                <th className="py-3 px-4">Max Students</th>
+                <th className="py-3 px-4">Level</th>
                 <th className="py-3 px-4">Price(VND)</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Actions</th>
@@ -69,17 +86,16 @@ export default function Courses() {
             </thead>
             <tbody className="text-gray-800">
               {filteredCourses.map(course => {
-                const bgColor = course.status === 'active' ? 'bg-green-100' : 'bg-red-100';
-                const textColor = course.status === 'active' ? 'text-green-800' : 'text-red-800';
+                const bgColor = course?.status === 'active' ? 'bg-green-100' : 'bg-red-100';
+                const textColor = course?.status === 'active' ? 'text-green-800' : 'text-red-800';
 
                 return (
                   <tr key={course.id} className="border-b last:border-none">
                     <td className="py-4 px-4">
-                      <div className="font-semibold">{course.name}</div>
+                      <div className="font-semibold">{course?.name}</div>
                     </td>
-                    <td className="py-4 px-4">{course.numberOfSlots}</td>
-                    <td className="py-4 px-4">{course.maxStudents}</td>
-                    <td className="py-4 px-4">{course.price}</td>
+                    <td className="py-4 px-4">{course?.level}</td>
+                    <td className="py-4 px-4">{course?.price}</td>                    
                     <td className="py-4 px-4">
                       <span className={`${bgColor} ${textColor} px-3 py-1 rounded-full text-xs font-semibold`}>
                         {course.status}

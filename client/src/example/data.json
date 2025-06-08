@@ -118,385 +118,362 @@
   "classes": [
     {
       "id": "c1",
-      "name": "English A1"
+      "name": "A"
     },
     {
       "id": "c2",
-      "name": "English A2"
+      "name": "B"
     },
     {
       "id": "c3",
-      "name": "English B1"
+      "name": "C"
     },
     {
       "id": "c4",
-      "name": "English B2"
+      "name": "D"
+    }
+  ],
+  "studentClasses": [
+    {
+      "studentId": "u4",
+      "classId": "c1"
     },
     {
-      "id": "c5",
-      "name": "English C1"
+      "studentId": "u5",
+      "classId": "c1"
     },
     {
-      "id": "c6",
-      "name": "Grammar A"
+      "studentId": "u6",
+      "classId": "c1"
     },
     {
-      "id": "c7",
-      "name": "Pronunciation B"
+      "studentId": "u6",
+      "classId": "c2"
     },
     {
-      "id": "c8",
-      "name": "IELTS Basic"
+      "studentId": "u7",
+      "classId": "c2"
     },
     {
-      "id": "c9",
-      "name": "IELTS Advanced"
+      "studentId": "u8",
+      "classId": "c2"
     },
     {
-      "id": "c10",
-      "name": "TOEIC Preparation"
+      "studentId": "u8",
+      "classId": "c3"
+    },
+    {
+      "studentId": "u9",
+      "classId": "c3"
+    },
+    {
+      "studentId": "u10",
+      "classId": "c3"
+    },
+    {
+      "studentId": "u4",
+      "classId": "c4"
+    },
+    {
+      "studentId": "u5",
+      "classId": "c4"
+    },
+    {
+      "studentId": "u10",
+      "classId": "c4"
+    },
+    {
+      "studentId": "u6",
+      "classId": "c1"
+    },
+    {
+      "studentId": "u7",
+      "classId": "c1"
+    },
+    {
+      "studentId": "u9",
+      "classId": "c1"
+    },
+    {
+      "studentId": "u4",
+      "classId": "c1"
+    },
+    {
+      "studentId": "u8",
+      "classId": "c1"
+    },
+    {
+      "studentId": "u10",
+      "classId": "c1"
+    }
+  ],
+  "attendance": [
+    {
+      "id": "a1",
+      "scheduleId": "1",
+      "studentId": "u4",
+      "classId": "c1",
+      "attendance": true,
+      "note": ""
+    },
+    {
+      "id": "a2",
+      "scheduleId": "1",
+      "studentId": "u5",
+      "classId": "c1",
+      "attendance": false,
+      "note": "Bị ốm"
+    },
+    {
+      "id": "a3",
+      "scheduleId": "1",
+      "studentId": "u6",
+      "classId": "c1",
+      "attendance": true,
+      "note": "Đến muộn 15 phút"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "1",
+      "name": "Room 101",
+      "capacity": 30,
+      "available": true,
+      "type": "classroom",
+      "location": "Building A, Floor 1"
+    },
+    {
+      "id": "2",
+      "name": "Room 102",
+      "capacity": 25,
+      "available": true,
+      "type": "classroom",
+      "location": "Building A, Floor 1"
+    },
+    {
+      "id": "3",
+      "name": "Room 103",
+      "capacity": 20,
+      "available": false,
+      "type": "classroom",
+      "location": "Building B, Floor 2"
+    },
+    {
+      "id": "4",
+      "name": "Room 104",
+      "capacity": 15,
+      "available": true,
+      "type": "meeting room",
+      "location": "Building B, Floor 2"
+    },
+    {
+      "id": "5",
+      "name": "Room 105",
+      "capacity": 40,
+      "available": true,
+      "type": "auditorium",
+      "location": "Building C, Floor 3"
+    },
+    {
+      "id": "6",
+      "name": "Room 106",
+      "capacity": 10,
+      "available": true,
+      "type": "classroom",
+      "location": "Building C, Floor 3"
+    },
+    {
+      "id": "7",
+      "name": "Room 107",
+      "capacity": 50,
+      "available": false,
+      "type": "auditorium",
+      "location": "Building D, Floor 4"
+    },
+    {
+      "id": "8",
+      "name": "Room 108",
+      "capacity": 30,
+      "available": true,
+      "type": "classroom",
+      "location": "Building D, Floor 4"
+    },
+    {
+      "id": "9",
+      "name": "Room 109",
+      "capacity": 20,
+      "available": true,
+      "type": "meeting room",
+      "location": "Building E, Floor 5"
+    },
+    {
+      "id": "10",
+      "name": "Room 110",
+      "capacity": 15,
+      "available": true,
+      "type": "classroom",
+      "location": "Building E, Floor 5"
     }
   ],
   "slots": [
     {
-      "slotId": "s1",
-      "slotNumber": 1,
+      "id": "1",
+      "from": "08:00",
+      "to": "09:30"
+    },
+    {
+      "id": "2",
+      "from": "09:40",
+      "to": "11:10"
+    },
+    {
+      "id": "3",
+      "from": "13:00",
+      "to": "14:30"
+    },
+    {
+      "id": "4",
+      "from": "14:40",
+      "to": "16:10"
+    },
+    {
+      "id": "5",
+      "from": "18:00",
+      "to": "19:30"
+    },
+    {
+      "id": "6",
+      "from": "19:40",
+      "to": "21:10"
+    }
+  ],
+  "schedule": [
+    {
+      "id": "1",
+      "slotId": "1",
       "classId": "c1",
-      "teacherIds": [
-        "u2"
-      ],
-      "studentIds": [
-        "u4",
-        "u5",
-        "u6"
-      ],
-      "courseId": "course1",
-      "roomId": "room101",
-      "time": "2025-06-01T08:00:00",
-      "meeting": "https://meet.example.com/slot1",
-      "attendance": {
-        "slotId": "s1",
-        "students": [
-          {
-            "studentId": "u4",
-            "status": "attend"
-          },
-          {
-            "studentId": "u5",
-            "status": "attend"
-          },
-          {
-            "studentId": "u6",
-            "status": "absent"
-          }
-        ]
-      }
+      "roomId": "1",
+      "date": "2025-05-25",
+      "meeting": "https://meet.example.com/slot1"
     },
     {
-      "slotId": "s2",
-      "slotNumber": 2,
+      "id": "2",
+      "slotId": "2",
       "classId": "c2",
-      "teacherIds": [
-        "u2"
-      ],
-      "studentIds": [
-        "u6",
-        "u7",
-        "u8"
-      ],
-      "courseId": "course2",
-      "roomId": "room102",
-      "time": "2025-06-01T10:00:00",
-      "meeting": "https://meet.example.com/slot2",
-      "attendance": {
-        "slotId": "s2",
-        "students": [
-          {
-            "studentId": "u6",
-            "status": "attend"
-          },
-          {
-            "studentId": "u7",
-            "status": "absent"
-          },
-          {
-            "studentId": "u8",
-            "status": "attend"
-          }
-        ]
-      }
+      "roomId": "2",
+      "date": "2025-05-25",
+      "meeting": "https://meet.example.com/slot2"
     },
     {
-      "slotId": "s3",
-      "slotNumber": 3,
+      "id": "3",
+      "slotId": "3",
       "classId": "c3",
-      "teacherIds": [
-        "u3"
-      ],
-      "studentIds": [
-        "u8",
-        "u9",
-        "u10"
-      ],
-      "courseId": "course3",
-      "roomId": "room103",
-      "time": "2025-06-02T08:00:00",
-      "meeting": "https://meet.example.com/slot3",
-      "attendance": {
-        "slotId": "s3",
-        "students": [
-          {
-            "studentId": "u8",
-            "status": "attend"
-          },
-          {
-            "studentId": "u9",
-            "status": "attend"
-          },
-          {
-            "studentId": "u10",
-            "status": "absent"
-          }
-        ]
-      }
+      "roomId": "3",
+      "date": "2025-05-26",
+      "meeting": "https://meet.example.com/slot3"
     },
     {
-      "slotId": "s4",
-      "slotNumber": 4,
+      "id": "4",
+      "slotId": "4",
       "classId": "c4",
-      "teacherIds": [
-        "u3"
-      ],
-      "studentIds": [
-        "u4",
-        "u5",
-        "u10"
-      ],
-      "courseId": "course4",
-      "roomId": "room104",
-      "time": "2025-06-02T10:00:00",
-      "meeting": "https://meet.example.com/slot4",
-      "attendance": {
-        "slotId": "s4",
-        "students": [
-          {
-            "studentId": "u4",
-            "status": "absent"
-          },
-          {
-            "studentId": "u5",
-            "status": "attend"
-          },
-          {
-            "studentId": "u10",
-            "status": "attend"
-          }
-        ]
-      }
+      "roomId": "4",
+      "date": "2025-05-26",
+      "meeting": null
+    }
+  ],
+  "courses": [
+    {
+      "id": "course_001",
+      "name": "English for Beginners",
+      "price": 1500000,
+      "status": "active",
+      "levelId": "1"
     },
     {
-      "slotId": "s5",
-      "slotNumber": 5,
-      "classId": "c5",
-      "teacherIds": [
-        "u2"
-      ],
-      "studentIds": [
-        "u6",
-        "u7",
-        "u9"
-      ],
-      "courseId": "course5",
-      "roomId": "room105",
-      "time": "2025-06-03T08:00:00",
-      "meeting": "https://meet.example.com/slot5",
-      "attendance": {
-        "slotId": "s5",
-        "students": [
-          {
-            "studentId": "u6",
-            "status": "attend"
-          },
-          {
-            "studentId": "u7",
-            "status": "attend"
-          },
-          {
-            "studentId": "u9",
-            "status": "absent"
-          }
-        ]
-      }
+      "id": "course_002",
+      "name": "IELTS Preparation",
+      "price": 3500000,
+      "status": "active",
+      "levelId": "2"
     },
     {
-      "slotId": "s6",
-      "slotNumber": 6,
-      "classId": "c6",
-      "teacherIds": [
-        "u3"
-      ],
-      "studentIds": [
-        "u4",
-        "u8",
-        "u10"
-      ],
-      "courseId": "course6",
-      "roomId": "room106",
-      "time": "2025-06-03T10:00:00",
-      "meeting": "https://meet.example.com/slot6",
-      "attendance": {
-        "slotId": "s6",
-        "students": [
-          {
-            "studentId": "u4",
-            "status": "attend"
-          },
-          {
-            "studentId": "u8",
-            "status": "attend"
-          },
-          {
-            "studentId": "u10",
-            "status": "absent"
-          }
-        ]
-      }
+      "id": "course_003",
+      "name": "Business English",
+      "price": 3000000,
+      "status": "inactive",
+      "levelId": "3"
     },
     {
-      "slotId": "s7",
-      "slotNumber": 1,
-      "classId": "c7",
-      "teacherIds": [
-        "u2"
-      ],
-      "studentIds": [
-        "u5",
-        "u6",
-        "u9"
-      ],
-      "courseId": "course7",
-      "roomId": "room107",
-      "time": "2025-06-04T08:00:00",
-      "meeting": "https://meet.example.com/slot7",
-      "attendance": {
-        "slotId": "s7",
-        "students": [
-          {
-            "studentId": "u5",
-            "status": "absent"
-          },
-          {
-            "studentId": "u6",
-            "status": "attend"
-          },
-          {
-            "studentId": "u9",
-            "status": "attend"
-          }
-        ]
-      }
+      "id": "course_004",
+      "name": "English Speaking Club",
+      "price": 1000000,
+      "status": "active",
+      "levelId": "1"
     },
     {
-      "slotId": "s8",
-      "slotNumber": 2,
-      "classId": "c8",
-      "teacherIds": [
-        "u3"
-      ],
-      "studentIds": [
-        "u4",
-        "u7",
-        "u8"
-      ],
-      "courseId": "course8",
-      "roomId": "room108",
-      "time": "2025-06-04T10:00:00",
-      "meeting": "https://meet.example.com/slot8",
-      "attendance": {
-        "slotId": "s8",
-        "students": [
-          {
-            "studentId": "u4",
-            "status": "attend"
-          },
-          {
-            "studentId": "u7",
-            "status": "attend"
-          },
-          {
-            "studentId": "u8",
-            "status": "attend"
-          }
-        ]
-      }
+      "id": "course_005",
+      "name": "TOEIC Practice",
+      "price": 2500000,
+      "status": "active",
+      "levelId": "2"
     },
     {
-      "slotId": "s9",
-      "slotNumber": 3,
-      "classId": "c9",
-      "teacherIds": [
-        "u2"
-      ],
-      "studentIds": [
-        "u5",
-        "u9",
-        "u10"
-      ],
-      "courseId": "course9",
-      "roomId": "room109",
-      "time": "2025-06-05T08:00:00",
-      "meeting": "https://meet.example.com/slot9",
-      "attendance": {
-        "slotId": "s9",
-        "students": [
-          {
-            "studentId": "u5",
-            "status": "attend"
-          },
-          {
-            "studentId": "u9",
-            "status": "attend"
-          },
-          {
-            "studentId": "u10",
-            "status": "absent"
-          }
-        ]
-      }
+      "id": "course_006",
+      "name": "Academic Writing",
+      "price": 2000000,
+      "status": "inactive",
+      "levelId": "3"
     },
     {
-      "slotId": "s10",
-      "slotNumber": 4,
-      "classId": "c10",
-      "teacherIds": [
-        "u3"
-      ],
-      "studentIds": [
-        "u6",
-        "u7",
-        "u8"
-      ],
-      "courseId": "course10",
-      "roomId": "room110",
-      "time": "2025-06-05T10:00:00",
-      "meeting": "https://meet.example.com/slot10",
-      "attendance": {
-        "slotId": "s10",
-        "students": [
-          {
-            "studentId": "u6",
-            "status": "attend"
-          },
-          {
-            "studentId": "u7",
-            "status": "absent"
-          },
-          {
-            "studentId": "u8",
-            "status": "attend"
-          }
-        ]
-      }
+      "id": "course_008",
+      "name": "Kids English Program",
+      "price": 1200000,
+      "status": "active",
+      "levelId": "1"
+    }
+  ],
+  "courseLevels": [
+    {
+      "id": "1",
+      "name": "Beginner"
+    },
+    {
+      "id": "2",
+      "name": "Intermediate"
+    },
+    {
+      "id": "3",
+      "name": "Advanced"
+    }
+  ],
+  "courseClasses": [
+    {
+      "courseId": "course_001",
+      "classId": "c1"
+    },
+    {
+      "courseId": "course_002",
+      "classId": "c2"
+    },
+    {
+      "courseId": "course_003",
+      "classId": "c3"
+    },
+    {
+      "courseId": "course_004",
+      "classId": "c4"
+    },
+    {
+      "courseId": "course_005",
+      "classId": "c1"
+    },
+    {
+      "courseId": "course_006",
+      "classId": "c2"
+    },
+    {
+      "courseId": "course_008",
+      "classId": "c3"
     }
   ],
   "feedbacks": [
@@ -536,7 +513,7 @@
       "date": "2025-05-14",
       "content": "Giáo viên dạy dễ hiểu.",
       "userId": "u5",
-      "classId": "c5",
+      "classId": "c1",
       "courseId": "course_005",
       "rating": 4
     },
@@ -544,7 +521,7 @@
       "date": "2025-05-15",
       "content": "Môi trường học tập thân thiện.",
       "userId": "u6",
-      "classId": "c6",
+      "classId": "c1",
       "courseId": "course_006",
       "rating": 5
     },
@@ -552,7 +529,7 @@
       "date": "2025-05-16",
       "content": "Cần cải thiện phần giao tiếp.",
       "userId": "u7",
-      "classId": "c7",
+      "classId": "c1",
       "courseId": "course_007",
       "rating": 3
     },
@@ -560,7 +537,7 @@
       "date": "2025-05-17",
       "content": "Học phí cao so với chất lượng.",
       "userId": "u8",
-      "classId": "c8",
+      "classId": "c1",
       "courseId": "course_008",
       "rating": 2
     },
@@ -568,7 +545,7 @@
       "date": "2025-05-18",
       "content": "Lịch học linh hoạt, hỗ trợ tốt.",
       "userId": "u9",
-      "classId": "c9",
+      "classId": "c1",
       "courseId": "course_009",
       "rating": 5
     },
@@ -576,91 +553,9 @@
       "date": "2025-05-19",
       "content": "Đánh giá tổng thể là ổn.",
       "userId": "u10",
-      "classId": "c10",
+      "classId": "c1",
       "courseId": "course_010",
       "rating": 4
-    }
-  ],
-  "courses": [
-    {
-      "id": "course_001",
-      "name": "English for Beginners",
-      "numberOfSlots": 12,
-      "price": 1500000,
-      "maxStudents": 15,
-      "status": "active"
-    },
-    {
-      "id": "course_002",
-      "name": "IELTS Preparation",
-      "numberOfSlots": 20,
-      "price": 3500000,
-      "maxStudents": 20,
-      "status": "active"
-    },
-    {
-      "id": "course_003",
-      "name": "Business English",
-      "numberOfSlots": 18,
-      "price": 3000000,
-      "maxStudents": 18,
-      "status": "inactive"
-    },
-    {
-      "id": "course_004",
-      "name": "English Speaking Club",
-      "numberOfSlots": 10,
-      "price": 1000000,
-      "maxStudents": 25,
-      "status": "active"
-    },
-    {
-      "id": "course_005",
-      "name": "TOEIC Practice",
-      "numberOfSlots": 16,
-      "price": 2500000,
-      "maxStudents": 20,
-      "status": "active"
-    },
-    {
-      "id": "course_006",
-      "name": "Academic Writing",
-      "numberOfSlots": 14,
-      "price": 2000000,
-      "maxStudents": 12,
-      "status": "inactive"
-    },
-    {
-      "id": "course_007",
-      "name": "Phonetics and Pronunciation",
-      "numberOfSlots": 8,
-      "price": 800000,
-      "maxStudents": 10,
-      "status": "active"
-    },
-    {
-      "id": "course_008",
-      "name": "Kids English Program",
-      "numberOfSlots": 10,
-      "price": 1200000,
-      "maxStudents": 20,
-      "status": "active"
-    },
-    {
-      "id": "course_009",
-      "name": "English Grammar Mastery",
-      "numberOfSlots": 15,
-      "price": 1800000,
-      "maxStudents": 18,
-      "status": "active"
-    },
-    {
-      "id": "course_010",
-      "name": "Interview Skills in English",
-      "numberOfSlots": 6,
-      "price": 900000,
-      "maxStudents": 8,
-      "status": "inactive"
     }
   ],
   "notifications": [
@@ -701,7 +596,7 @@
       "title": "Thay đổi giáo viên",
       "content": "Lớp c_005 sẽ thay đổi giáo viên từ buổi sau.",
       "level": "medium",
-      "classId": "c5",
+      "classId": "c1",
       "read": true
     },
     {
@@ -709,39 +604,39 @@
       "title": "Workshop cuối tuần",
       "content": "Tham gia Workshop miễn phí vào Chủ nhật.",
       "level": "low",
-      "classId": "c6",
+      "classId": "c1",
       "read": false
     },
     {
       "time": "2025-05-24T08:30:00",
       "title": "Nhắc lịch kiểm tra",
-      "content": "Lớp c7 có bài kiểm tra vào ngày 2/6.",
+      "content": "Lớp c1 có bài kiểm tra vào ngày 2/6.",
       "level": "medium",
-      "classId": "c7",
+      "classId": "c1",
       "read": false
     },
     {
       "time": "2025-05-23T13:00:00",
       "title": "Thông báo mất điện",
-      "content": "Lớp c_008 tạm hoãn vì mất điện.",
+      "content": "Lớp c1 tạm hoãn vì mất điện.",
       "level": "high",
-      "classId": "c8",
+      "classId": "c1",
       "read": false
     },
     {
       "time": "2025-05-22T10:00:00",
       "title": "Tăng thời lượng học",
-      "content": "Lớp c_009 tăng 1 slot mỗi tuần.",
+      "content": "Lớp c1 tăng 1 slot mỗi tuần.",
       "level": "low",
-      "classId": "c9",
+      "classId": "c1",
       "read": true
     },
     {
       "time": "2025-05-21T15:30:00",
       "title": "Cập nhật tài liệu học",
-      "content": "Tài liệu lớp c_010 đã được cập nhật trên hệ thống.",
+      "content": "Tài liệu lớp c1 đã được cập nhật trên hệ thống.",
       "level": "low",
-      "classId": "c10",
+      "classId": "c1",
       "read": true
     }
   ]

@@ -5,11 +5,17 @@ export default class CourseService {
         return data.courses.map(course => ({
             "id": course.id,
             "name": course.name,
-            "numberOfSlots": course.numberOfSlots,
             "price": course.price,
-            "maxStudents": course.maxStudents,
-            "status": course.status
+            "status": course.status,
+            "level": data.courseLevels.find(level => level.id === course.levelId)?.name || "Unknown Level"
         }));
     }
-    
+
+    static getLevels() {
+        return data.courseLevels.map(level => ({
+            "id": level.id,
+            "name": level.name
+        }));
+    }
+
 }

@@ -1,6 +1,6 @@
 import TeacherLayout from '../layouts/TeacherLayout';
 import { useState } from 'react';
-import { Bell, AlertCircle, Search } from 'lucide-react';
+import { Bell, AlertCircle, Search, Megaphone } from 'lucide-react';
 import NotificationService from '../services/NotificationService';
 
 
@@ -59,6 +59,19 @@ export default function ClassNotifications() {
                             {notifs.filter(n => !n.read).length} Unread
                         </span>
                     </div>
+                </div>
+
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-4">
+                    <div className="bg-white rounded-xl border p-6 flex items-center gap-4">
+                        <span className="bg-blue-100 text-blue-600 p-3 rounded-lg">
+                            <Megaphone className="w-7 h-7" />
+                        </span>
+                        <div>
+                            <div className="text-2xl font-bold">Send Notification</div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div className="flex gap-2 mb-6">
