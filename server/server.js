@@ -1,24 +1,20 @@
 const express = require("express");
-const morgan = require("morgan");
-const connectDB = require("./config/db");
-const cors = require("cors"); // npm i cors
-
+require("dotenv").config();
 const app = express();
-app.use(cors());
+const connectDB = require("./connect/database");
 
-// Kết nối database
-connectDB();
-
-app.use(morgan("dev"));
 app.use(express.json());
 
-app.use("/api/users", require("./routes/user.route"));
-app.use("/api/courses", require("./routes/course.route"));
-app.use("/api/classes", require("./routes/class.route"));
+app.get("/", (req, res) => {
+    res.status(200).json({ message: "Welcome to ExpressJS" });
+  });
 
-const PORT = 9999;
-const HOSTNAME = "localhost";
+// app.use('/api', require('./routes/blog.route'));
 
-app.listen(PORT, HOSTNAME, () => {
-  console.log(`Server is running at http://${HOSTNAME}:${PORT}`);
-});
+  const PORT = process.env.PORT || 9999;
+  const HOSTNAME = 'localhost';
+
+  app.listen(PORT, HOSTNAME, () => {
+    console.log(`✅ Server is running at http://${HOSTNAME}:${PORT}`);
+    connectDB();
+  });

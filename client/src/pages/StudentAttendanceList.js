@@ -178,6 +178,7 @@ export default function StudentAttendanceList() {
                     >
                         Save Attendance
                     </button>
+
                 </div>
             </div>
         </TeacherLayout>
