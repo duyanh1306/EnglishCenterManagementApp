@@ -1,6 +1,6 @@
 import { useState } from "react";
-import AdminSidebar from "../components/AdminSidebar";
-import Navbar from "../components/Navbar";
+import AdminSidebar from "../components/admin/AdminSidebar";
+import Navbar from "../components/admin/Navbar";
 
 export default function AdminLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);

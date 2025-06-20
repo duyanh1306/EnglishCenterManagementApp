@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus, Search, Edit, Eye, Trash2, FileDown, X } from "lucide-react";
 import AdminLayout from "../../layouts/AdminLayout";
-import AddCourseModal from "../../components/AddCourseModal";
+import AddCourseModal from "../../components/admin/AddCourseModal";
 import dayjs from "dayjs";
 
 const initialCourses = [
