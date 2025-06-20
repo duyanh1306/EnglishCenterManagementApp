@@ -1,62 +1,34 @@
 import TeacherLayout from "../layouts/TeacherLayout";
-import { useState, useEffect } from "react";
-import { Search, Edit } from "lucide-react";
+// import { useState, useEffect} from "react";
+import { Search } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import AttendanceService from "../services/AttendanceService";
+import ClassService from "../services/ClassService";
 
-// Helper to get query params
 function useQuery() {
     return new URLSearchParams(useLocation().search);
 }
 
 export default function StudentAttendanceList() {
-    const [students, setStudents] = useState([]);
-    const [search, setSearch] = useState("");
     const query = useQuery();
     const classId = query.get("classId");
+    const className = ClassService.getClassById(classId).name || "Unknown Class";
     const date = query.get("date");
-    const className = query.get("className") || "Class";
-    const [editingStudentId, setEditingStudentId] = useState(null); // Track which student is being edited
 
-    const handleNoteChange = (studentId, newNote) => {
-        setStudents(prevStudents =>
-            prevStudents.map(student =>
-                student.id === studentId ? { ...student, note: newNote } : student
-            )
-        );
-    };
+    // Fetch students and attendance data using ClassService
+    const fetchedStudents = ClassService.getStudentsInClass(classId);
+    const attendanceData = ClassService.getAttendanceForClass(classId);
+    const students = fetchedStudents.map(student => {
+        const attendance = attendanceData.find(att => att.studentId === student.id);
+        return {
+            ...student,
+            note: attendance?.note || "",
+            attendance: attendance?.attendance || false,
+        };
+    });
 
-    const handleSaveNote = () => {
-        setEditingStudentId(null); // Exit editing mode
-    };
-
-    useEffect(() => {
-        // Fetch attendance data using AttendanceService
-        const fetchedStudents = classId ? AttendanceService.getAttendanceOfClass(classId) : [];
-        const filteredStudents = fetchedStudents.filter(student => {
-            if (search.trim() === "") {
-                return true; // No search filter applied
-            }
-            const searchText = search.toLowerCase();
-            return (
-                student.fullName.toLowerCase().includes(searchText) ||
-                student.email.toLowerCase().includes(searchText)
-            );
-        });
-        setStudents(filteredStudents);
-    }, [classId, search]);
-
-    const handleAttendanceChange = (studentId, attendanceStatus) => {
-        setStudents(prevStudents =>
-            prevStudents.map(student =>
-                student.id === studentId ? { ...student, attendance: attendanceStatus } : student
-            )
-        );
-    };
+    // const [studentAttendance, setStudentAttendance] = useState(students);
 
     const handleSaveAttendance = () => {
-        // Save updated attendance data (mock implementation)
-        console.log("Updated Attendance:", students);
         alert("Attendance saved successfully!");
     };
 
@@ -65,11 +37,9 @@ export default function StudentAttendanceList() {
             <div className="w-full p-8 bg-gray-50 min-h-screen">
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        {classId && (
-                            <h2 className="text-2xl font-bold text-gray-900">
-                                Taking Attendance, Class {className} on {new Date(date).toLocaleDateString()}
-                            </h2>
-                        )}
+                        <h2 className="text-2xl font-bold text-gray-900">
+                            Taking Attendance, Class {className}, Date {date}
+                        </h2>
                     </div>
                 </div>
                 <div className="bg-white rounded-xl shadow p-6 mb-6">
@@ -84,8 +54,6 @@ export default function StudentAttendanceList() {
                                     type="text"
                                     placeholder="Search by name or email..."
                                     className="border border-gray-300 rounded pl-10 pr-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-200"
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -106,42 +74,33 @@ export default function StudentAttendanceList() {
                             {students.map(student => (
                                 <tr key={student.id} className="border-b last:border-none">
                                     <td className="py-4 px-4 font-medium">{student.id}</td>
-                                    <td className="py-4 px-4 font-medium">{student.fullName}</td>
+                                    <td className="py-4 px-4 font-medium">{student.name}</td>
                                     <td className="py-4 px-4">{student.email}</td>
                                     <td className="py-4 px-4">
-                                        {editingStudentId === student.id ? (
-                                            <div className="flex items-center">
-                                                <input
-                                                    type="text"
-                                                    value={student.note || ""}
-                                                    onChange={e => handleNoteChange(student.id, e.target.value)}
-                                                    className="border border-gray-300 rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-200"
-                                                />
-                                                <button
-                                                    className="ml-2 text-blue-600 hover:text-blue-800"
-                                                    onClick={handleSaveNote}
-                                                >
-                                                    Save
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center">
-                                                <span>{student.note || "No notes"}</span>
-                                                <Edit
-                                                    className="inline w-4 h-4 ml-2 cursor-pointer text-gray-600 hover:text-gray-800"
-                                                    onClick={() => setEditingStudentId(student.id)}
-                                                />
-                                            </div>
-                                        )}
-                                    </td>                                    <td className="py-4 px-4">
+
+                                        <div className="flex items-center">
+                                            <input
+                                                type="text"
+                                                value={student.note || ""}
+                                                className="border border-gray-300 rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                            />
+                                            <button
+                                                className="ml-2 text-blue-600 hover:text-blue-800"
+                                            >
+                                                Save
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-4">
                                         <div className="flex items-center gap-2">
                                             <label className="inline-flex items-center">
                                                 <input
                                                     type="radio"
                                                     name={`attendance-${student.id}`}
                                                     value="absent"
-                                                    checked={!student.attendance}
-                                                    onChange={() => handleAttendanceChange(student.id, false)}
+                                                    checked={
+                                                        student.attendance === false
+                                                    }
                                                     className="form-radio text-blue-600"
                                                 />
                                                 <span className="ml-1 text-sm">Absent</span>
@@ -151,8 +110,9 @@ export default function StudentAttendanceList() {
                                                     type="radio"
                                                     name={`attendance-${student.id}`}
                                                     value="attend"
-                                                    checked={student.attendance}
-                                                    onChange={() => handleAttendanceChange(student.id, true)}
+                                                    checked={
+                                                        student.attendance === true
+                                                    }
                                                     className="form-radio text-blue-600"
                                                 />
                                                 <span className="ml-1 text-sm">Attend</span>
@@ -178,7 +138,6 @@ export default function StudentAttendanceList() {
                     >
                         Save Attendance
                     </button>
-
                 </div>
             </div>
         </TeacherLayout>

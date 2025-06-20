@@ -8,17 +8,13 @@ export default function Courses() {
   const [courses] = useState(CourseService.getCourses());
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
-  const levels = CourseService.getLevels();
-
-  const [level, setLevel] = useState("all");
 
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = course.name
       .toLowerCase()
       .includes(search.toLowerCase());
     const matchesStatus = status === "all" || course.status === status;
-    const matchesLevel = level === "all" || course.level === level;
-    return matchesSearch && matchesStatus && matchesLevel;
+    return matchesSearch && matchesStatus;
   });
 
   return (
@@ -58,22 +54,7 @@ export default function Courses() {
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Level</label>
-              <select
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-                value={level}
-                onChange={(e) => setLevel(e.target.value)}
-              >
-                <option value="all">All Levels</option>
-                {levels.map((level) => (
-                  <option key={level.id} value={level.name}>
-                    {level.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            </div>            
           </div>
         </div>
         <div className="">

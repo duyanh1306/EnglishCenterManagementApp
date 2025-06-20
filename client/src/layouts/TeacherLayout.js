@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
+import Navbar from "../components/teacher/Navbar";
+import Sidebar from "../components/teacher/Sidebar";
 
 export default function TeacherLayout({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
