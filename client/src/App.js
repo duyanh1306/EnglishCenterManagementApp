@@ -9,21 +9,19 @@ import StudentList from "./pages/StudentList";
 import TeachingClass from "./pages/TeachingClass";
 import Grades from "./pages/Grades";
 import StudentLayout from "./layouts/StudentLayout";
-import StudentSchedule from "./pages/StudentSchedule";
+import StudentSchedule from "./pages/student/StudentSchedule";
 
-import AcademicResults from "./pages/AcademicResults";
 import Dashboard from "./pages/admin/DashBoard";
 import CourseManagement from "./pages/admin/CourseManagement";
 import ClassesManagement from "./pages/admin/ClassesManagement";
 import UserManagement from "./pages/admin/UserManagement";
 import Notifications from "./pages/Notifications";
-
-import RegisterClass from "./pages/RegisterClass";
-import StudentNotifications from "./pages/StudentNotifications";
-import Attendance from "./pages/Attendance";
-import MyClasses from "./pages/MyClasses";
-import ClassDetails from "./pages/ClassDetails";
-
+import AcademicResults from "./pages/student/AcademicResults";
+import RegisterClass from "./pages/student/RegisterClass";
+import StudentNotifications from "./pages/student/StudentNotifications";
+import Attendance from "./pages/student/Attendance";
+import MyClasses from "./pages/student/MyClasses";
+import ClassDetails from "./pages/student/ClassDetails";
 
 function App() {
   return (
