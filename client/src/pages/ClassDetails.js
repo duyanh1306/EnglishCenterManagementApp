@@ -1,7 +1,6 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ClassDetails = () => {
-  const { classId } = useParams();
   const navigate = useNavigate();
 
   // Em có thể fetch dữ liệu từ API hoặc mock data trước
