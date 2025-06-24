@@ -11,6 +11,11 @@ import StudentList from "./pages/StudentList";
 import AcademicResults from "./pages/AcademicResults";
 import StudentLayout from "./layouts/StudentLayout";
 import StudentSchedule from "./pages/StudentSchedule";
+import RegisterClass from "./pages/RegisterClass";
+import StudentNotifications from "./pages/StudentNotifications";
+import Attendance from "./pages/Attendance";
+import MyClasses from "./pages/MyClasses";
+import ClassDetails from "./pages/ClassDetails";
 
 function App() {
   return (
@@ -31,6 +36,12 @@ function App() {
         <Route path="/student" element={<StudentLayout />}>
           <Route path="schedule" element={<StudentSchedule />} />
           <Route path="results" element={<AcademicResults />} />
+          <Route path="my-classes" element={<MyClasses />} />
+          <Route path="register-class" element={<RegisterClass />} />
+          <Route path="my-classes/:classId" element={<ClassDetails />} />
+          <Route path="notifications" element={<StudentNotifications />} />
+          <Route path="feedback" element={<Feedback />} />
+          <Route path="attendance" element={<Attendance />} />
         </Route>
       </Routes>
     </Router>
