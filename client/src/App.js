@@ -10,12 +10,20 @@ import TeachingClass from "./pages/TeachingClass";
 import Grades from "./pages/Grades";
 import StudentLayout from "./layouts/StudentLayout";
 import StudentSchedule from "./pages/StudentSchedule";
+
 import AcademicResults from "./pages/AcademicResults";
 import Dashboard from "./pages/admin/DashBoard";
 import CourseManagement from "./pages/admin/CourseManagement";
 import ClassesManagement from "./pages/admin/ClassesManagement";
 import UserManagement from "./pages/admin/UserManagement";
 import Notifications from "./pages/Notifications";
+
+import RegisterClass from "./pages/RegisterClass";
+import StudentNotifications from "./pages/StudentNotifications";
+import Attendance from "./pages/Attendance";
+import MyClasses from "./pages/MyClasses";
+import ClassDetails from "./pages/ClassDetails";
+
 
 function App() {
   return (
@@ -47,6 +55,12 @@ function App() {
         <Route path="/student" element={<StudentLayout />}>
           <Route path="schedule" element={<StudentSchedule />} />
           <Route path="results" element={<AcademicResults />} />
+          <Route path="my-classes" element={<MyClasses />} />
+          <Route path="register-class" element={<RegisterClass />} />
+          <Route path="my-classes/:classId" element={<ClassDetails />} />
+          <Route path="notifications" element={<StudentNotifications />} />
+          <Route path="feedback" element={<Feedback />} />
+          <Route path="attendance" element={<Attendance />} />
         </Route>
       </Routes>
     </Router>
