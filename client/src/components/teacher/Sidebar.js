@@ -1,15 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { Calendar, MessageCircle, Megaphone, GraduationCap, ClipboardPenLine, BookOpen } from "lucide-react";
+import { Calendar, GraduationCap, ClipboardPenLine, BookOpen } from "lucide-react";
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const items = [
-    { icon: <Calendar size={20} />, text: "Teaching Schedule", link: "/teaching/schedule" },
-    { icon: <GraduationCap size={20} />, text: "Teaching Class", link: "/teaching/class" },
-    { icon: <ClipboardPenLine size={20} />, text: "Grades", link: "/teaching/grades" },
-    { icon: <BookOpen size={20} />, text: "Courses", link: "/courses" },
-    { icon: <Megaphone size={20} />, text: "Notification", link: "/notifications" },
-    { icon: <MessageCircle size={20} />, text: "Feedback", link: "/feedback" },
+    { icon: <Calendar size={20} />, text: "Teaching Schedule", link: "/teacher/schedule" },
+    { icon: <GraduationCap size={20} />, text: "Teaching Class", link: "/teacher/classes" },
+    { icon: <ClipboardPenLine size={20} />, text: "Grades", link: "/teacher/grades" },
+    { icon: <BookOpen size={20} />, text: "Courses", link: "/teacher/courses" }
   ];
 
   return (

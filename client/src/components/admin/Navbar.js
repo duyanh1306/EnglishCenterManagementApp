@@ -24,11 +24,7 @@ const Navbar = ({
 
       {/* Right: Notification + Avatar + Name + Logout */}
       <div className="flex items-center gap-4">
-        <button className="relative p-2 rounded hover:bg-gray-100">
-          <Bell className="w-6 h-6 text-gray-600" />
-          {/* Badge notification nếu cần */}
-          <span className="absolute top-0 right-0 inline-block w-2 h-2 bg-red-500 rounded-full" />
-        </button>
+        
 
         {/* Avatar + Name */}
         <div className="flex items-center gap-2">

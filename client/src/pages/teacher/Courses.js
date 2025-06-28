@@ -1,7 +1,6 @@
-import TeacherLayout from "../layouts/TeacherLayout";
 import { useState } from "react";
 import { Plus, Search, Edit, Eye, Trash2 } from "lucide-react";
-import CourseService from "../services/CourseService";
+import CourseService from "../../services/CourseService";
 
 export default function Courses() {
   // Get courses data from CourseService
@@ -18,7 +17,7 @@ export default function Courses() {
   });
 
   return (
-    <TeacherLayout>
+    <>
       <div className="w-full p-8 bg-gray-50 min-h-screen">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Courses</h2>
@@ -127,6 +126,6 @@ export default function Courses() {
           </table>
         </div>
       </div>
-    </TeacherLayout>
+    </>
   );
 }

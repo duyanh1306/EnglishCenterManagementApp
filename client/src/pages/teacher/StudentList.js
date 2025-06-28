@@ -1,4 +1,4 @@
-import TeacherLayout from "../layouts/TeacherLayout";
+import TeacherLayout from "../../layouts/TeacherLayout";
 import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { useLocation } from "react-router-dom";
@@ -47,7 +47,7 @@ export default function StudentList() {
     }, [classId, search]);
 
     return (
-        <TeacherLayout>
+        <>
             <div className="w-full p-8 bg-gray-50 min-h-screen">
                 <div className="flex items-center justify-between mb-6">
                     <div>
@@ -136,6 +136,6 @@ export default function StudentList() {
                     </table>
                 </div>
             </div>
-        </TeacherLayout>
+        </>
     );
 }

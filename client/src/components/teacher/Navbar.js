@@ -1,5 +1,5 @@
 import React from "react";
-import { Bell, Menu} from "lucide-react"; // Lucide: bộ icon Tailwind-friendly
+import { Menu} from "lucide-react"; // Lucide: bộ icon Tailwind-friendly
 
 const Navbar = ({ user = { name: "John Doe", avatarUrl: "" }, onLogout, onToggleSidebar }) => {
     return (
@@ -19,12 +19,7 @@ const Navbar = ({ user = { name: "John Doe", avatarUrl: "" }, onLogout, onToggle
 
             {/* Right: Notification + Avatar + Name + Logout */}
             <div className="flex items-center gap-4">
-                <button className="relative p-2 rounded hover:bg-gray-100">
-                    <Bell className="w-6 h-6 text-gray-600" />
-                    {/* Badge notification nếu cần */}
-                    <span className="absolute top-0 right-0 inline-block w-2 h-2 bg-red-500 rounded-full" />
-                </button>
-
+                
                 {/* Avatar + Name */}
                 <div className="flex items-center gap-2">
                     <img
