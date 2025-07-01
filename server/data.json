@@ -137,6 +137,7 @@
       ],
       "courseId": "course_001",
       "startDate": "2025-05-01",
+      "status": "ongoing",
       "students": [
         {
           "studentId": "u4"

@@ -3,8 +3,10 @@ require("dotenv").config();
 const app = express();
 const connectDB = require("./connect/database");
 const classRoute = require('./routes/classRoute');
+const userRoute = require('./routes/userRoute');
 app.use(express.json());
 app.use('/api/classes',classRoute );
+app.use('/api/users',userRoute);
 app.get("/", (req, res) => {
     res.status(200).json({ message: "Welcome to ExpressJS" });
   });
