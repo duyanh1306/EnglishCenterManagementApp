@@ -7,15 +7,12 @@ export default class CourseService {
             "name": course.name,
             "price": course.price,
             "status": course.status,
-            "level": data.courseLevels.find(level => level.id === course.levelId)?.name || "Unknown Level"
+            "level": course.level
         }));
-    }
+    }   
 
-    static getLevels() {
-        return data.courseLevels.map(level => ({
-            "id": level.id,
-            "name": level.name
-        }));
+    static getCourseById(id) {
+        return data.courses.find(course => course.id === id);
     }
 
 }

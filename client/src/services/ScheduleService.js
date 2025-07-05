@@ -1,53 +1,45 @@
 import data from "../example/data.json";
+import ClassService from "./ClassService";
+import RoomService from "./RoomService";
 
 export default class ScheduleService {
     static getSlots() {
         return data.slots;
     }
 
-    static getClasses() {
-        return data.classes.map((item) => {
-            return {
-                "id": item.id,
-                "name": item.name                
-            };
-        });
-    }
-
-    static getRooms() {
-        return data.rooms.map((item) => {
-            return {
-                "id": item.id,
-                "name": item.name,
-                "location": item.location
-            };
-        });
-    }
-
-    static getCourse() {
+    static getCourses() {
         return data.courses.map((item) => {
             return {
-                "id": item.id,
-                "name": item.name,
-                "code": item.code,
-                "credits": item.credits
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                status: item.status,
+                level: item.level
             };
         });
-    }
-
-    static getCourseClasses() {
-        return data.courseClasses;
     }
 
     static getSchedule() {
         return data.schedule.map((item) => {
+            const classData = ClassService.getClasses().find(c => c.id === item.classId);
+            const roomData = RoomService.getRooms().find(r => r.id === item.roomId);
+            const courseData = classData ? this.getCourses().find(c => c.id === classData.courseId) : null;
             return {
-                "slotId": item.slotId,
-                "class": this.getClasses().find(c => c.id === item.classId),
-                "room": this.getRooms().find(r => r.id === item.roomId),
-                "date": item.date,
-                "meeting": item.meeting,
-                "course": this.getCourse().find(c => c.id === this.getCourseClasses().find(cc => cc.classId === item.classId)?.courseId),
+                id: item.id,
+                slotId: item.slotId,
+                class: classData ? {
+                    id: classData.id,
+                    name: classData.name,
+                    teacher: classData.teacher ? classData.teacher.name : "Unknown Teacher"
+                } : "Unknown Class",
+                room: roomData ? {
+                    id: roomData.id,
+                    name: roomData.name,
+                    location: roomData.location
+                } : "Unknown Room",
+                date: item.date || "Unknown Date",
+                meeting: item.meeting || null,
+                course: courseData ? courseData.name : "Unknown Course"
             };
         });
     }

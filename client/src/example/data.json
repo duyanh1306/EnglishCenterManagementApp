@@ -18,6 +18,7 @@
       "id": "u1",
       "fullName": "Nguyen Van A",
       "userName": "nguyenvana",
+      "password": "password123",
       "email": "vana@example.com",
       "number": "0901000001",
       "birthday": "1985-01-01",
@@ -28,6 +29,7 @@
       "id": "u2",
       "fullName": "Tran Thi B",
       "userName": "tranthib",
+      "password": "password123",
       "email": "thib@example.com",
       "number": "0901000002",
       "birthday": "1988-02-02",
@@ -38,6 +40,7 @@
       "id": "u3",
       "fullName": "Le Van C",
       "userName": "levanc",
+      "password": "password123",
       "email": "vanc@example.com",
       "number": "0901000003",
       "birthday": "1990-03-03",
@@ -48,6 +51,7 @@
       "id": "u4",
       "fullName": "Pham Thi D",
       "userName": "phamthid",
+      "password": "password123",
       "email": "thid@example.com",
       "number": "0901000004",
       "birthday": "2000-04-04",
@@ -58,6 +62,7 @@
       "id": "u5",
       "fullName": "Hoang Van E",
       "userName": "hoangvane",
+      "password": "password123",
       "email": "vane@example.com",
       "number": "0901000005",
       "birthday": "2001-05-05",
@@ -68,6 +73,7 @@
       "id": "u6",
       "fullName": "Nguyen Thi F",
       "userName": "nguyenthif",
+      "password": "password123",
       "email": "thif@example.com",
       "number": "0901000006",
       "birthday": "2002-06-06",
@@ -78,6 +84,7 @@
       "id": "u7",
       "fullName": "Bui Van G",
       "userName": "buivang",
+      "password": "password123",
       "email": "vang@example.com",
       "number": "0901000007",
       "birthday": "2000-07-07",
@@ -88,6 +95,7 @@
       "id": "u8",
       "fullName": "Do Thi H",
       "userName": "dothih",
+      "password": "password123",
       "email": "thih@example.com",
       "number": "0901000008",
       "birthday": "2003-08-08",
@@ -98,6 +106,7 @@
       "id": "u9",
       "fullName": "Vu Van I",
       "userName": "vuvani",
+      "password": "password123",
       "email": "vani@example.com",
       "number": "0901000009",
       "birthday": "2001-09-09",
@@ -108,6 +117,7 @@
       "id": "u10",
       "fullName": "Tran Thi J",
       "userName": "tranthij",
+      "password": "password123",
       "email": "thij@example.com",
       "number": "0901000010",
       "birthday": "2004-10-10",
@@ -118,119 +128,70 @@
   "classes": [
     {
       "id": "c1",
-      "name": "A"
-    },
-    {
-      "id": "c2",
-      "name": "B"
-    },
-    {
-      "id": "c3",
-      "name": "C"
-    },
-    {
-      "id": "c4",
-      "name": "D"
+      "name": "A",      
+      "courseId": "course_001",
+      "startDate": "2025-05-01",
+      "status": "ongoing",
+      "teacherId": [
+        {
+          "teacherId": "u2"
+        }
+      ],
+      "students": [
+        {
+          "studentId": "u4"
+        },
+        {
+          "studentId": "u5"
+        },
+        {
+          "studentId": "u6"
+        },
+        {
+          "studentId": "u7"
+        },
+        {
+          "studentId": "u8"
+        },
+        {
+          "studentId": "u9"
+        },
+        {
+          "studentId": "u10"
+        }
+      ]
     }
   ],
-  "studentClasses": [
+  "grades": [
     {
-      "studentId": "u4",
-      "classId": "c1"
-    },
-    {
-      "studentId": "u5",
-      "classId": "c1"
-    },
-    {
-      "studentId": "u6",
-      "classId": "c1"
-    },
-    {
-      "studentId": "u6",
-      "classId": "c2"
-    },
-    {
-      "studentId": "u7",
-      "classId": "c2"
-    },
-    {
-      "studentId": "u8",
-      "classId": "c2"
-    },
-    {
-      "studentId": "u8",
-      "classId": "c3"
-    },
-    {
-      "studentId": "u9",
-      "classId": "c3"
-    },
-    {
-      "studentId": "u10",
-      "classId": "c3"
-    },
-    {
-      "studentId": "u4",
-      "classId": "c4"
-    },
-    {
-      "studentId": "u5",
-      "classId": "c4"
-    },
-    {
-      "studentId": "u10",
-      "classId": "c4"
-    },
-    {
-      "studentId": "u6",
-      "classId": "c1"
-    },
-    {
-      "studentId": "u7",
-      "classId": "c1"
-    },
-    {
-      "studentId": "u9",
-      "classId": "c1"
-    },
-    {
-      "studentId": "u4",
-      "classId": "c1"
-    },
-    {
-      "studentId": "u8",
-      "classId": "c1"
-    },
-    {
-      "studentId": "u10",
-      "classId": "c1"
-    }
-  ],
-  "attendance": [
-    {
-      "id": "a1",
-      "scheduleId": "1",
+      "id": "1",
       "studentId": "u4",
       "classId": "c1",
-      "attendance": true,
-      "note": ""
+      "courseId": "course_001",
+      "score": 8.5,
+      "type": "midterm",
+      "date": "2025-06-10",
+      "comment": "Làm bài tốt, chú ý phần speaking."
     },
     {
-      "id": "a2",
-      "scheduleId": "1",
+      "id": "2",
       "studentId": "u5",
       "classId": "c1",
-      "attendance": false,
-      "note": "Bị ốm"
+      "courseId": "course_001",
+      "score": 7.0,
+      "type": "final",
+      "date": "2025-07-15",
+      "comment": "Cần cải thiện kỹ năng viết."
     },
     {
-      "id": "a3",
-      "scheduleId": "1",
+      "id": "3",
       "studentId": "u6",
       "classId": "c1",
-      "attendance": true,
-      "note": "Đến muộn 15 phút"
+      "courseId": "course_001",
+      "score": 9.0,
+      "type": "midterm",
+      "date": "2025-06-10",
+      "comment": ""
     }
   ],
   "rooms": [
@@ -353,291 +314,68 @@
       "slotId": "1",
       "classId": "c1",
       "roomId": "1",
-      "date": "2025-05-25",
-      "meeting": "https://meet.example.com/slot1"
+      "date": "2025-05-25"
     },
     {
       "id": "2",
       "slotId": "2",
-      "classId": "c2",
+      "classId": "c1",
       "roomId": "2",
-      "date": "2025-05-25",
-      "meeting": "https://meet.example.com/slot2"
+      "date": "2025-05-26"
     },
     {
       "id": "3",
       "slotId": "3",
-      "classId": "c3",
+      "classId": "c1",
       "roomId": "3",
-      "date": "2025-05-26",
-      "meeting": "https://meet.example.com/slot3"
+      "date": "2025-05-27",
+      "meeting": ""
     },
     {
       "id": "4",
       "slotId": "4",
-      "classId": "c4",
+      "classId": "c1",
       "roomId": "4",
-      "date": "2025-05-26",
-      "meeting": null
+      "date": "2025-05-28",
+      "meeting": ""
     }
   ],
   "courses": [
     {
       "id": "course_001",
       "name": "English for Beginners",
+      "description": "Khóa học tiếng Anh cơ bản dành cho người mới bắt đầu.",
+      "image": "https://example.com/images/course_001.jpg",
       "price": 1500000,
       "status": "active",
-      "levelId": "1"
+      "level": "beginner"
     },
     {
       "id": "course_002",
       "name": "IELTS Preparation",
+      "description": "Khóa học luyện thi IELTS cho trình độ trung cấp.",
+      "image": "https://example.com/images/course_002.jpg",
       "price": 3500000,
       "status": "active",
-      "levelId": "2"
+      "level": "intermediate"
     },
     {
       "id": "course_003",
       "name": "Business English",
+      "description": "Khóa học tiếng Anh thương mại cho người đi làm.",
+      "image": "https://example.com/images/course_003.jpg",
       "price": 3000000,
       "status": "inactive",
-      "levelId": "3"
+      "level": "advanced"
     },
     {
       "id": "course_004",
       "name": "English Speaking Club",
+      "description": "Câu lạc bộ nói tiếng Anh dành cho mọi trình độ.",
+      "image": "https://example.com/images/course_004.jpg",
       "price": 1000000,
       "status": "active",
-      "levelId": "1"
-    },
-    {
-      "id": "course_005",
-      "name": "TOEIC Practice",
-      "price": 2500000,
-      "status": "active",
-      "levelId": "2"
-    },
-    {
-      "id": "course_006",
-      "name": "Academic Writing",
-      "price": 2000000,
-      "status": "inactive",
-      "levelId": "3"
-    },
-    {
-      "id": "course_008",
-      "name": "Kids English Program",
-      "price": 1200000,
-      "status": "active",
-      "levelId": "1"
-    }
-  ],
-  "courseLevels": [
-    {
-      "id": "1",
-      "name": "Beginner"
-    },
-    {
-      "id": "2",
-      "name": "Intermediate"
-    },
-    {
-      "id": "3",
-      "name": "Advanced"
-    }
-  ],
-  "courseClasses": [
-    {
-      "courseId": "course_001",
-      "classId": "c1"
-    },
-    {
-      "courseId": "course_002",
-      "classId": "c2"
-    },
-    {
-      "courseId": "course_003",
-      "classId": "c3"
-    },
-    {
-      "courseId": "course_004",
-      "classId": "c4"
-    },
-    {
-      "courseId": "course_005",
-      "classId": "c1"
-    },
-    {
-      "courseId": "course_006",
-      "classId": "c2"
-    },
-    {
-      "courseId": "course_008",
-      "classId": "c3"
-    }
-  ],
-  "feedbacks": [
-    {
-      "date": "2025-05-10",
-      "content": "Khóa học rất bổ ích và giảng viên nhiệt tình.",
-      "userId": "u1",
-      "classId": "c1",
-      "courseId": "course_001",
-      "rating": 5
-    },
-    {
-      "date": "2025-05-11",
-      "content": "Lịch học phù hợp nhưng nội dung hơi nhanh.",
-      "userId": "u2",
-      "classId": "c2",
-      "courseId": "course_002",
-      "rating": 4
-    },
-    {
-      "date": "2025-05-12",
-      "content": "Khóa học chưa đúng kỳ vọng.",
-      "userId": "u3",
-      "classId": "c3",
-      "courseId": "course_003",
-      "rating": 2
-    },
-    {
-      "date": "2025-05-13",
-      "content": "Tài liệu tốt, cần thêm ví dụ thực tế.",
-      "userId": "u4",
-      "classId": "c4",
-      "courseId": "course_004",
-      "rating": 3
-    },
-    {
-      "date": "2025-05-14",
-      "content": "Giáo viên dạy dễ hiểu.",
-      "userId": "u5",
-      "classId": "c1",
-      "courseId": "course_005",
-      "rating": 4
-    },
-    {
-      "date": "2025-05-15",
-      "content": "Môi trường học tập thân thiện.",
-      "userId": "u6",
-      "classId": "c1",
-      "courseId": "course_006",
-      "rating": 5
-    },
-    {
-      "date": "2025-05-16",
-      "content": "Cần cải thiện phần giao tiếp.",
-      "userId": "u7",
-      "classId": "c1",
-      "courseId": "course_007",
-      "rating": 3
-    },
-    {
-      "date": "2025-05-17",
-      "content": "Học phí cao so với chất lượng.",
-      "userId": "u8",
-      "classId": "c1",
-      "courseId": "course_008",
-      "rating": 2
-    },
-    {
-      "date": "2025-05-18",
-      "content": "Lịch học linh hoạt, hỗ trợ tốt.",
-      "userId": "u9",
-      "classId": "c1",
-      "courseId": "course_009",
-      "rating": 5
-    },
-    {
-      "date": "2025-05-19",
-      "content": "Đánh giá tổng thể là ổn.",
-      "userId": "u10",
-      "classId": "c1",
-      "courseId": "course_010",
-      "rating": 4
-    }
-  ],
-  "notifications": [
-    {
-      "time": "2025-05-30T08:00:00",
-      "title": "Thông báo nghỉ lễ",
-      "content": "Nghỉ lễ Quốc tế vào ngày 1/5.",
-      "level": "medium",
-      "classId": "c1",
-      "read": false
-    },
-    {
-      "time": "2025-05-29T10:30:00",
-      "title": "Cập nhật lịch học",
-      "content": "Lịch học lớp c_002 đã được cập nhật.",
-      "level": "low",
-      "classId": "c2",
-      "read": false
-    },
-    {
-      "time": "2025-05-28T14:45:00",
-      "title": "Nhắc nhở đóng học phí",
-      "content": "Vui lòng hoàn tất học phí trước ngày 5/6.",
-      "level": "high",
-      "classId": "c3",
-      "read": true
-    },
-    {
-      "time": "2025-05-27T16:00:00",
-      "title": "Thông báo kết quả thi",
-      "content": "Kết quả thi lớp c_004 đã được công bố.",
-      "level": "medium",
-      "classId": "c4",
-      "read": false
-    },
-    {
-      "time": "2025-05-26T09:15:00",
-      "title": "Thay đổi giáo viên",
-      "content": "Lớp c_005 sẽ thay đổi giáo viên từ buổi sau.",
-      "level": "medium",
-      "classId": "c1",
-      "read": true
-    },
-    {
-      "time": "2025-05-25T11:00:00",
-      "title": "Workshop cuối tuần",
-      "content": "Tham gia Workshop miễn phí vào Chủ nhật.",
-      "level": "low",
-      "classId": "c1",
-      "read": false
-    },
-    {
-      "time": "2025-05-24T08:30:00",
-      "title": "Nhắc lịch kiểm tra",
-      "content": "Lớp c1 có bài kiểm tra vào ngày 2/6.",
-      "level": "medium",
-      "classId": "c1",
-      "read": false
-    },
-    {
-      "time": "2025-05-23T13:00:00",
-      "title": "Thông báo mất điện",
-      "content": "Lớp c1 tạm hoãn vì mất điện.",
-      "level": "high",
-      "classId": "c1",
-      "read": false
-    },
-    {
-      "time": "2025-05-22T10:00:00",
-      "title": "Tăng thời lượng học",
-      "content": "Lớp c1 tăng 1 slot mỗi tuần.",
-      "level": "low",
-      "classId": "c1",
-      "read": true
-    },
-    {
-      "time": "2025-05-21T15:30:00",
-      "title": "Cập nhật tài liệu học",
-      "content": "Tài liệu lớp c1 đã được cập nhật trên hệ thống.",
-      "level": "low",
-      "classId": "c1",
-      "read": true
+      "level": "beginner"
     }
   ]
 }
