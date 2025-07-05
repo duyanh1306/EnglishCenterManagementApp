@@ -1,12 +1,39 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
+
 const courseSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String },
-  duration: { type: Number }, // số giờ học
-  startDate: { type: Date },
-  endDate: { type: Date },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // admin
-  createdAt: { type: Date, default: Date.now },
+  id: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  image: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'active'
+  },
+  level: {
+    type: String,
+    enum: ['beginner', 'intermediate', 'advanced'],
+    required: true
+  }
+}, {
+  timestamps: true
 });
 
-export default mongoose.model("Course", courseSchema, "Courses");
+module.exports = mongoose.model("Course", courseSchema); 
