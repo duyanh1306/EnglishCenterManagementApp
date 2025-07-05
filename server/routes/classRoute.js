@@ -1,9 +1,9 @@
 const express = require('express');
-const router = express.Router();
-
+const classRouter = express.Router();
+const { jwtAuth } = require("../middlewares/auth");
 const { getAllClasses } = require('../controllers/classController');
 
 
-router.get('/', getAllClasses);
+classRouter.get('/',jwtAuth, getAllClasses);
 
-module.exports = router;
+module.exports = classRouter;

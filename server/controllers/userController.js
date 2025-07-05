@@ -53,7 +53,7 @@ exports.login = async (req, res) => {
     }
     // const isValidPassword = password === account.password;
       const isValidPassword = await bcrypt.compare(password, account.password);
-    //mongodb chua encrypt password nen dung thi dung cai tren, neu da encrypt thi dung cai duoi
+    //mongodb chua encrypt password thi dung cai tren, neu da encrypt thi dung cai duoi
     if (!isValidPassword) {
       return res.status(400).json({ message: "Invalid password" });
     }
@@ -78,3 +78,15 @@ exports.login = async (req, res) => {
     next(error);
   }
 };
+
+exports.getAllUser = async (req, res, next) => {
+    try {
+      const users = await userAccount.find({}).select("-password"); 
+      res.status(200).json({
+        message: "All users fetched successfully",
+        data: users,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
