@@ -22,41 +22,43 @@ import CourseManagement from "./pages/admin/CourseManagement";
 import ClassesManagement from "./pages/admin/ClassesManagement";
 import UserManagement from "./pages/admin/UserManagement";
 
-
+import LoginPage from "./auth/Login";
 
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        
+      <Router>
+        <Routes>
 
-        {/* Các route dùng chung layout Teacher */}
-        <Route path="/teacher" element={<TeacherLayout />} > 
-          <Route path="courses" element={<Courses />} />         
-          <Route path="schedule" element={<TeachingSchedule />} />
-          <Route path="classes" element={<TeachingClass />} />
-          <Route path="grades" element={<Grades />} />
-        </Route >
+          {/* Login */}
+          <Route path="/login" element={<LoginPage />} />
 
-        {/* Các route dùng chung layout Admin */}
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/admin/courses" element={<CourseManagement />} />
-        <Route path="/admin/classes" element={<ClassesManagement />} />
-        <Route path="/admin/users" element={<UserManagement />} />
+          {/* Các route dùng chung layout Teacher */}
+          <Route path="/teacher" element={<TeacherLayout />} >
+            <Route path="courses" element={<Courses />} />
+            <Route path="schedule" element={<TeachingSchedule />} />
+            <Route path="classes" element={<TeachingClass />} />
+            <Route path="grades" element={<Grades />} />
+          </Route >
 
-        {/* Các route dùng chung layout Student */}
-        <Route path="/student" element={<StudentLayout />}>
-          <Route path="schedule" element={<StudentSchedule />} />
-          <Route path="results" element={<AcademicResults />} />
-          <Route path="my-classes" element={<MyClasses />} />
-          <Route path="register-class" element={<RegisterClass />} />
-          <Route path="my-classes/:classId" element={<ClassDetails />} />
-          <Route path="notifications" element={<StudentNotifications />} />
-          <Route path="attendance" element={<Attendance />} />
-        </Route>
-      </Routes>
-    </Router>
+          {/* Các route dùng chung layout Admin */}
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/courses" element={<CourseManagement />} />
+          <Route path="/admin/classes" element={<ClassesManagement />} />
+          <Route path="/admin/users" element={<UserManagement />} />
+
+          {/* Các route dùng chung layout Student */}
+          <Route path="/student" element={<StudentLayout />}>
+            <Route path="schedule" element={<StudentSchedule />} />
+            <Route path="results" element={<AcademicResults />} />
+            <Route path="my-classes" element={<MyClasses />} />
+            <Route path="register-class" element={<RegisterClass />} />
+            <Route path="my-classes/:classId" element={<ClassDetails />} />
+            <Route path="notifications" element={<StudentNotifications />} />
+            <Route path="attendance" element={<Attendance />} />
+          </Route>
+        </Routes>
+      </Router>
   );
 }
 

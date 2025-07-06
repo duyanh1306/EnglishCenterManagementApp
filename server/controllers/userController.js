@@ -51,8 +51,8 @@ exports.login = async (req, res) => {
     if (!account) {
       return res.status(401).json({ message: "Invalid username" });
     }
-    // const isValidPassword = password === account.password;
-      const isValidPassword = await bcrypt.compare(password, account.password);
+    const isValidPassword = password === account.password;
+    //   const isValidPassword = await bcrypt.compare(password, account.password);
     //mongodb chua encrypt password thi dung cai tren, neu da encrypt thi dung cai duoi
     if (!isValidPassword) {
       return res.status(400).json({ message: "Invalid password" });
