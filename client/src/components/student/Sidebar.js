@@ -10,13 +10,16 @@ import {
   FaBookOpen,
   FaComments,
   FaClipboardCheck,
+  FaFileAlt,
+  FaClock,
 } from "react-icons/fa";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { name: "Home", icon: <FaHome />, path: "/dashboard" },
+    { name: "Home", icon: <FaHome />, path: "/student/dashboard" },
+
     { name: "My Classes", icon: <FaBookOpen />, path: "/student/my-classes" },
     { name: "Schedule", icon: <FaCalendarAlt />, path: "/student/schedule" },
     {
@@ -25,18 +28,20 @@ const Sidebar = () => {
       path: "/student/register-class",
     },
     {
-      name: "Academic Results",
+      name: "Grade ",
       icon: <FaGraduationCap />,
-      path: "/student/results",
+      path: "/student/grade",
     },
     {
       name: "Attendance",
       icon: <FaClipboardCheck />,
       path: "/student/attendance",
     },
-
-    // { name: "Notifications", icon: <FaBell />, path: "/student/notifications" },
-    { name: "Feedback", icon: <FaComments />, path: "/student/feedback" },
+    {
+      name: "Exam Schedule",
+      icon: <FaClock />,
+      path: "/student/exam-schedule",
+    },
   ];
 
   return (
