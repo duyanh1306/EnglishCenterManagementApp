@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   FaBookOpen,
   FaGraduationCap,
@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 
 const StudentDashboard = () => {
-  const [stats, setStats] = useState({
+  const [stats] = useState({
     fullName: "Nguyen Van Luong",
     studentId: "ST123456",
     totalClasses: 5,

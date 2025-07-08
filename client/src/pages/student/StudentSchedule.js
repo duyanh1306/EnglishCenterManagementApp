@@ -1,123 +1,181 @@
-import React from "react";
+import { useState, useEffect } from "react";
 
-const scheduleData = [
-  {
-    day: "Monday",
-    time: "08:00 - 09:30",
-    subject: "Math",
-    room: "101",
-    date: "2025-06-10",
-    mode: "Onsite",
-  },
-  {
-    day: "Wednesday",
-    time: "13:00 - 14:30",
-    subject: "Physics",
-    room: "Lab A",
-    date: "2025-06-12",
-    mode: "Online",
-    link: "https://zoom.us/j/123456789",
-  },
-];
+export default function StudentSchedule() {
+  const [year, setYear] = useState(2025);
+  const [weeks, setWeeks] = useState([]);
+  const [selectedWeek, setSelectedWeek] = useState(null);
+  const [schedule, setSchedule] = useState([]);
 
-const daysOfWeek = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
+  const daysOfWeek = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+  const slotLabels = [
+    "Slot 0",
+    "Slot 1",
+    "Slot 2",
+    "Slot 3",
+    "Slot 4",
+    "Slot 5",
+  ];
 
-const timeSlots = [
-  "08:00 - 09:30",
-  "09:40 - 11:10",
-  "13:00 - 14:30",
-  "15:00 - 17:30",
-];
+  const generateWeeksOfYear = (targetYear) => {
+    const startDate = new Date(`${targetYear}-01-01`);
+    const weeks = [];
 
-const StudentSchedule = () => {
+    while (startDate.getDay() !== 1) {
+      startDate.setDate(startDate.getDate() + 1);
+    }
+
+    for (let i = 0; i < 53; i++) {
+      const weekStart = new Date(startDate);
+      weekStart.setDate(startDate.getDate() + i * 7);
+
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+
+      if (weekStart.getFullYear() > targetYear) break;
+
+      const label = `${weekStart.toLocaleDateString(
+        "en-GB"
+      )} To ${weekEnd.toLocaleDateString("en-GB")}`;
+      weeks.push({
+        label,
+        start: new Date(weekStart),
+        end: new Date(weekEnd),
+      });
+    }
+    return weeks;
+  };
+
+  const formatDate = (dateObj) => {
+    if (!(dateObj instanceof Date) || isNaN(dateObj)) return "";
+    return dateObj.toISOString().split("T")[0];
+  };
+
+  const getDateByOffset = (startDate, offset) => {
+    if (!startDate) return null;
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + offset);
+    return date;
+  };
+
+  const getScheduleItem = (slotId, dateStr) => {
+    return schedule.find(
+      (item) => item.slotId === slotId && item.date === dateStr
+    );
+  };
+
+  useEffect(() => {
+    const newWeeks = generateWeeksOfYear(year);
+    setWeeks(newWeeks);
+    setSelectedWeek(newWeeks[0]);
+  }, [year]);
+
+  useEffect(() => {
+    const fetchedSchedule = [
+      {
+        id: "1",
+        slotId: "1",
+        className: "A",
+        course: "TOEIC",
+        room: "R101",
+        date: "2025-07-08", // Tuesday
+      },
+      {
+        id: "2",
+        slotId: "2",
+        className: "A",
+        course: "TOEIC",
+        room: "R102",
+        date: "2025-07-10", // Thursday
+      },
+      {
+        id: "3",
+        slotId: "3",
+        className: "A",
+        course: "TOEIC",
+        room: "R103",
+        date: "2025-07-09", // Wednesday
+      },
+    ];
+    setSchedule(fetchedSchedule);
+  }, []);
+
   return (
-    <div className="flex flex-col w-full p-6">
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold">Weekly Schedule</h2>
-        {/* <p className="text-gray-500">Week of 9/6/2025 - 15/6/2025</p> */}
+    <div className="p-6 bg-white min-h-screen">
+      <div className="flex items-center gap-4 mb-4">
+        <label className="text-sm font-semibold">YEAR</label>
+        <select
+          value={year}
+          onChange={(e) => setYear(+e.target.value)}
+          className="border px-3 py-2 rounded text-sm"
+        >
+          <option value={2024}>2024</option>
+          <option value={2025}>2025</option>
+          <option value={2026}>2026</option>
+        </select>
+
+        <label className="text-sm font-semibold">WEEK</label>
+        <select
+          value={selectedWeek?.label || ""}
+          onChange={(e) => {
+            const week = weeks.find((w) => w.label === e.target.value);
+            setSelectedWeek(week);
+          }}
+          className="border px-3 py-2 rounded text-sm max-w-[250px]"
+        >
+          {weeks.map((week) => (
+            <option key={week.label} value={week.label}>
+              {week.label}
+            </option>
+          ))}
+        </select>
       </div>
 
-      <div className="bg-white rounded-xl shadow p-6 overflow-x-auto w-full max-w-[1200px]">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-xl">
-              👤
-            </div>
-            <div>
-              <p className="font-semibold">Welcome back, John Doe</p>
-              <p className="text-sm text-gray-500">Student</p>
-            </div>
-          </div>
-        </div>
-
-        <table className="table w-full border border-gray-200 min-w-full">
+      {selectedWeek ? (
+        <table className="w-full border-collapse border border-gray-300 text-sm">
           <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2 text-left w-32">Time</th>
-              {daysOfWeek.map((day) => (
-                <th key={day} className="border p-2 text-center">
-                  {day}
-                </th>
-              ))}
+            <tr className="bg-blue-200 text-center">
+              <th className="border border-gray-300 p-2 font-bold">WEEK</th>
+              {daysOfWeek.map((day, idx) => {
+                const date = getDateByOffset(selectedWeek.start, idx);
+                return (
+                  <th key={day} className="border border-gray-300 p-2">
+                    {day}
+                    <br />
+                    {date.toLocaleDateString("en-GB")}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
-
           <tbody>
-            {timeSlots.map((time) => (
-              <tr key={time}>
-                <td className="border p-2 font-semibold w-32">{time}</td>
-
-                {daysOfWeek.map((day) => {
-                  const item = scheduleData.find(
-                    (s) => s.day === day && s.time === time
-                  );
+            {slotLabels.map((slotLabel, rowIdx) => (
+              <tr key={slotLabel} className="text-center">
+                <td className="border border-gray-300 p-2 font-semibold">
+                  {slotLabel}
+                </td>
+                {daysOfWeek.map((_, colIdx) => {
+                  const date = getDateByOffset(selectedWeek.start, colIdx);
+                  const dateStr = formatDate(date);
+                  const item = getScheduleItem(`${rowIdx}`, dateStr);
 
                   return (
                     <td
-                      key={day}
-                      className="border p-2 text-sm align-top min-w-[140px] text-left"
+                      key={colIdx}
+                      className="border border-gray-300 p-2 text-left min-w-[150px] align-top"
                     >
                       {item ? (
                         <div className="space-y-1">
                           <div>
-                            <span className="font-bold">Subject:</span>{" "}
-                            {item.subject}
+                            <span className="font-bold">Class:</span>{" "}
+                            {item.className}
+                          </div>
+                          <div>
+                            <span className="font-bold">Course:</span>{" "}
+                            {item.course}
                           </div>
                           <div>
                             <span className="font-bold">Room:</span> {item.room}
                           </div>
-                          <div>
-                            <span className="font-bold">Date:</span> {item.date}
-                          </div>
-                          <div>
-                            <span
-                              className={`text-xs font-medium px-2 py-1 rounded-full ${
-                                item.mode === "Online"
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-blue-100 text-blue-700"
-                              }`}
-                            >
-                              {item.mode}
-                            </span>
-                          </div>
-                          {item.link && (
-                            <a
-                              href={item.link}
-                              className="text-blue-600 underline text-xs"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Join Meeting
-                            </a>
-                          )}
                         </div>
                       ) : (
                         <span className="text-gray-400 text-xs">–</span>
@@ -129,9 +187,9 @@ const StudentSchedule = () => {
             ))}
           </tbody>
         </table>
-      </div>
+      ) : (
+        <p className="text-gray-500">Loading schedule...</p>
+      )}
     </div>
   );
-};
-
-export default StudentSchedule;
+}
