@@ -1,67 +1,38 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-
-export default function Grades() {
-    const [results, setResults] = useState([]);
-
-    useEffect(() => {
-        // Mock detailed subject-based results
-        const mockResults = [
-            {
-                subject: "English 101",
-                scores: {
-                    Listening: 85,
-                    Speaking: 78,
-                    Reading: 92,
-                    Writing: 88,
-                },
-            },
-            {
-                subject: "TOEIC Preparation",
-                scores: {
-                    Listening: 90,
-                    Speaking: 82,
-                    Reading: 89,
-                    Writing: 87,
-                },
-            },
-        ];
-        setResults(mockResults);
-    }, []);
-
+export default function Grades({ grades }) {
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6">Grades</h1>
-            {results.map((result, index) => (
-                <div
-                    key={index}
-                    className="mb-6 border border-gray-300 rounded shadow bg-white p-4"
-                >
-                    <h2 className="text-xl font-semibold mb-2 text-blue-700">
-                        {result.subject}
-                    </h2>
-                    <table className="w-full border-collapse border border-gray-200">
-                        <thead className="bg-gray-100">
-                            <tr>
-                                <th className="border border-gray-300 px-4 py-2 text-left">
-                                    Skill
-                                </th>
-                                <th className="border border-gray-300 px-4 py-2 text-left">
-                                    Score
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {Object.entries(result.scores).map(([skill, score]) => (
-                                <tr key={skill} className="hover:bg-gray-50">
-                                    <td className="border border-gray-300 px-4 py-2">{skill}</td>
-                                    <td className="border border-gray-300 px-4 py-2">{score}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            ))}
+        <div>
+            <table className="w-full border">
+                <thead className="bg-gray-100">
+                    <tr>
+                        <th className="border px-3 py-2 text-left">Name</th>
+                        <th className="border px-3 py-2 text-left">Reading</th>
+                        <th className="border px-3 py-2 text-left">Writing</th>
+                        <th className="border px-3 py-2 text-left">Speaking</th>
+                        <th className="border px-3 py-2 text-left">Listening</th>
+                        <th className="border px-3 py-2 text-left">Average</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {grades?.map((student, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                            <td className="border px-3 py-2">{student?.name}</td>
+                            <td className="border px-3 py-2">{student?.score?.reading}</td>
+                            <td className="border px-3 py-2">{student?.score?.writing}</td>
+                            <td className="border px-3 py-2">{student?.score?.speaking}</td>
+                            <td className="border px-3 py-2">{student?.score?.listening}</td>
+                            <td className="border px-3 py-2">
+                                {(
+                                    (student?.score?.reading +
+                                        student?.score?.writing +
+                                        student?.score?.speaking +
+                                        student?.score?.listening) /
+                                    4
+                                ).toFixed(2)}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
-    );
+    )
 }

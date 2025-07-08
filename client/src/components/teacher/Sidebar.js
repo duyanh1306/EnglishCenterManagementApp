@@ -1,12 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { Calendar, GraduationCap, ClipboardPenLine, BookOpen } from "lucide-react";
+import { Calendar, GraduationCap, BookOpen } from "lucide-react";
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const items = [
     { icon: <Calendar size={20} />, text: "Teaching Schedule", link: "/teacher/schedule" },
-    { icon: <GraduationCap size={20} />, text: "Teaching Class", link: "/teacher/classes" },
-    { icon: <ClipboardPenLine size={20} />, text: "Grades", link: "/teacher/grades" },
+    { icon: <GraduationCap size={20} />, text: "Teaching Classes", link: "/teacher/classes" },
     { icon: <BookOpen size={20} />, text: "Courses", link: "/teacher/courses" }
   ];
 
