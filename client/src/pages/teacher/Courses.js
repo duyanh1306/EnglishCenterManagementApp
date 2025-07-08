@@ -1,12 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, Search, Edit, Eye, Trash2 } from "lucide-react";
-import CourseService from "../../services/CourseService";
 
 export default function Courses() {
   // Get courses data from CourseService
-  const [courses] = useState(CourseService.getCourses());
+  const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
+
+  // Fetch courses data from CourseService
+  useEffect(() => {
+    const fetchCourses = [
+      {
+        "id": "course_001",
+        "name": "English for Beginners",
+        "description": "Khóa học tiếng Anh cơ bản dành cho người mới bắt đầu.",
+        "image": "https://example.com/images/course_001.jpg",
+        "price": 1500000,
+        "status": "active",
+        "level": "beginner"
+      },
+      {
+        "id": "course_002",
+        "name": "IELTS Preparation",
+        "description": "Khóa học luyện thi IELTS cho trình độ trung cấp.",
+        "image": "https://example.com/images/course_002.jpg",
+        "price": 3500000,
+        "status": "active",
+        "level": "intermediate"
+      },
+      {
+        "id": "course_003",
+        "name": "Business English",
+        "description": "Khóa học tiếng Anh thương mại cho người đi làm.",
+        "image": "https://example.com/images/course_003.jpg",
+        "price": 3000000,
+        "status": "inactive",
+        "level": "advanced"
+      },
+      {
+        "id": "course_004",
+        "name": "English Speaking Club",
+        "description": "Câu lạc bộ nói tiếng Anh dành cho mọi trình độ.",
+        "image": "https://example.com/images/course_004.jpg",
+        "price": 1000000,
+        "status": "active",
+        "level": "beginner"
+      }
+    ]
+    setCourses(fetchCourses);
+  }, []);
 
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = course.name
@@ -53,7 +95,7 @@ export default function Courses() {
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
-            </div>            
+            </div>
           </div>
         </div>
         <div className="">

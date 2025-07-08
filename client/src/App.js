@@ -6,7 +6,7 @@ import TeacherLayout from "./layouts/TeacherLayout";
 import Courses from "./pages/teacher/Courses";
 import TeachingSchedule from "./pages/teacher/TeachingSchedule";
 import TeachingClass from "./pages/teacher/TeachingClass";
-import Grades from "./pages/teacher/Grades";
+import TeachingClassDetails from "./pages/teacher/TeachingClassDetails";
 
 // Student
 import StudentLayout from "./layouts/StudentLayout";
@@ -39,8 +39,8 @@ function App() {
           <Route path="courses" element={<Courses />} />
           <Route path="schedule" element={<TeachingSchedule />} />
           <Route path="classes" element={<TeachingClass />} />
-          <Route path="grades" element={<Grades />} />
-        </Route>
+          <Route path="classes/:classId" element={<TeachingClassDetails />} />
+        </Route >
 
         {/* Admin */}
         <Route path="/admin/dashboard" element={<Dashboard />} />

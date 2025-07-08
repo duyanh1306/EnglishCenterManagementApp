@@ -167,37 +167,67 @@
       "id": "1",
       "studentId": "u4",
       "classId": "c1",
-      "courseId": "course_001",
-      "score": 8.5,
-      "type": "midterm",
-      "date": "2025-06-10",
+      "score": {
+        "listening": 8.5,
+        "reading": 7.0,
+        "writing": 6.5,
+        "speaking": 7.5
+      },      
       "comment": "Làm bài tốt, chú ý phần speaking."
     },
     {
       "id": "2",
       "studentId": "u5",
       "classId": "c1",
-      "courseId": "course_001",
-      "score": 7.0,
-      "type": "final",
-      "date": "2025-07-15",
+      "score": {
+        "listening": 7.0,
+        "reading": 6.5,
+        "writing": 6.0,
+        "speaking": 7.0
+      },
       "comment": "Cần cải thiện kỹ năng viết."
     },
     {
       "id": "3",
       "studentId": "u6",
       "classId": "c1",
-      "courseId": "course_001",
-      "score": 9.0,
-      "type": "midterm",
-      "date": "2025-06-10",
+      "score": {
+        "listening": 9.0,
+        "reading": 8.5,
+        "writing": 8.0,
+        "speaking": 9.0
+      },
+      "comment": ""
+    },
+    {
+      "id": "4",
+      "studentId": "u7",
+      "classId": "c1",
+      "score": {
+        "listening": 6.0,
+        "reading": 5.5,
+        "writing": 6.0,
+        "speaking": 6.5
+      },
+      "comment": "Cần cải thiện kỹ năng nghe và đọc."
+    },
+    {
+      "id": "5",
+      "studentId": "u8",
+      "classId": "c1",
+      "score": {
+        "listening": 7.5,
+        "reading": 7.0,
+        "writing": 7.5,
+        "speaking": 8.0
+      },
       "comment": ""
     }
   ],
   "rooms": [
     {
       "id": "1",
-      "name": "Room 101",
+      "name": "R101",
       "capacity": 30,
       "available": true,
       "type": "classroom",
