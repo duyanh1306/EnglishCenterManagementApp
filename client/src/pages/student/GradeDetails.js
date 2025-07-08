@@ -46,7 +46,7 @@ const GradeDetails = () => {
         <thead className="bg-gray-100">
           <tr>
             <th className="border p-2">Skill</th>
-            <th className="border p-2">Score</th>
+            <th className="border p-2">Grades</th>
             <th className="border p-2">Comment</th>
           </tr>
         </thead>

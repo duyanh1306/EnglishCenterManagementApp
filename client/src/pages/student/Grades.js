@@ -124,7 +124,7 @@ const Grades = () => {
           <tr>
             <th className="p-2 border text-left">Class</th>
             <th className="p-2 border text-left">Course</th>
-            <th className="p-2 border text-left">Score</th>
+            <th className="p-2 border text-left">Grades</th>
             <th className="p-2 border text-left">Comment</th>
             <th className="p-2 border text-left">Action</th>
           </tr>

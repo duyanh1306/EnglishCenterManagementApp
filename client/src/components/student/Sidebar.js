@@ -1,25 +1,21 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   FaHome,
   FaCalendarAlt,
   FaClipboardList,
   FaGraduationCap,
-  FaUser,
-  FaBell,
   FaBookOpen,
-  FaComments,
   FaClipboardCheck,
-  FaFileAlt,
   FaClock,
 } from "react-icons/fa";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   const menuItems = [
     { name: "Home", icon: <FaHome />, path: "/student/dashboard" },
-
     { name: "My Classes", icon: <FaBookOpen />, path: "/student/my-classes" },
     { name: "Schedule", icon: <FaCalendarAlt />, path: "/student/schedule" },
     {
@@ -27,11 +23,7 @@ const Sidebar = () => {
       icon: <FaClipboardList />,
       path: "/student/register-class",
     },
-    {
-      name: "Grade ",
-      icon: <FaGraduationCap />,
-      path: "/student/grade",
-    },
+    { name: "Grade", icon: <FaGraduationCap />, path: "/student/grade" },
     {
       name: "Attendance",
       icon: <FaClipboardCheck />,
@@ -46,23 +38,25 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`bg-blue-800 text-white h-screen p-4 ${
+      className={`bg-blue-800 text-white h-screen p-4 flex flex-col transition-all duration-300 ${
         isOpen ? "w-60" : "w-16"
-      } transition-all duration-300 md:w-60`}
+      } md:w-60`}
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="mb-4 text-white text-xl md:hidden"
+        className="mb-6 text-white text-xl md:hidden self-end"
       >
         {isOpen ? "✖" : "☰"}
       </button>
 
-      <ul>
+      <ul className="flex flex-col gap-2">
         {menuItems.map((item) => (
-          <li key={item.path} className="mb-2">
+          <li key={item.path}>
             <Link
               to={item.path}
-              className="flex items-center p-2 hover:bg-blue-600 rounded transition-colors"
+              className={`flex items-center p-2 rounded hover:bg-blue-600 transition-colors ${
+                location.pathname === item.path ? "bg-blue-700" : ""
+              }`}
             >
               <span className="text-xl mr-3">{item.icon}</span>
               <span className={`${isOpen ? "block" : "hidden"} md:block`}>
