@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
-
+import {useNavigate} from "react-router-dom";
 export default function TeachingSchedule() {
     const [schedule, setSchedule] = useState([]);
     const [slots, setSlots] = useState([]);
     const [weekdays, setWeekdays] = useState([]);
+
+    const navigate = useNavigate();
+    const handleTakeAttendance = (scheduleId) => {
+        navigate(`/teacher/attendance/${scheduleId}`);
+    };
 
     // Function to get current week dates (Monday to Sunday)
     const getCurrentWeekDates = () => {
@@ -198,6 +203,12 @@ export default function TeachingSchedule() {
                                                                 <span className="text-sm text-gray-500 font-semibold py-0.5 rounded mt-1 inline-block">
                                                                     {scheduleForDay.room}
                                                                 </span>
+                                                            </div>
+                                                            <div>
+                                                                <button className="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                                                    onClick={() => handleTakeAttendance(scheduleForDay.id)}>
+                                                                    Take Attendance
+                                                                </button>
                                                             </div>
                                                         </>
                                                     ) : null}

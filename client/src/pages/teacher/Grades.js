@@ -10,6 +10,7 @@ export default function Grades({ grades }) {
                         <th className="border px-3 py-2 text-left">Speaking</th>
                         <th className="border px-3 py-2 text-left">Listening</th>
                         <th className="border px-3 py-2 text-left">Average</th>
+                        <th className="border px-3 py-2 text-left">Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,6 +28,14 @@ export default function Grades({ grades }) {
                                         student?.score?.speaking +
                                         student?.score?.listening) /
                                     4
+                                ).toFixed(2)}
+                            </td>
+                            <td className="border px-3 py-2">
+                                {(
+                                    student?.score?.reading +
+                                    student?.score?.writing +
+                                    student?.score?.speaking +
+                                    student?.score?.listening
                                 ).toFixed(2)}
                             </td>
                         </tr>

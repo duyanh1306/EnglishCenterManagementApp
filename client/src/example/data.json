@@ -152,12 +152,6 @@
         },
         {
           "studentId": "u8"
-        },
-        {
-          "studentId": "u9"
-        },
-        {
-          "studentId": "u10"
         }
       ]
     }
@@ -344,30 +338,39 @@
       "slotId": "1",
       "classId": "c1",
       "roomId": "1",
-      "date": "2025-05-25"
+      "date": "2025-05-25"      
+    }
+  ],
+  "attendances": [
+    {
+      "id": "1",
+      "studentId": "u4",
+      "scheduleId": "1",
+      "status": "present"
     },
     {
       "id": "2",
-      "slotId": "2",
-      "classId": "c1",
-      "roomId": "2",
-      "date": "2025-05-26"
+      "studentId": "u5",
+      "scheduleId": "1",
+      "status": "absent"
     },
     {
       "id": "3",
-      "slotId": "3",
-      "classId": "c1",
-      "roomId": "3",
-      "date": "2025-05-27",
-      "meeting": ""
+      "studentId": "u6",
+      "scheduleId": "1",
+      "status": "present"
     },
     {
       "id": "4",
-      "slotId": "4",
-      "classId": "c1",
-      "roomId": "4",
-      "date": "2025-05-28",
-      "meeting": ""
+      "studentId": "u7",
+      "scheduleId": "1",
+      "status": "present"
+    },
+    {
+      "id": "5",
+      "studentId": "u8",
+      "scheduleId": "1",
+      "status": "absent"
     }
   ],
   "courses": [
