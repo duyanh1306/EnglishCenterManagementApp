@@ -1,68 +1,112 @@
-import { useState } from "react";
-import { Plus, Search, Edit, Eye, Trash2, FileDown, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Plus, Search, Edit, Eye, X } from "lucide-react";
 import AdminLayout from "../../layouts/AdminLayout";
 import AddUserModal from "../../components/admin/AddUserModal";
-
-const initialUsers = [
-  {
-    id: 1,
-    name: "Nguyen Van A",
-    email: "vana@example.com",
-    role: "admin",
-    status: "active",
-    lastLogin: "2025-06-03 10:45",
-    createdAt: "2024-12-01",
-  },
-  {
-    id: 2,
-    name: "Tran Thi B",
-    email: "thib@example.com",
-    role: "teacher",
-    status: "inactive",
-    lastLogin: "2025-05-21 09:30",
-    createdAt: "2025-01-10",
-  },
-  {
-    id: 3,
-    name: "Le Van C",
-    email: "levanc@example.com",
-    role: "student",
-    status: "active",
-    lastLogin: "2025-06-01 14:20",
-    createdAt: "2025-02-15",
-  },
-];
+import UpdateUserModal from "../../components/admin/UpdateUserModal";
+import ShowUserDetailModal from "../../components/admin/ShowUserDetailModal";
 
 export default function UserManagement() {
-  const [users] = useState(initialUsers);
+  const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("all");
-  const [status, setStatus] = useState("all");
+  const [roles, setRoles] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+
+  // // Lấy thông tin user hiện tại từ token
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (!token) return;
+
+  //   const fetchCurrentUser = async () => {
+  //     try {
+  //       const decoded = JSON.parse(atob(token.split(".")[1])); // decode JWT payload
+  //       setCurrentUser(decoded);
+  //     } catch (error) {
+  //       console.error("Invalid token", error);
+  //       setCurrentUser(null);
+  //     }
+  //   };
+
+  //   fetchCurrentUser();
+  // }, []);
+
+  // // Lấy danh sách user nếu là admin
+  // const fetchUsers = async () => {
+  //   try {
+  //     const res = await axios.get("http://localhost:9999/api/users", {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //       },
+  //     });
+  //     setUsers(res.data.data || []);
+  //   } catch (err) {
+  //     console.error("Lỗi khi lấy danh sách người dùng:", err);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (currentUser?.role === "Admin") {
+  //     fetchUsers();
+  //   }
+  // }, [currentUser]);
+
+  const fetchUserById = async (userId) => {
+    try {
+      const res = await axios.get(`http://localhost:9999/api/users/${userId}`);
+      return res.data.data;
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin người dùng:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get("http://localhost:9999/api/users");
+        setUsers(res.data.data || []);
+      } catch (err) {
+        console.error("Lỗi khi lấy danh sách người dùng:", err);
+      }
+    };
+
+    const fetchRoles = async () => {
+      try {
+        const res = await axios.get("http://localhost:9999/api/roles");
+        setRoles(res.data.data || []);
+      } catch (err) {
+        console.error("Lỗi khi lấy roles:", err);
+      }
+    };
+
+    fetchUsers();
+    fetchRoles();
+  }, []);
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
+      user.fullName.toLowerCase().includes(search.toLowerCase()) ||
       user.email.toLowerCase().includes(search.toLowerCase());
-    const matchesRole = role === "all" || user.role === role;
-    const matchesStatus = status === "all" || user.status === status;
-    return matchesSearch && matchesRole && matchesStatus;
+    const matchesRole =
+      role === "all" || user.roleId?.name?.toLowerCase() === role.toLowerCase();
+    return matchesSearch && matchesRole;
   });
+
   const handleClearFilters = () => {
     setSearch("");
     setRole("all");
-    setStatus("all");
   };
+
   return (
     <AdminLayout>
       <div className="w-full p-8 bg-gray-50 min-h-screen">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Users</h2>
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md font-semibold shadow hover:bg-green-700">
-              <FileDown className="w-5 h-5" /> Export
-            </button>
-
             <button
               className="flex items-center gap-2 px-5 py-2 bg-blue-500 text-white rounded-md font-semibold shadow hover:bg-blue-600"
               onClick={() => setShowModal(true)}
@@ -73,7 +117,7 @@ export default function UserManagement() {
         </div>
 
         <div className="bg-white rounded-xl shadow p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Search</label>
               <div className="relative">
@@ -97,25 +141,14 @@ export default function UserManagement() {
                 onChange={(e) => setRole(e.target.value)}
               >
                 <option value="all">All Roles</option>
-                <option value="admin">Admin</option>
-                <option value="teacher">Teachers</option>
-                <option value="student">Students</option>
-                <option value="parents">Parents</option>
+                {roles.map((r) => (
+                  <option key={r._id} value={r.name}>
+                    {r.name}
+                  </option>
+                ))}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Status</label>
-              <select
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
-            </div>
-            <div className="col-span-1 md:col-span-1 flex justify-end">
+            <div className="flex justify-end items-end">
               <button
                 onClick={handleClearFilters}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm text-gray-700 font-medium border border-gray-300 rounded-md shadow-sm transition duration-150"
@@ -131,53 +164,57 @@ export default function UserManagement() {
           <table className="min-w-full bg-white shadow-md border border-gray-200">
             <thead>
               <tr className="text-left text-gray-600 border-b">
-                <th className="py-3 px-4">Name</th>
+                <th className="py-3 px-4">Full Name</th>
+                <th className="py-3 px-4">Username</th>
                 <th className="py-3 px-4">Email</th>
+                <th className="py-3 px-4">Phone Number</th>
                 <th className="py-3 px-4">Role</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Last Login</th>
-                <th className="py-3 px-4">Created</th>
+                <th className="py-3 px-4">Date of Birth</th>
                 <th className="py-3 px-4">Actions</th>
               </tr>
             </thead>
             <tbody className="text-gray-800">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="border-b last:border-none">
-                  <td className="py-4 px-4 font-semibold">{user.name}</td>
+                <tr key={user._id} className="border-b last:border-none">
+                  <td className="py-4 px-4 font-semibold">{user.fullName}</td>
+                  <td className="py-4 px-4">{user.userName}</td>
                   <td className="py-4 px-4">{user.email}</td>
-                  <td className="py-4 px-4 capitalize">{user.role}</td>
+                  <td className="py-4 px-4">{user.number}</td>
+                  <td className="py-4 px-4 capitalize">{user.roleId?.name}</td>
                   <td className="py-4 px-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        user.status === "active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {user.status}
-                    </span>
+                    {new Date(user.birthday).toLocaleDateString("vi-VN", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
                   </td>
-                  <td className="py-4 px-4">{user.lastLogin}</td>
-                  <td className="py-4 px-4">{user.createdAt}</td>
                   <td className="py-4 px-4">
                     <div className="flex gap-3">
                       <button
                         className="text-gray-600 hover:text-blue-600"
                         title="Edit"
+                        onClick={async () => {
+                          const freshUser = await fetchUserById(user._id);
+                          if (freshUser) {
+                            setSelectedUser(freshUser);
+                            setShowUpdateModal(true);
+                          }
+                        }}
                       >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button
                         className="text-gray-600 hover:text-blue-600"
                         title="View"
+                        onClick={async () => {
+                          const freshUser = await fetchUserById(user._id);
+                          if (freshUser) {
+                            setSelectedUser(freshUser);
+                            setShowDetailModal(true);
+                          }
+                        }}
                       >
                         <Eye className="w-5 h-5" />
-                      </button>
-                      <button
-                        className="text-gray-600 hover:text-red-500"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
                   </td>
@@ -195,13 +232,38 @@ export default function UserManagement() {
         </div>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <AddUserModal
           onClose={() => setShowModal(false)}
-          onCreate={(userData) => {
-            console.log("User Created:", userData);
+          onCreate={(newUser) => {
+            setUsers((prev) => [...prev, newUser]);
             setShowModal(false);
+          }}
+        />
+      )}
+      {showUpdateModal && selectedUser && (
+        <UpdateUserModal
+          user={selectedUser}
+          onClose={() => {
+            setSelectedUser(null);
+            setShowUpdateModal(false);
+          }}
+          onUpdate={(updatedUser) => {
+            setUsers((prevUsers) =>
+              prevUsers.map((u) =>
+                u._id === updatedUser._id ? updatedUser : u
+              )
+            );
+            setShowUpdateModal(false);
+          }}
+        />
+      )}
+      {showDetailModal && selectedUser && (
+        <ShowUserDetailModal
+          user={selectedUser}
+          onClose={() => {
+            setSelectedUser(null);
+            setShowDetailModal(false);
           }}
         />
       )}

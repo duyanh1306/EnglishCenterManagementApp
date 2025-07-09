@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import axios from "axios";
 
-export default function AddUserModal({ onClose, onCreate }) {
+export default function UpdateUserModal({ onClose, user, onUpdate }) {
   const [form, setForm] = useState({
     fullName: "",
     userName: "",
@@ -12,23 +12,31 @@ export default function AddUserModal({ onClose, onCreate }) {
     number: "",
     birthday: "",
     address: "",
-    roleName: "",
+    roleId: "",
   });
-
   const [roles, setRoles] = useState([]);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const res = await axios.get("http://localhost:9999/api/roles");
-        setRoles(res.data.data || []);
-      } catch (err) {
-        console.error("Failed to fetch roles", err);
-      }
-    };
+    if (user) {
+      setForm({
+        fullName: user.fullName || "",
+        userName: user.userName || "",
+        email: user.email || "",
+        password: "",
+        number: user.number || "",
+        birthday: user.birthday ? user.birthday.slice(0, 10) : "",
+        address: user.address || "",
+        roleId:
+          typeof user.roleId === "object" ? user.roleId._id : user.roleId || "",
+      });
+    }
+  }, [user]);
 
-    fetchRoles();
+  useEffect(() => {
+    axios.get("http://localhost:9999/api/roles").then((res) => {
+      setRoles(res.data.data);
+    });
   }, []);
 
   const validate = () => {
@@ -39,40 +47,33 @@ export default function AddUserModal({ onClose, onCreate }) {
       newErrors.fullName = "Full name is required";
       valid = false;
     }
-
     if (!form.userName.trim()) {
       newErrors.userName = "Username is required";
       valid = false;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!form.email.trim() || !emailRegex.test(form.email)) {
       newErrors.email = "Valid email is required";
       valid = false;
     }
-
-    if (!form.password || form.password.length < 6) {
+    if (form.password && form.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
       valid = false;
     }
-
     if (!form.number.trim()) {
       newErrors.number = "Phone number is required";
       valid = false;
     }
-
     if (!form.birthday.trim()) {
       newErrors.birthday = "Birthday is required";
       valid = false;
     }
-
     if (!form.address.trim()) {
       newErrors.address = "Address is required";
       valid = false;
     }
-
-    if (!form.roleName) {
-      newErrors.roleName = "Role is required";
+    if (!form.roleId) {
+      newErrors.roleId = "Role is required";
       valid = false;
     }
 
@@ -84,36 +85,29 @@ export default function AddUserModal({ onClose, onCreate }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async () => {
+  const handleUpdate = async () => {
     if (!validate()) return;
-
     try {
-      const selectedRole = roles.find((r) => r.name === form.roleName);
-      if (!selectedRole) {
-        alert("Invalid role selected");
-        return;
+      const updatePayload = { ...form };
+      if (!form.password) {
+        delete updatePayload.password;
       }
 
-      const res = await axios.post(
-        "http://localhost:9999/api/users/register",
-        {
-          ...form,
-          roleId: selectedRole._id,
-        },
+      const res = await axios.put(
+        `http://localhost:9999/api/users/${user._id}`,
+        updatePayload,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-
-      if (res.status === 201) {
-        onCreate(res.data.data);
+      if (res.status === 200) {
+        onUpdate(res.data.data);
         onClose();
       }
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to create user");
-      console.error("Error:", error);
+      alert(error.response?.data?.message || "Failed to update user");
     }
   };
 
@@ -140,7 +134,7 @@ export default function AddUserModal({ onClose, onCreate }) {
           </button>
 
           <h2 className="text-2xl font-semibold mb-6 text-center">
-            Add New User
+            Update User
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -194,20 +188,20 @@ export default function AddUserModal({ onClose, onCreate }) {
               <div className="w-full md:w-1/2">
                 <label className="block font-medium">Role</label>
                 <select
-                  name="roleName"
+                  name="roleId"
                   className="w-full px-3 py-2 mt-1 border border-gray-300 rounded"
-                  value={form.roleName}
+                  value={form.roleId}
                   onChange={handleChange}
                 >
                   <option value="">-- Select Role --</option>
                   {roles.map((role) => (
-                    <option key={role._id} value={role.name}>
+                    <option key={role._id} value={role._id}>
                       {role.name}
                     </option>
                   ))}
                 </select>
-                {errors.roleName && (
-                  <p className="text-red-600 text-sm mt-1">{errors.roleName}</p>
+                {errors.roleId && (
+                  <p className="text-red-600 text-sm mt-1">{errors.roleId}</p>
                 )}
               </div>
             </div>
@@ -221,10 +215,10 @@ export default function AddUserModal({ onClose, onCreate }) {
               Cancel
             </button>
             <button
-              onClick={handleSubmit}
+              onClick={handleUpdate}
               className="px-4 py-2 bg-blue-700 text-white rounded shadow hover:bg-blue-800 font-semibold"
             >
-              Create
+              Update
             </button>
           </div>
         </motion.div>
