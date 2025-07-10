@@ -1,48 +1,10 @@
-import { useState } from "react";
-import { Plus, Search, Edit, Eye, Trash2, FileDown, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Plus, Search, Edit, Eye, Trash2, X } from "lucide-react";
 import AdminLayout from "../../layouts/AdminLayout";
 import AddCourseModal from "../../components/admin/AddCourseModal";
-import dayjs from "dayjs";
-
-const initialCourses = [
-  {
-    id: 1,
-    name: "Business English Fundamentals",
-    description: "Learn essential business communication skills",
-    level: "intermediate",
-    duration: "12 weeks",
-    price: 299,
-    maxStudents: 15,
-    status: "active",
-    startDate: "2025-01-01",
-    endDate: "2025-03-24",
-  },
-  {
-    id: 2,
-    name: "IELTS Preparation Course",
-    description: "Comprehensive IELTS exam preparation",
-    level: "advanced",
-    duration: "8 weeks",
-    price: 399,
-    maxStudents: 12,
-    status: "active",
-    startDate: "2025-02-01",
-    endDate: "2025-03-29",
-  },
-  {
-    id: 3,
-    name: "English Conversation Club",
-    description: "Practice speaking in a relaxed environment",
-    level: "beginner",
-    duration: "6 weeks",
-    price: 149,
-    maxStudents: 20,
-    status: "active",
-    startDate: "2025-03-01",
-    endDate: "2025-04-12",
-  },
-];
-
+import ShowCourseDetailModal from "../../components/admin/ShowCourseDetailModal";
+import UpdateCourseModal from "../../components/admin/UpdateCourseModal";
 const levelColors = {
   beginner: "bg-gray-100 text-gray-800",
   intermediate: "bg-gray-200 text-gray-900",
@@ -50,12 +12,28 @@ const levelColors = {
 };
 
 export default function Courses() {
-  const [courses, setCourses] = useState(initialCourses);
+  const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState("");
   const [level, setLevel] = useState("all");
   const [status, setStatus] = useState("all");
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [expandedDescriptionId, setExpandedDescriptionId] = useState(null);
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const response = await axios.get("http://localhost:9999/api/courses");
+      setCourses(response.data.data);
+    } catch (error) {
+      console.error("Failed to fetch courses:", error);
+    }
+  };
 
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = course.name
@@ -71,22 +49,61 @@ export default function Courses() {
     setLevel("all");
     setStatus("all");
   };
+  const handleAddCourse = async (newCourse) => {
+    try {
+      const { data } = await axios.post(
+        "http://localhost:9999/api/courses/add",
+        newCourse
+      );
 
-  const getDuration = (startDate, endDate) => {
-    const start = dayjs(startDate);
-    const end = dayjs(endDate);
-    return `${end.diff(start, "week")} weeks`;
+      if (data.success) {
+        const added = data.data; // khoá học mới từ server
+
+        // Cập nhật state ngay (tránh fetchCourses => duplicate)
+        setCourses((prev) => [...prev, added]);
+
+        // Đóng modal Add
+        setShowAddModal(false);
+      }
+    } catch (err) {
+      console.error("Failed to add course:", err);
+    }
   };
 
-  const handleAddCourse = (newCourse) => {
-    const duration = getDuration(newCourse.startDate, newCourse.endDate);
-    const courseWithDuration = {
-      ...newCourse,
-      duration,
-      id: courses.length + 1,
-    };
-    setCourses((prev) => [...prev, courseWithDuration]);
-    setShowAddModal(false);
+  const handleUpdateCourse = async (updatedCourse) => {
+    try {
+      const { data } = await axios.put(
+        `http://localhost:9999/api/courses/update/${updatedCourse.id}`,
+        updatedCourse
+      );
+      if (data.success) {
+        setCourses((prev) =>
+          prev.map((c) =>
+            c.id === updatedCourse.id ? { ...c, ...updatedCourse } : c
+          )
+        );
+        setShowEditModal(false);
+        setSelectedCourse(null);
+      }
+    } catch (err) {
+      console.error("Failed to update course:", err);
+    }
+  };
+  const handleDeleteCourse = async (id) => {
+    const confirm = window.confirm(
+      "Are you sure you want to delete this course?"
+    );
+    if (!confirm) return;
+    try {
+      const { data } = await axios.delete(
+        `http://localhost:9999/api/courses/delete/${id}`
+      );
+      if (data.success) {
+        setCourses((prev) => prev.filter((c) => c.id !== id));
+      }
+    } catch (err) {
+      console.error("Failed to delete course:", err);
+    }
   };
 
   return (
@@ -95,9 +112,6 @@ export default function Courses() {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Courses</h2>
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md font-semibold shadow hover:bg-green-700">
-              <FileDown className="w-5 h-5" /> Export
-            </button>
             <button
               onClick={() => setShowAddModal(true)}
               className="flex items-center gap-2 px-5 py-2 bg-blue-500 text-white rounded-md font-semibold shadow hover:bg-blue-600"
@@ -163,11 +177,10 @@ export default function Courses() {
           <table className="min-w-full bg-white shadow-md border border-gray-200">
             <thead>
               <tr className="text-left text-gray-600 border-b">
+                <th className="py-3 px-4">Course ID</th>
                 <th className="py-3 px-4">Course Name</th>
                 <th className="py-3 px-4">Level</th>
-                <th className="py-3 px-4">Duration</th>
                 <th className="py-3 px-4">Price</th>
-                <th className="py-3 px-4">Max Students</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Description</th>
                 <th className="py-3 px-4">Actions</th>
@@ -175,7 +188,10 @@ export default function Courses() {
             </thead>
             <tbody className="text-gray-800">
               {filteredCourses.map((course) => (
-                <tr key={course.id} className="border-b last:border-none">
+                <tr key={course._id} className="border-b last:border-none">
+                  <td className="py-4 px-4 font-mono text-xs text-gray-700">
+                    {course.id}
+                  </td>
                   <td className="py-4 px-4 font-semibold">{course.name}</td>
                   <td className="py-4 px-4">
                     <span
@@ -186,9 +202,7 @@ export default function Courses() {
                       {course.level}
                     </span>
                   </td>
-                  <td className="py-4 px-4">{course.duration}</td>
                   <td className="py-4 px-4">${course.price.toFixed(2)}</td>
-                  <td className="py-4 px-4">{course.maxStudents}</td>
                   <td className="py-4 px-4">
                     <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
                       {course.status}
@@ -198,11 +212,11 @@ export default function Courses() {
                     className="py-4 px-4 cursor-pointer text-sm text-gray-600 hover:underline"
                     onClick={() =>
                       setExpandedDescriptionId((prev) =>
-                        prev === course.id ? null : course.id
+                        prev === course._id ? null : course._id
                       )
                     }
                   >
-                    {expandedDescriptionId === course.id
+                    {expandedDescriptionId === course._id
                       ? course.description
                       : course.description.slice(0, 30) +
                         (course.description.length > 30 ? "..." : "")}
@@ -212,18 +226,27 @@ export default function Courses() {
                       <button
                         className="text-gray-600 hover:text-blue-600"
                         title="Edit"
+                        onClick={() => {
+                          setSelectedCourse(course);
+                          setShowEditModal(true);
+                        }}
                       >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button
                         className="text-gray-600 hover:text-blue-600"
                         title="View"
+                        onClick={() => {
+                          setSelectedCourse(course);
+                          setShowDetailModal(true);
+                        }}
                       >
                         <Eye className="w-5 h-5" />
                       </button>
                       <button
                         className="text-gray-600 hover:text-red-500"
                         title="Delete"
+                        onClick={() => handleDeleteCourse(course.id)}
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
@@ -233,7 +256,7 @@ export default function Courses() {
               ))}
               {filteredCourses.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-8 text-center text-gray-400">
+                  <td colSpan={7} className="py-8 text-center text-gray-400">
                     No courses found.
                   </td>
                 </tr>
@@ -246,6 +269,25 @@ export default function Courses() {
         <AddCourseModal
           onClose={() => setShowAddModal(false)}
           onCreate={handleAddCourse}
+        />
+      )}
+      {showEditModal && (
+        <UpdateCourseModal
+          course={selectedCourse}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedCourse(null);
+          }}
+          onUpdate={handleUpdateCourse}
+        />
+      )}
+      {showDetailModal && (
+        <ShowCourseDetailModal
+          course={selectedCourse}
+          onClose={() => {
+            setShowDetailModal(false);
+            setSelectedCourse(null);
+          }}
         />
       )}
     </AdminLayout>

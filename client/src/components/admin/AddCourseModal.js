@@ -1,57 +1,62 @@
 import { useState } from "react";
+import axios from "axios";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function AddCourseModal({ onClose, onCreate }) {
+  const [id, setId] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [level, setLevel] = useState("beginner");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [image, setImage] = useState("");
   const [price, setPrice] = useState("");
-  const [capacity, setCapacity] = useState("");
   const [status, setStatus] = useState("active");
+  const [level, setLevel] = useState("beginner");
   const [errors, setErrors] = useState({});
 
   const validate = () => {
     const newErrors = {};
+    if (!id.trim()) newErrors.id = "Course ID is required.";
     if (!name.trim()) newErrors.name = "Course name is required.";
     if (!description.trim()) newErrors.description = "Description is required.";
-    if (!startDate) newErrors.startDate = "Start date is required.";
-    if (!endDate) newErrors.endDate = "End date is required.";
+    if (!image.trim()) newErrors.image = "Image URL is required.";
     if (!price || isNaN(price)) newErrors.price = "Valid price is required.";
-    if (!capacity || isNaN(capacity))
-      newErrors.capacity = "Valid capacity is required.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffInWeeks = Math.ceil((end - start) / (1000 * 60 * 60 * 24 * 7));
 
     const courseData = {
+      id,
       name,
       description,
-      level,
-      duration: `${diffInWeeks} weeks`,
+      image,
       price: parseFloat(price),
-      maxStudents: parseInt(capacity),
       status,
-      startDate,
-      endDate,
+      level,
     };
-    onCreate(courseData);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:9999/api/courses/add",
+        courseData,
+        {
+          // headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      onCreate(response.data.data);
+      onClose();
+    } catch (error) {
+      console.error("Failed to create course:", error);
+    }
   };
 
   return (
     <AnimatePresence>
       <Dialog open={true} onClose={onClose} className="relative z-50">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <DialogPanel
             as={motion.div}
@@ -72,28 +77,28 @@ export default function AddCourseModal({ onClose, onCreate }) {
             </DialogTitle>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
+                <label className="text-sm font-medium">Course ID</label>
+                <input
+                  type="text"
+                  value={id}
+                  onChange={(e) => setId(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                />
+                {errors.id && (
+                  <p className="text-red-500 text-sm mt-1">{errors.id}</p>
+                )}
+              </div>
+              <div>
                 <label className="text-sm font-medium">Course Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
                 />
                 {errors.name && (
                   <p className="text-red-500 text-sm mt-1">{errors.name}</p>
                 )}
-              </div>
-              <div>
-                <label className="text-sm font-medium">Level</label>
-                <select
-                  value={level}
-                  onChange={(e) => setLevel(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                >
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                </select>
               </div>
               <div className="col-span-2">
                 <label className="text-sm font-medium">Description</label>
@@ -109,30 +114,16 @@ export default function AddCourseModal({ onClose, onCreate }) {
                   </p>
                 )}
               </div>
-              <div>
-                <label className="text-sm font-medium">Start Date</label>
+              <div className="col-span-2">
+                <label className="text-sm font-medium">Image URL</label>
                 <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  type="text"
+                  value={image}
+                  onChange={(e) => setImage(e.target.value)}
                   className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
                 />
-                {errors.startDate && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.startDate}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="text-sm font-medium">End Date</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                />
-                {errors.endDate && (
-                  <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>
+                {errors.image && (
+                  <p className="text-red-500 text-sm mt-1">{errors.image}</p>
                 )}
               </div>
               <div>
@@ -148,18 +139,6 @@ export default function AddCourseModal({ onClose, onCreate }) {
                 )}
               </div>
               <div>
-                <label className="text-sm font-medium">Capacity</label>
-                <input
-                  type="number"
-                  value={capacity}
-                  onChange={(e) => setCapacity(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                />
-                {errors.capacity && (
-                  <p className="text-red-500 text-sm mt-1">{errors.capacity}</p>
-                )}
-              </div>
-              <div>
                 <label className="text-sm font-medium">Status</label>
                 <select
                   value={status}
@@ -168,6 +147,18 @@ export default function AddCourseModal({ onClose, onCreate }) {
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Level</label>
+                <select
+                  value={level}
+                  onChange={(e) => setLevel(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                >
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
                 </select>
               </div>
             </div>
