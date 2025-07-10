@@ -22,10 +22,30 @@ const gradeSchema = new mongoose.Schema({
     required: true
   },
   score: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 10
+    listening: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 10
+    },
+    reading: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 10
+    },
+    writing: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 10
+    },
+    speaking: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 10
+    }
   },
   type: {
     type: String,

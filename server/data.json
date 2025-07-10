@@ -161,6 +161,36 @@
           "studentId": "u10"
         }
       ]
+    },
+    {
+      "id": "c2",
+      "name": "B",
+      "description": "Lớp học tiếng Anh trung cấp",
+      "teacherId": [
+        {
+          "teacherId": "u2"
+        }
+      ],
+      "courseId": "course_002",
+      "startDate": "2025-06-01",
+      "status": "upcoming",
+      "students": [
+        {
+          "studentId": "u4"
+        },
+        {
+          "studentId": "u5"
+        },
+        {
+          "studentId": "u6"
+        },
+        {
+          "studentId": "u7"
+        },
+        {
+          "studentId": "u8"
+        }
+      ]
     }
   ],
   "grades": [
@@ -169,7 +199,12 @@
       "studentId": "u4",
       "classId": "c1",
       "courseId": "course_001",
-      "score": 8.5,
+      "score": {
+        "listening": 8.5,
+        "reading": 7.0,
+        "writing": 6.5,
+        "speaking": 7.5
+      },
       "type": "midterm",
       "date": "2025-06-10",
       "comment": "Làm bài tốt, chú ý phần speaking."
@@ -179,7 +214,12 @@
       "studentId": "u5",
       "classId": "c1",
       "courseId": "course_001",
-      "score": 7.0,
+      "score": {
+        "listening": 7.0,
+        "reading": 8.0,
+        "writing": 6.0,
+        "speaking": 7.0
+      },
       "type": "final",
       "date": "2025-07-15",
       "comment": "Cần cải thiện kỹ năng viết."
@@ -189,10 +229,45 @@
       "studentId": "u6",
       "classId": "c1",
       "courseId": "course_001",
-      "score": 9.0,
+      "score": {
+        "listening": 9.0,
+        "reading": 8.5,
+        "writing": 8.0,
+        "speaking": 9.0
+      },
       "type": "midterm",
       "date": "2025-06-10",
       "comment": ""
+    },
+    {
+      "id": "4",
+      "studentId": "u7",
+      "classId": "c1",
+      "courseId": "course_001",
+      "score": {
+        "listening": 6.5,
+        "reading": 7.5,
+        "writing": 7.0,
+        "speaking": 6.0
+      },
+      "type": "midterm",
+      "date": "2025-06-10",
+      "comment": "Cần luyện tập thêm phần listening và speaking."
+    },
+    {
+      "id": "5",
+      "studentId": "u8",
+      "classId": "c1",
+      "courseId": "course_001",
+      "score": {
+        "listening": 8.0,
+        "reading": 8.0,
+        "writing": 7.5,
+        "speaking": 8.5
+      },
+      "type": "final",
+      "date": "2025-07-15",
+      "comment": "Tiến bộ tốt, duy trì phong độ."
     }
   ],
   "rooms": [
@@ -341,6 +416,30 @@
       "roomId": "4",
       "date": "2025-05-28",
       "meeting": ""
+    },
+    {
+      "id": "5",
+      "slotId": "2",
+      "classId": "c2",
+      "roomId": "2",
+      "date": "2025-06-10",
+      "meeting": "https://meet.example.com/c2slot2"
+    },
+    {
+      "id": "6",
+      "slotId": "3",
+      "classId": "c2",
+      "roomId": "3",
+      "date": "2025-06-12",
+      "meeting": "https://meet.example.com/c2slot3"
+    },
+    {
+      "id": "7",
+      "slotId": "4",
+      "classId": "c2",
+      "roomId": "4",
+      "date": "2025-06-14",
+      "meeting": "https://meet.example.com/c2slot4"
     }
   ],
   "courses": [
