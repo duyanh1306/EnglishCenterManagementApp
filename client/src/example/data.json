@@ -133,26 +133,14 @@
       "startDate": "2025-05-01",
       "status": "ongoing",
       "teacherId": [
-        {
-          "teacherId": "u2"
-        }
+        "u2"        
       ],
       "students": [
-        {
-          "studentId": "u4"
-        },
-        {
-          "studentId": "u5"
-        },
-        {
-          "studentId": "u6"
-        },
-        {
-          "studentId": "u7"
-        },
-        {
-          "studentId": "u8"
-        }
+        "u4",
+        "u5",
+        "u6",
+        "u7",
+        "u8"
       ]
     }
   ],
@@ -370,7 +358,7 @@
       "id": "5",
       "studentId": "u8",
       "scheduleId": "1",
-      "status": "absent"
+      "status": "present"
     }
   ],
   "courses": [

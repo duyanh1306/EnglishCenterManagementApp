@@ -1,4 +1,13 @@
+
+import { useNavigate } from 'react-router-dom';
+
 export default function Grades({ grades }) {
+    const navigate = useNavigate();
+
+    const handleEdit = (classId, studentId) => {
+        navigate(`/teacher/grades/class/${classId}/student/${studentId}`);
+    };
+
     return (
         <div>
             <table className="w-full border">
@@ -11,6 +20,8 @@ export default function Grades({ grades }) {
                         <th className="border px-3 py-2 text-left">Listening</th>
                         <th className="border px-3 py-2 text-left">Average</th>
                         <th className="border px-3 py-2 text-left">Total</th>
+                        <th className="border px-3 py-2 text-left">Comment</th>
+                        <th className="border px-3 py-2 text-left">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,6 +48,13 @@ export default function Grades({ grades }) {
                                     student?.score?.speaking +
                                     student?.score?.listening
                                 ).toFixed(2)}
+                            </td>
+                            <td className="border px-3 py-2">{student?.comment}</td>
+                            <td className="border px-3 py-2">
+                                <button className="text-blue-500 hover:underline"
+                                onClick={() => handleEdit(student?.classId, student?.id)}
+                                >Edit
+                                </button>
                             </td>
                         </tr>
                     ))}
