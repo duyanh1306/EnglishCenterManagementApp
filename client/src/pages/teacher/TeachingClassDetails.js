@@ -85,6 +85,7 @@ const TeachingClassDetails = () => {
         "writing": 6.0,
         "speaking": 7.0
       },
+      "comment": "Needs improvement in writing."
     },
     {
       "studentId": "u5",
@@ -94,7 +95,8 @@ const TeachingClassDetails = () => {
         "reading": 7.5,
         "writing": 7.0,
         "speaking": 8.0
-      }
+      },
+      "comment": "Good performance overall."
     },
     {
       "studentId": "u5",
@@ -104,7 +106,8 @@ const TeachingClassDetails = () => {
         "reading": 7.5,
         "writing": 7.0,
         "speaking": 8.0
-      }
+      },
+      "comment": "Good performance overall."
     },
     {
       "studentId": "u6",
@@ -114,7 +117,8 @@ const TeachingClassDetails = () => {
         "reading": 8.5,
         "writing": 8.0,
         "speaking": 9.0
-      }
+      },
+      "comment": "Excellent in all areas."
     },
     {
       "studentId": "u7",
@@ -124,7 +128,8 @@ const TeachingClassDetails = () => {
         "reading": 7.0,
         "writing": 6.5,
         "speaking": 7.5
-      }
+      },
+      "comment": "Good effort, but needs to focus on writing."
     },
     {
       "studentId": "u8",
@@ -134,7 +139,8 @@ const TeachingClassDetails = () => {
         "reading": 7.5,
         "writing": 7.0,
         "speaking": 8.0
-      }
+      },
+      "comment": "Consistent performance."
     },
     {
       "studentId": "u9",
@@ -144,7 +150,8 @@ const TeachingClassDetails = () => {
         "reading": 6.5,
         "writing": 6.0,
         "speaking": 7.0
-      }
+      },
+      "comment": "Needs improvement in writing."
     },
     {
       "studentId": "u10",
@@ -154,7 +161,8 @@ const TeachingClassDetails = () => {
         "reading": 5.5,
         "writing": 5.0,
         "speaking": 6.0
-      }
+      },
+      "comment": "Struggling in all areas, needs extra help."
     }
   ]
 

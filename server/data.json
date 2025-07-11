@@ -128,38 +128,19 @@
   "classes": [
     {
       "id": "c1",
-      "name": "A",
-      "description": "Lớp học tiếng Anh cơ bản",
-      "teacherId": [
-        {
-          "teacherId": "u2"
-        }
-      ],
+      "name": "A",      
       "courseId": "course_001",
       "startDate": "2025-05-01",
       "status": "ongoing",
+      "teacherId": [
+        "u2"        
+      ],
       "students": [
-        {
-          "studentId": "u4"
-        },
-        {
-          "studentId": "u5"
-        },
-        {
-          "studentId": "u6"
-        },
-        {
-          "studentId": "u7"
-        },
-        {
-          "studentId": "u8"
-        },
-        {
-          "studentId": "u9"
-        },
-        {
-          "studentId": "u10"
-        }
+        "u4",
+        "u5",
+        "u6",
+        "u7",
+        "u8"
       ]
     }
   ],
@@ -168,37 +149,67 @@
       "id": "1",
       "studentId": "u4",
       "classId": "c1",
-      "courseId": "course_001",
-      "score": 8.5,
-      "type": "midterm",
-      "date": "2025-06-10",
+      "score": {
+        "listening": 8.5,
+        "reading": 7.0,
+        "writing": 6.5,
+        "speaking": 7.5
+      },      
       "comment": "Làm bài tốt, chú ý phần speaking."
     },
     {
       "id": "2",
       "studentId": "u5",
       "classId": "c1",
-      "courseId": "course_001",
-      "score": 7.0,
-      "type": "final",
-      "date": "2025-07-15",
+      "score": {
+        "listening": 7.0,
+        "reading": 6.5,
+        "writing": 6.0,
+        "speaking": 7.0
+      },
       "comment": "Cần cải thiện kỹ năng viết."
     },
     {
       "id": "3",
       "studentId": "u6",
       "classId": "c1",
-      "courseId": "course_001",
-      "score": 9.0,
-      "type": "midterm",
-      "date": "2025-06-10",
+      "score": {
+        "listening": 9.0,
+        "reading": 8.5,
+        "writing": 8.0,
+        "speaking": 9.0
+      },
+      "comment": ""
+    },
+    {
+      "id": "4",
+      "studentId": "u7",
+      "classId": "c1",
+      "score": {
+        "listening": 6.0,
+        "reading": 5.5,
+        "writing": 6.0,
+        "speaking": 6.5
+      },
+      "comment": "Cần cải thiện kỹ năng nghe và đọc."
+    },
+    {
+      "id": "5",
+      "studentId": "u8",
+      "classId": "c1",
+      "score": {
+        "listening": 7.5,
+        "reading": 7.0,
+        "writing": 7.5,
+        "speaking": 8.0
+      },
       "comment": ""
     }
   ],
   "rooms": [
     {
       "id": "1",
-      "name": "Room 101",
+      "name": "R101",
       "capacity": 30,
       "available": true,
       "type": "classroom",
@@ -315,32 +326,39 @@
       "slotId": "1",
       "classId": "c1",
       "roomId": "1",
-      "date": "2025-05-25",
-      "meeting": "https://meet.example.com/slot1"
+      "date": "2025-05-25"      
+    }
+  ],
+  "attendances": [
+    {
+      "id": "1",
+      "studentId": "u4",
+      "scheduleId": "1",
+      "status": "present"
     },
     {
       "id": "2",
-      "slotId": "2",
-      "classId": "c1",
-      "roomId": "2",
-      "date": "2025-05-26",
-      "meeting": "https://meet.example.com/slot2"
+      "studentId": "u5",
+      "scheduleId": "1",
+      "status": "absent"
     },
     {
       "id": "3",
-      "slotId": "3",
-      "classId": "c1",
-      "roomId": "3",
-      "date": "2025-05-27",
-      "meeting": ""
+      "studentId": "u6",
+      "scheduleId": "1",
+      "status": "present"
     },
     {
       "id": "4",
-      "slotId": "4",
-      "classId": "c1",
-      "roomId": "4",
-      "date": "2025-05-28",
-      "meeting": ""
+      "studentId": "u7",
+      "scheduleId": "1",
+      "status": "present"
+    },
+    {
+      "id": "5",
+      "studentId": "u8",
+      "scheduleId": "1",
+      "status": "present"
     }
   ],
   "courses": [

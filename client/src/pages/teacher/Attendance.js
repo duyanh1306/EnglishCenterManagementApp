@@ -67,9 +67,11 @@ export default function Attendance() {
 
     return (
         <div>
+            <h1 className="text-2xl font-bold mb-6">Attendance List</h1>
             <table className="w-full border">
                 <thead className="bg-gray-100">
                     <tr>
+                        <th className="border px-3 py-2 text-left">No</th>
                         <th className="border px-3 py-2 text-left">Name</th>
                         <th className="border px-3 py-2 text-left">Email</th>
                         <th className="border px-3 py-2 text-left">Phone</th>
@@ -80,6 +82,7 @@ export default function Attendance() {
                 <tbody>
                     {students?.map((student, index) => (
                         <tr key={index} className="hover:bg-gray-50">
+                            <td className="border px-3 py-2 text-center">{index + 1}</td>
                             <td className="border px-3 py-2">{student?.name}</td>
                             <td className="border px-3 py-2">{student?.email}</td>
                             <td className="border px-3 py-2">{student?.phone}</td>
