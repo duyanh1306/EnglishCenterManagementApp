@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const { Schema, Types } = mongoose;
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   
   fullName: {
     type: String,
@@ -15,6 +16,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Password is required"]
   },
+  gender: {
+    type: String,
+    enum: ['male', 'female']
+  },
   email: {
     type: String,
     required: [true, "Email is required"],
@@ -24,8 +29,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  birthday: {
-    type: String,
+  birthDate: {
+    type: Date,
     required: true
   },
   address: {

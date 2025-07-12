@@ -127,20 +127,52 @@
   ],
   "classes": [
     {
-      "id": "c1",
-      "name": "A",      
-      "courseId": "course_001",
+      "name": "A",
+      "courseId": {
+        "$oid": "68713d064cdde4e0be284935"
+      },
       "startDate": "2025-05-01",
+      "endDate": "2025-07-01",
+      "capacity": 30,
+      "Schedule": [
+        {
+          "weekday": "Sat",
+          "slot": {
+            "$oid": "68713b204cdde4e0be284911"
+          }
+        },
+        {
+          "weekday": "Sat",
+          "slot": {
+            "$oid": "68713b204cdde4e0be284912"
+          }
+        }
+      ],
       "status": "ongoing",
-      "teacherId": [
-        "u2"        
+      "teachers": [
+        {
+          "$oid": "687139a34cdde4e0be2848f5"
+        },
+        {
+          "$oid": "687139a34cdde4e0be2848f6"
+        }
       ],
       "students": [
-        "u4",
-        "u5",
-        "u6",
-        "u7",
-        "u8"
+        {
+          "$oid": "687139a34cdde4e0be2848f7"
+        },
+        {
+          "$oid": "687139a34cdde4e0be2848f8"
+        },
+        {
+          "$oid": "687139a34cdde4e0be2848f9"
+        },
+        {
+          "$oid": "687139a34cdde4e0be2848fa"
+        },
+        {
+          "$oid": "687139a34cdde4e0be2848fb"
+        }
       ]
     }
   ],
@@ -154,7 +186,7 @@
         "reading": 7.0,
         "writing": 6.5,
         "speaking": 7.5
-      },      
+      },
       "comment": "Làm bài tốt, chú ý phần speaking."
     },
     {
@@ -326,7 +358,35 @@
       "slotId": "1",
       "classId": "c1",
       "roomId": "1",
-      "date": "2025-05-25"      
+      "date": "2025-05-25"
+    },
+    {
+      "id": "2",
+      "slotId": "2",
+      "classId": "c1",
+      "roomId": "2",
+      "date": "2025-05-26"
+    },
+    {
+      "id": "3",
+      "slotId": "3",
+      "classId": "c1",
+      "roomId": "3",
+      "date": "2025-05-27"
+    },
+    {
+      "id": "4",
+      "slotId": "4",
+      "classId": "c1",
+      "roomId": "4",
+      "date": "2025-05-28"
+    },
+    {
+      "id": "5",
+      "slotId": "5",
+      "classId": "c1",
+      "roomId": "5",
+      "date": "2025-05-29"
     }
   ],
   "attendances": [

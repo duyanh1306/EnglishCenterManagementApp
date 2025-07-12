@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const authAdmin = require("../middlewares/authAdmin");
 const {getAllCourses, createCourse, updateCourse, deleteCourse  } = require("../controllers/courseController");
 
 router.get("/", getAllCourses);
-router.post("/add",authAdmin, createCourse);
-router.put("/update/:id",authAdmin, updateCourse);
-router.delete("/delete/:id",authAdmin, deleteCourse);
+router.post("/add",createCourse);
+router.put("/update/:id",updateCourse);
+router.delete("/delete/:id", deleteCourse);
 module.exports = router;

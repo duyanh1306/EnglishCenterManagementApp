@@ -1,11 +1,7 @@
 const mongoose = require("mongoose");
-
-const roomSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-    unique: true
-  },
+const { Schema, Types } = mongoose;
+const roomSchema = new Schema({
+  
   name: {
     type: String,
     required: true

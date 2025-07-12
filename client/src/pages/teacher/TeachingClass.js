@@ -2,44 +2,49 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { NotebookTabs } from "lucide-react";
+import axios from 'axios';
 
 export default function TeachingClass() {
   const [classes, setClasses] = useState([]);
+  const [allClasses, setAllClasses] = useState([]); // Store all classes
   const [statusFilter, setStatusFilter] = useState("All");
-
+  const teacherId = "687139a34cdde4e0be2848f5"; // You should get this from auth context or props
+  // Fetch classes from API (only once on component mount)
   useEffect(() => {
-    // Mock data
-    const mockClasses = [
-      {
-        "id": "c1",
-        "name": "A",
-        "course": "TOEIC",
-        "startDate": "2025-05-01",
-        "status": "On going"
-      },
-      {
-        "id": "c2",
-        "name": "B",
-        "course": "IELTS",
-        "startDate": "2025-06-01",
-        "status": "Completed"
-      },
-      {
-        "id": "c3",
-        "name": "C",
-        "course": "TOEFL",
-        "startDate": "2025-07-01",
-        "status": "On going"
+    const fetchClasses = async () => {
+      try {
+         // You should get this from auth context or props
+        const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/classes`);
+        
+        if (response.data && response.data.success) {
+          setAllClasses(response.data.data); // Store all classes
+          setClasses(response.data.data); // Initially show all classes
+        } else {
+          console.error("Failed to fetch classes:", response.data.message);
+          setAllClasses([]);
+          setClasses([]);
+        }
+      } catch (error) {
+        console.error("Error fetching classes:", error);
+        setAllClasses([]);
+        setClasses([]);
       }
-    ];
-    if(statusFilter !== "All") {
-      setClasses(mockClasses.filter(cls => cls.status.toLowerCase() === statusFilter.toLowerCase()));
+    };
+
+    fetchClasses();
+  }, []); // Empty dependency array - fetch only once
+
+  // Filter classes when statusFilter changes
+  useEffect(() => {
+    if (statusFilter !== "All") {
+      const filteredClasses = allClasses.filter(cls => 
+        cls.status.toLowerCase() === statusFilter.toLowerCase()
+      );
+      setClasses(filteredClasses);
     } else {
-      setClasses(mockClasses);
+      setClasses(allClasses);
     }
-  }, [statusFilter]);
-
-
+  }, [statusFilter, allClasses]); // Depend on statusFilter and allClasses
 
   return (
     <div className="p-6">
@@ -48,14 +53,15 @@ export default function TeachingClass() {
         <h1 className="text-2xl font-bold">Teaching Classes</h1>
 
         <div className="flex gap-2 flex-wrap">
-          {["All", "On going", "Completed"].map((type) => (
+          {["All", "Ongoing", "Completed"].map((type) => (
             <button
               key={type}
               onClick={() => setStatusFilter(type)}
-              className={`border px-4 py-1.5 rounded text-sm font-medium transition-all ${statusFilter.toLowerCase() === type.toLowerCase()
-                ? "bg-blue-500 text-white shadow"
-                : "hover:bg-gray-100 text-gray-700"
-                }`}
+              className={`border px-4 py-1.5 rounded text-sm font-medium transition-all ${
+                statusFilter.toLowerCase() === type.toLowerCase()
+                  ? "bg-blue-500 text-white shadow"
+                  : "hover:bg-gray-100 text-gray-700"
+              }`}
             >
               {type}
             </button>
@@ -80,7 +86,6 @@ export default function TeachingClass() {
             </thead>
             <tbody>
               {classes.map((cls) => {
-
                 return (
                   <tr
                     key={cls.id}
@@ -93,17 +98,18 @@ export default function TeachingClass() {
                     <td className="border px-4 py-3 text-center">{cls.startDate}</td>
                     <td className="border px-4 py-3 text-center">
                       <span
-                        className={`px-2 py-1 rounded font-medium ${cls.status === "On going"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-200 text-gray-600"
-                          }`}
+                        className={`px-2 py-1 rounded font-medium ${
+                          cls.status === "ongoing"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-200 text-gray-600"
+                        }`}
                       >
                         {cls.status}
                       </span>
                     </td>
                     <td className="border px-4 py-3 text-center max-w-[80px]">
                       <Link
-                        to={`/teacher/classes/${cls.id}`}
+                        to={`/teacher/${teacherId}/classes/${cls.id}`}
                         className="flex justify-center text-blue-600 hover:underline text-sm"
                       >
                         <NotebookTabs size={20} /> View Details
