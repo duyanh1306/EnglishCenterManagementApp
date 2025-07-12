@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Search, Edit, Eye, Trash2 } from "lucide-react";
+import { Plus, Search, Eye } from "lucide-react";
 
 export default function Courses() {
   // Get courses data from CourseService
@@ -133,26 +133,16 @@ export default function Courses() {
                       </span>
                     </td>
                     <td className="py-4 px-4">
-                      <div className="flex gap-3">
-                        <button
-                          className="text-gray-600 hover:text-blue-600"
-                          title="Edit"
-                        >
-                          <Edit className="w-5 h-5" />
-                        </button>
-                        <button
-                          className="text-gray-600 hover:text-blue-600"
-                          title="View"
-                        >
-                          <Eye className="w-5 h-5" />
-                        </button>
-                        <button
-                          className="text-gray-600 hover:text-red-500"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </div>
+
+                      <button
+                        className="text-gray-600 hover:text-blue-600"
+                        title="View"
+                      >
+                        <div className="flex gap-3">
+                          <Eye Size={20} />View Details
+                        </div>
+
+                      </button>
                     </td>
                   </tr>
                 );

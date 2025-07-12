@@ -1,34 +1,26 @@
 const mongoose = require("mongoose");
+const { Schema, Types } = mongoose;
 
-const scheduleSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-    unique: true
-  },
+const scheduleSchema = new Schema({
+  
   slotId: {
-    type: String,
+    type: Types.ObjectId,
     ref: 'Slot',
     required: true
   },
   classId: {
-    type: String,
+    type: Types.ObjectId,
     ref: 'Class',
     required: true
   },
   roomId: {
-    type: String,
+    type: Types.ObjectId,
     ref: 'Room',
     required: true
   },
   date: {
-    type: String,
-    required: true,
-    match: /^\d{4}-\d{2}-\d{2}$/ // YYYY-MM-DD format
-  },
-  meeting: {
-    type: String,
-    default: ""
+    type: Date,
+    required: true
   }
 }, {
   timestamps: true
@@ -40,4 +32,4 @@ scheduleSchema.index({ roomId: 1, date: 1, slotId: 1 }, { unique: true });
 // Compound index to prevent double booking of classes
 scheduleSchema.index({ classId: 1, date: 1, slotId: 1 }, { unique: true });
 
-module.exports = mongoose.model("Schedule", scheduleSchema); 
+module.exports = mongoose.model("Schedules", scheduleSchema); 

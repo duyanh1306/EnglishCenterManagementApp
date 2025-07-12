@@ -1,65 +1,79 @@
+import React from 'react';
 
-import { useNavigate } from 'react-router-dom';
-
-export default function Grades({ grades }) {
-    const navigate = useNavigate();
-
-    const handleEdit = (classId, studentId) => {
-        navigate(`/teacher/grades/class/${classId}/student/${studentId}`);
-    };
-
+const Grades = ({ grades }) => {
+  if (!grades || grades.length === 0) {
     return (
-        <div>
-            <table className="w-full border">
-                <thead className="bg-gray-100">
-                    <tr>
-                        <th className="border px-3 py-2 text-left">Name</th>
-                        <th className="border px-3 py-2 text-left">Reading</th>
-                        <th className="border px-3 py-2 text-left">Writing</th>
-                        <th className="border px-3 py-2 text-left">Speaking</th>
-                        <th className="border px-3 py-2 text-left">Listening</th>
-                        <th className="border px-3 py-2 text-left">Average</th>
-                        <th className="border px-3 py-2 text-left">Total</th>
-                        <th className="border px-3 py-2 text-left">Comment</th>
-                        <th className="border px-3 py-2 text-left">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {grades?.map((student, index) => (
-                        <tr key={index} className="hover:bg-gray-50">
-                            <td className="border px-3 py-2">{student?.name}</td>
-                            <td className="border px-3 py-2">{student?.score?.reading}</td>
-                            <td className="border px-3 py-2">{student?.score?.writing}</td>
-                            <td className="border px-3 py-2">{student?.score?.speaking}</td>
-                            <td className="border px-3 py-2">{student?.score?.listening}</td>
-                            <td className="border px-3 py-2">
-                                {(
-                                    (student?.score?.reading +
-                                        student?.score?.writing +
-                                        student?.score?.speaking +
-                                        student?.score?.listening) /
-                                    4
-                                ).toFixed(2)}
-                            </td>
-                            <td className="border px-3 py-2">
-                                {(
-                                    student?.score?.reading +
-                                    student?.score?.writing +
-                                    student?.score?.speaking +
-                                    student?.score?.listening
-                                ).toFixed(2)}
-                            </td>
-                            <td className="border px-3 py-2">{student?.comment}</td>
-                            <td className="border px-3 py-2">
-                                <button className="text-blue-500 hover:underline"
-                                onClick={() => handleEdit(student?.classId, student?.id)}
-                                >Edit
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    )
-}
+      <div className="text-gray-500 text-center py-10">
+        No grades available for this class.
+      </div>
+    );
+  }
+
+  const calculateAverage = (score) => {
+    const scores = [score.listening, score.reading, score.writing, score.speaking];
+    const average = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+    return average.toFixed(1);
+  };
+
+  const getGradeColor = (average) => {
+    if (average >= 8) return "text-green-600 bg-green-100";
+    if (average >= 6.5) return "text-yellow-600 bg-yellow-100";
+    return "text-red-600 bg-red-100";
+  };
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse border border-gray-200 text-sm">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="border px-4 py-3 text-left">Student</th>
+            <th className="border px-4 py-3 text-center">Listening</th>
+            <th className="border px-4 py-3 text-center">Reading</th>
+            <th className="border px-4 py-3 text-center">Writing</th>
+            <th className="border px-4 py-3 text-center">Speaking</th>
+            <th className="border px-4 py-3 text-center">Average</th>
+            <th className="border px-4 py-3 text-left">Comment</th>
+            <th className="border px-4 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {grades.map((grade) => {
+            const average = calculateAverage(grade.score);
+            return (
+              <tr key={grade.id} className="hover:bg-gray-50">
+                <td className="border px-4 py-3 font-semibold text-blue-700">
+                  {grade.student.name}
+                </td>
+                <td className="border px-4 py-3 text-center">
+                  {grade.score.listening}
+                </td>
+                <td className="border px-4 py-3 text-center">
+                  {grade.score.reading}
+                </td>
+                <td className="border px-4 py-3 text-center">
+                  {grade.score.writing}
+                </td>
+                <td className="border px-4 py-3 text-center">
+                  {grade.score.speaking}
+                </td>
+                <td className="border px-4 py-3 text-center">
+                  <span className={`px-2 py-1 rounded font-medium ${getGradeColor(average)}`}>
+                    {average ? average : ''}
+                  </span>
+                </td>
+                <td className="border px-4 py-3">
+                  {grade.comment || <span className="text-gray-400 italic">No comment</span>}
+                </td>
+                <td className="border px-4 py-3 text-center">                  
+                  <button className="text-blue-600 hover:text-blue-800">Update</button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default Grades;

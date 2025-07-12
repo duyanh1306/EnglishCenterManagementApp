@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
+const { Schema, Types } = mongoose;
 
-const roleSchema = new mongoose.Schema({
+const roleSchema = new Schema({
   id: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   name: {
     type: String,

@@ -88,7 +88,11 @@ export default function Attendance() {
                             <td className="border px-3 py-2">{student?.phone}</td>
                             <td className="border px-3 py-2">{student?.birthdate}</td>
                             <td className="border px-3 py-2">
-                                <input type="checkbox" className="form-checkbox" checked={student?.attendance === "present"} readOnly />
+                                <input type="checkbox" className="form-checkbox" checked={student?.attendance === "present"} onChange={(e) => {
+                                    const updatedStudents = [...students];
+                                    updatedStudents[index].attendance = e.target.checked ? "present" : "absent";
+                                    setStudents(updatedStudents);
+                                }} /> Present
                             </td>
                         </tr>
                     ))}
