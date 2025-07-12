@@ -12,6 +12,7 @@ const {
     addGradeToAStudent,
     updateGradesOfAStudent
 } = require("../controllers/teacherController");
+const authTeacher = require("../middlewares/authTeacher");
 
 // Get teaching schedule for a specific teacher
 router.get("/:teacherId/schedules", getTeachingSchedule);

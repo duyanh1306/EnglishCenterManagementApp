@@ -23,13 +23,13 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: [true, "Email is required"],
-    unique: true
+    unique: [true, "Email is already registered"],
   },
   number: {
     type: String,
     required: true
   },
-  birthDate: {
+  birthday: {
     type: Date,
     required: true
   },
@@ -38,9 +38,7 @@ const userSchema = new Schema({
     required: true
   },
   roleId: {
-    type: String,
-    ref: 'Role',
-    required: true
+    type: String
   }
 }, {
   timestamps: true

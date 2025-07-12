@@ -7,14 +7,8 @@ const classRoute = require('./routes/classRoute');
 const userRoute = require('./routes/userRoute');
 const roleRoute = require('./routes/roleRoute');
 
-// Configure CORS to allow requests from your React frontend
-const corsOptions = {
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'], // Allow both localhost and 127.0.0.1
-  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-  optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
-};
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use('/api/classes',classRoute );
 app.use('/api/users',userRoute);

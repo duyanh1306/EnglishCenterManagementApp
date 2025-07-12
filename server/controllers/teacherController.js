@@ -142,7 +142,7 @@ const getTeachingClassDetails = async (req, res) => {
     const classDetails = await Class.findById(classId)
       .populate('courseId', 'name')
       .populate('teachers', 'fullName email')
-      .populate('students', 'fullName email number birthDate');
+      .populate('students', 'fullName email number birthday');
 
     if (!classDetails) {
       return res.status(404).json({
@@ -169,7 +169,7 @@ const getTeachingClassDetails = async (req, res) => {
         name: s.fullName,
         email: s.email,
         number: s.number,
-        birthDate: s.birthDate.toISOString().split('T')[0]
+        birthday: s.birthday.toISOString().split('T')[0]
       }))
     };
 
