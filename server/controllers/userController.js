@@ -13,44 +13,36 @@ exports.register = async (req, res, next) => {
       number,
       birthday,
       address,
-      roleName,
+      roleId,
     } = req.body;
-
-    // 🔍 Kiểm tra trùng username
-    const existingUser = await userAccount.findOne({ userName });
-    if (existingUser) {
-      return res.status(400).json({ message: "Username already exists" });
+    const account = await userAccount.findOne({ userName });
+    if (account) {
+      return res.status(400).json({ message: "userName already exist" });
     }
-
-    // 🔍 Tìm Role theo roleName
-    const role = await Role.findOne({ name: roleName });
-    if (!role) {
-      return res.status(400).json({ message: "Invalid role selected" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    const hashPassword = await bcrypt.hash(password, 10);
     const newUser = new userAccount({
       fullName,
       userName,
-      password: hashedPassword,
+      password: hashPassword,
       email,
       number,
       birthday,
       address,
-      roleId: role._id,
+      roleId,
     });
 
-    const savedUser = await newUser.save();
-
-    res.status(201).json({
-      message: "Register successfully",
-      data: savedUser,
-    });
+    const result = await newUser.save();
+    if (result) {
+      res.status(201).json({
+        message: "Register successfully",
+        data: result,
+      });
+    }
   } catch (error) {
     next(error);
   }
 };
+
 exports.login = async (req, res) => {
   try {
     const { userName, password } = req.body;
@@ -58,9 +50,7 @@ exports.login = async (req, res) => {
     if (!account) {
       return res.status(401).json({ message: "Invalid username" });
     }
-    // const isValidPassword = password === account.password;
     const isValidPassword = await bcrypt.compare(password, account.password);
-    //mongodb chua encrypt password thi dung cai tren, neu da encrypt thi dung cai duoi
     if (!isValidPassword) {
       return res.status(400).json({ message: "Invalid password" });
     }
@@ -88,13 +78,24 @@ exports.login = async (req, res) => {
 
 exports.getAllUser = async (req, res, next) => {
   try {
-    const users = await userAccount
-      .find({})
-      .populate("roleId", "name")
-      .select("-password");
+    const users = await userAccount.find({}).select("-password");
+    const roles = await Role.find();
+    const roleMap = roles.reduce((acc, role) => {
+      acc[role.id] = role.name;
+      return acc;
+    }, {});
+
+    const enrichedUsers = users.map((user) => ({
+      ...user.toObject(),
+      roleId: {
+        id: user.roleId,
+        name: roleMap[user.roleId] || user.roleId,
+      },
+    }));
+
     res.status(200).json({
       message: "All users fetched successfully",
-      data: users,
+      data: enrichedUsers,
     });
   } catch (error) {
     next(error);
@@ -103,16 +104,29 @@ exports.getAllUser = async (req, res, next) => {
 
 exports.getUserById = async (req, res) => {
   try {
-    const user = await userAccount
-      .findById(req.params.id)
-      .populate("roleId", "name"); // chỉ lấy trường `name` trong role
-
+    const user = await userAccount.findById(req.params.id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.status(200).json({ message: "User fetched successfully", data: user });
+    const role = await Role.findOne({ id: user.roleId });
+    const userWithRole = {
+      ...user.toObject(),
+      roleId: {
+        id: user.roleId,
+        name: role?.name || user.roleId,
+      },
+    };
+
+    res
+      .status(200)
+      .json({ message: "User fetched successfully", data: userWithRole });
   } catch (error) {
     console.error("Error fetching user:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res
+      .status(500)
+      .json({
+        message: "Server error or UserName / Email exists",
+        error: error.message,
+      });
   }
 };
 
@@ -125,7 +139,7 @@ exports.updateUserById = async (req, res) => {
       const hashedPassword = await bcrypt.hash(updateData.password, 10);
       updateData.password = hashedPassword;
     } else {
-      delete updateData.password; // bỏ qua nếu không có mật khẩu mới
+      delete updateData.password;
     }
 
     const updatedUser = await userAccount
@@ -133,15 +147,24 @@ exports.updateUserById = async (req, res) => {
         new: true,
         runValidators: true,
       })
-      .populate("roleId", "name");
+      .select("-password");
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    const role = await Role.findOne({ id: updatedUser.roleId });
+    const userWithRole = {
+      ...updatedUser.toObject(),
+      roleId: {
+        id: updatedUser.roleId,
+        name: role?.name || updatedUser.roleId,
+      },
+    };
+
     res.status(200).json({
       message: "User updated successfully",
-      data: updatedUser,
+      data: userWithRole,
     });
   } catch (error) {
     console.error("Update error:", error);

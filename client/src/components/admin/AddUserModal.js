@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import axios from "axios";
 
 export default function AddUserModal({ onClose, onCreate }) {
+  /* ---------------- State ---------------- */
   const [form, setForm] = useState({
     fullName: "",
     userName: "",
@@ -12,23 +13,16 @@ export default function AddUserModal({ onClose, onCreate }) {
     number: "",
     birthday: "",
     address: "",
-    roleName: "",
+    roleId: "",
   });
-
-  const [roles, setRoles] = useState([]);
+  const [roles, setRoles] = useState([]); // [{ _id, id:"r1", name:"Admin" }]
   const [errors, setErrors] = useState({});
 
+  /* ---------------- Fetch roles ---------------- */
   useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const res = await axios.get("http://localhost:9999/api/roles");
-        setRoles(res.data.data || []);
-      } catch (err) {
-        console.error("Failed to fetch roles", err);
-      }
-    };
-
-    fetchRoles();
+    axios
+      .get("http://localhost:9999/api/roles")
+      .then((res) => setRoles(res.data.data));
   }, []);
 
   const validate = () => {
@@ -71,8 +65,8 @@ export default function AddUserModal({ onClose, onCreate }) {
       valid = false;
     }
 
-    if (!form.roleName) {
-      newErrors.roleName = "Role is required";
+    if (!form.roleId) {
+      newErrors.roleId = "Role is required";
       valid = false;
     }
 
@@ -80,47 +74,34 @@ export default function AddUserModal({ onClose, onCreate }) {
     return valid;
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
+  /* ---------------- Submit ---------------- */
   const handleSubmit = async () => {
     if (!validate()) return;
-
     try {
-      const selectedRole = roles.find((r) => r.name === form.roleName);
-      if (!selectedRole) {
-        alert("Invalid role selected");
-        return;
-      }
-
       const res = await axios.post(
         "http://localhost:9999/api/users/register",
+        form,
         {
-          ...form,
-          roleId: selectedRole._id,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-
       if (res.status === 201) {
         onCreate(res.data.data);
         onClose();
       }
-    } catch (error) {
-      alert(error.response?.data?.message || "Failed to create user");
-      console.error("Error:", error);
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to create user");
     }
   };
 
+  /* ---------------- JSX ---------------- */
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center"
+        className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -132,6 +113,7 @@ export default function AddUserModal({ onClose, onCreate }) {
           exit={{ scale: 0.95, opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
+          {/* Close */}
           <button
             onClick={onClose}
             className="absolute right-4 top-4 text-gray-500 hover:text-gray-800"
@@ -151,37 +133,38 @@ export default function AddUserModal({ onClose, onCreate }) {
               "password",
               "number",
               "birthday",
-            ].map((key) => (
-              <div key={key}>
+            ].map((k) => (
+              <div key={k}>
                 <label className="block font-medium">
-                  {key.charAt(0).toUpperCase() +
-                    key.slice(1).replace(/([A-Z])/g, " $1")}
+                  {k
+                    .replace(/([A-Z])/g, " $1")
+                    .replace(/^./, (s) => s.toUpperCase())}
                 </label>
                 <input
-                  name={key}
+                  name={k}
                   type={
-                    key === "password"
+                    k === "password"
                       ? "password"
-                      : key === "birthday"
+                      : k === "birthday"
                       ? "date"
                       : "text"
                   }
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded"
-                  value={form[key]}
+                  className="w-full px-3 py-2 mt-1 border rounded"
+                  value={form[k]}
                   onChange={handleChange}
                 />
-                {errors[key] && (
-                  <p className="text-red-600 text-sm mt-1">{errors[key]}</p>
+                {errors[k] && (
+                  <p className="text-red-600 text-sm mt-1">{errors[k]}</p>
                 )}
               </div>
             ))}
 
+            {/* address */}
             <div className="md:col-span-2">
               <label className="block font-medium">Address</label>
               <input
                 name="address"
-                type="text"
-                className="w-full px-3 py-2 mt-1 border border-gray-300 rounded"
+                className="w-full px-3 py-2 mt-1 border rounded"
                 value={form.address}
                 onChange={handleChange}
               />
@@ -190,39 +173,41 @@ export default function AddUserModal({ onClose, onCreate }) {
               )}
             </div>
 
+            {/* role */}
             <div className="md:col-span-2 flex justify-center">
               <div className="w-full md:w-1/2">
                 <label className="block font-medium">Role</label>
                 <select
-                  name="roleName"
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded"
-                  value={form.roleName}
+                  name="roleId"
+                  className="w-full px-3 py-2 mt-1 border rounded"
+                  value={form.roleId}
                   onChange={handleChange}
                 >
                   <option value="">-- Select Role --</option>
-                  {roles.map((role) => (
-                    <option key={role._id} value={role.name}>
-                      {role.name}
+                  {roles.map((r) => (
+                    <option key={r._id} value={r.id}>
+                      {r.name}
                     </option>
                   ))}
                 </select>
-                {errors.roleName && (
-                  <p className="text-red-600 text-sm mt-1">{errors.roleName}</p>
+                {errors.roleId && (
+                  <p className="text-red-600 text-sm mt-1">{errors.roleId}</p>
                 )}
               </div>
             </div>
           </div>
 
+          {/* actions */}
           <div className="flex justify-end gap-2 mt-6">
             <button
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+              className="px-4 py-2 border rounded hover:bg-gray-100"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
-              className="px-4 py-2 bg-blue-700 text-white rounded shadow hover:bg-blue-800 font-semibold"
+              className="px-4 py-2 bg-blue-700 text-white rounded"
             >
               Create
             </button>

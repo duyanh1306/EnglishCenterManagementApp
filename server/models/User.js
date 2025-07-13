@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     roleId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "Role",
       required: true,
     },
