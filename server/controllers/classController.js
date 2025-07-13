@@ -1,7 +1,6 @@
 const Class = require('../models/Class');
 const User = require("../models/User");
 const mongoose = require('mongoose');  // Add this line at the very top
-const { Types } = require('mongoose');
 
 // Get all classes
 const getAllClasses = async (req, res) => {
