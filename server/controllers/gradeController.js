@@ -264,7 +264,7 @@ const getGradesByClassId = async (req, res) => {
         });
     }
 };
-;
+
 
 
 

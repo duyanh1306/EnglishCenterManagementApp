@@ -1,52 +1,59 @@
 const mongoose = require("mongoose");
+const { Schema, Types } = mongoose;
 
-const teacherSchema = new mongoose.Schema({
-  teacherId: {
-    type: String,
-    ref: 'User',
-    required: true
-  }
-});
+const classSchema = new Schema({
 
-const studentSchema = new mongoose.Schema({
-  studentId: {
-    type: String,
-    ref: 'User',
-    required: true
-  }
-});
-
-const classSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-    unique: true
-  },
   name: {
     type: String,
     required: true
   },
-  description: {
-    type: String,
-    required: true
-  },
-  teacherId: [teacherSchema],
   courseId: {
-    type: String,
+    type: Types.ObjectId,
     ref: 'Course',
     required: true
   },
   startDate: {
-    type: String,
+    type: Date,
     required: true
   },
+  endDate: {
+    type: Date,
+    required: true
+  },
+  capacity: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+  schedule: [{
+    weekday: {
+      type: String,
+      required: true
+    },
+    slot:{
+      type: Types.ObjectId,
+      ref: 'Slot',
+      required: true
+    }
+  }],
   status: {
     type: String,
+    enum: ['ongoing', 'finished', 'cancelled'],
+    default: 'ongoing',
     required: true
   },
-  students: [studentSchema]
+  teachers: [{
+    type: Types.ObjectId,
+    ref: 'User',
+    required: true
+  }],
+  students: [{
+    type: Types.ObjectId,
+    ref: 'User',
+    required: true
+  }]
 }, {
   timestamps: true
 });
 
-module.exports = mongoose.model("Class", classSchema); 
+module.exports = mongoose.model("Class", classSchema);
