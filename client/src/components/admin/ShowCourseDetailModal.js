@@ -41,7 +41,6 @@ export default function ShowCourseDetailModal({ course, onClose }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { label: "Course ID", value: courseData.id },
               { label: "Course Name", value: courseData.name },
               { label: "Description", value: courseData.description },
               {

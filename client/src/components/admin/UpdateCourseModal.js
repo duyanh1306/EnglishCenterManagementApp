@@ -5,7 +5,6 @@ import axios from "axios";
 
 export default function UpdateCourseModal({ onClose, course, onUpdate }) {
   const [form, setForm] = useState({
-    id: "",
     name: "",
     description: "",
     image: "",
@@ -13,13 +12,11 @@ export default function UpdateCourseModal({ onClose, course, onUpdate }) {
     level: "beginner",
     status: "active",
   });
-
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (course) {
       setForm({
-        id: course.id || "",
         name: course.name || "",
         description: course.description || "",
         image: course.image || "",
@@ -34,10 +31,6 @@ export default function UpdateCourseModal({ onClose, course, onUpdate }) {
     const newErrors = {};
     let valid = true;
 
-    if (!form.id.trim()) {
-      newErrors.id = "Course ID is required";
-      valid = false;
-    }
     if (!form.name.trim()) {
       newErrors.name = "Course name is required";
       valid = false;
@@ -66,9 +59,11 @@ export default function UpdateCourseModal({ onClose, course, onUpdate }) {
   const handleUpdate = async () => {
     if (!validate()) return;
     try {
+      const token = localStorage.getItem("token");
       const res = await axios.put(
-        `http://localhost:9999/api/courses/update/${course.id}`,
+        `http://localhost:9999/api/courses/update/${course._id}`,
         { ...form }
+        // { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.status === 200 && res.data.success) {
         onUpdate(res.data.data);
@@ -106,12 +101,10 @@ export default function UpdateCourseModal({ onClose, course, onUpdate }) {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {["id", "name", "price"].map((key) => (
+            {["name", "price"].map((key) => (
               <div key={key}>
                 <label className="block font-medium capitalize">
-                  {key === "id"
-                    ? "Course ID"
-                    : key.charAt(0).toUpperCase() + key.slice(1)}
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
                 </label>
                 <input
                   name={key}

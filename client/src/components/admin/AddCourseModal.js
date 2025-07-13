@@ -5,7 +5,6 @@ import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function AddCourseModal({ onClose, onCreate }) {
-  const [id, setId] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
@@ -16,20 +15,18 @@ export default function AddCourseModal({ onClose, onCreate }) {
 
   const validate = () => {
     const newErrors = {};
-    if (!id.trim()) newErrors.id = "Course ID is required.";
     if (!name.trim()) newErrors.name = "Course name is required.";
     if (!description.trim()) newErrors.description = "Description is required.";
     if (!image.trim()) newErrors.image = "Image URL is required.";
-    if (!price || isNaN(price)) newErrors.price = "Valid price is required.";
+    if (price === "" || isNaN(price))
+      newErrors.price = "Valid price is required.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
     if (!validate()) return;
-
     const courseData = {
-      id,
       name,
       description,
       image,
@@ -37,19 +34,19 @@ export default function AddCourseModal({ onClose, onCreate }) {
       status,
       level,
     };
-
     try {
-      const response = await axios.post(
+      // const token = localStorage.getItem("token");
+      const { data } = await axios.post(
         "http://localhost:9999/api/courses/add",
-        courseData,
-        {
-          // headers: { Authorization: `Bearer ${token}` },
-        }
+        courseData
+        // { headers: { Authorization: `Bearer ${token}` } }
       );
-      onCreate(response.data.data);
-      onClose();
-    } catch (error) {
-      console.error("Failed to create course:", error);
+      if (data.success) {
+        onCreate(data.data);
+        onClose();
+      }
+    } catch (err) {
+      console.error("Failed to create course", err);
     }
   };
 
@@ -72,100 +69,95 @@ export default function AddCourseModal({ onClose, onCreate }) {
             >
               <X className="w-5 h-5" />
             </button>
-            <DialogTitle className="text-xl font-bold text-gray-800 mb-4">
+            <DialogTitle className="text-xl font-bold mb-4">
               Add New Course
             </DialogTitle>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">Course ID</label>
-                <input
-                  type="text"
-                  value={id}
-                  onChange={(e) => setId(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                />
-                {errors.id && (
-                  <p className="text-red-500 text-sm mt-1">{errors.id}</p>
-                )}
-              </div>
-              <div>
+              <div className="sm:col-span-2">
                 <label className="text-sm font-medium">Course Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="mt-1 w-full border rounded px-3 py-2"
                 />
                 {errors.name && (
                   <p className="text-red-500 text-sm mt-1">{errors.name}</p>
                 )}
               </div>
-              <div className="col-span-2">
+
+              <div className="sm:col-span-2">
                 <label className="text-sm font-medium">Description</label>
                 <textarea
                   rows="3"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                ></textarea>
+                  className="mt-1 w-full border rounded px-3 py-2"
+                />
                 {errors.description && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.description}
                   </p>
                 )}
               </div>
-              <div className="col-span-2">
+
+              <div className="sm:col-span-2">
                 <label className="text-sm font-medium">Image URL</label>
                 <input
                   type="text"
                   value={image}
                   onChange={(e) => setImage(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="mt-1 w-full border rounded px-3 py-2"
                 />
                 {errors.image && (
                   <p className="text-red-500 text-sm mt-1">{errors.image}</p>
                 )}
               </div>
+
               <div>
                 <label className="text-sm font-medium">Price ($)</label>
                 <input
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="mt-1 w-full border rounded px-3 py-2"
                 />
                 {errors.price && (
                   <p className="text-red-500 text-sm mt-1">{errors.price}</p>
                 )}
               </div>
-              <div>
-                <label className="text-sm font-medium">Status</label>
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
+
               <div>
                 <label className="text-sm font-medium">Level</label>
                 <select
                   value={level}
                   onChange={(e) => setLevel(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="mt-1 w-full border rounded px-3 py-2"
                 >
                   <option value="beginner">Beginner</option>
                   <option value="intermediate">Intermediate</option>
                   <option value="advanced">Advanced</option>
                 </select>
               </div>
+
+              <div>
+                <label className="text-sm font-medium">Status</label>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="mt-1 w-full border rounded px-3 py-2"
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
             </div>
-            <div className="flex justify-end gap-2 mt-4">
+
+            <div className="flex justify-end gap-2 mt-6">
               <button
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                className="px-4 py-2 border rounded hover:bg-gray-100"
               >
                 Cancel
               </button>
