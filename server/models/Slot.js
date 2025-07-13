@@ -1,11 +1,8 @@
 const mongoose = require("mongoose");
+const { Schema, Types } = mongoose;
 
-const slotSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-    unique: true
-  },
+const slotSchema = new Schema({
+
   from: {
     type: String,
     required: true,

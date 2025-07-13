@@ -151,15 +151,13 @@ const getStudentSchedule = async (req, res) => {
         const [allSchedules, slots, rooms] = await Promise.all([
             Schedule.find().lean(),
             Slot.find().lean(),
-            Room.find().lean()
         ]);
 
         const scheduleFiltered = allSchedules.filter(s =>
             enrolledClassIds.includes(s.classId.toString())
         );
 
-        const slotMap = Object.fromEntries(slots.map(slot => [slot.id, slot]));
-        const roomMap = Object.fromEntries(rooms.map(room => [room.id, room]));
+        const slotMap = Object.fromEntries(slots.map(slot => [slot._id, slot]));
         const classMap = Object.fromEntries(enrolledClasses.map(cls => [cls._id.toString(), cls]));
 
         const enrichedSchedule = scheduleFiltered.map(s => ({
@@ -168,8 +166,6 @@ const getStudentSchedule = async (req, res) => {
             slotTime: slotMap[s.slotId]
                 ? { from: slotMap[s.slotId].from, to: slotMap[s.slotId].to }
                 : null,
-            room: roomMap[s.roomId]?.name || "",
-            location: roomMap[s.roomId]?.location || "",
             className: classMap[s.classId.toString()]?.name || ""
         }));
 

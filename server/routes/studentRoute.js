@@ -16,6 +16,6 @@ router.get("/my-classes/:id",jwtAuth,getClassesByUserId);
 router.get("/registerable-classes",jwtAuth,getRegisterableClasses); // chua co api co dinh
 router.get("/attendance/:classid",jwtAuth,getAttendanceByClassId);
 router.get("/attendance",jwtAuth,getAllAttendanceOfStudent);
-router.post("/register-class/:classid",jwtAuth,enrollInClass);
+router.post("/register-class/:id",jwtAuth,enrollInClass);
 router.delete("/register-class/:classid",jwtAuth,unenrollFromClass);
 module.exports = router;

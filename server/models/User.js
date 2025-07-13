@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const { Schema, Types } = mongoose;
 
-const userSchema = new mongoose.Schema({  userId: { type: String, unique: true },  // Your custom ID
+const userSchema = new Schema({
 
   fullName: {
     type: String,
@@ -15,17 +16,21 @@ const userSchema = new mongoose.Schema({  userId: { type: String, unique: true }
     type: String,
     required: [true, "Password is required"]
   },
+  gender: {
+    type: String,
+    enum: ['male', 'female']
+  },
   email: {
     type: String,
     required: [true, "Email is required"],
-    unique: true
+    unique: [true, "Email is already registered"],
   },
   number: {
     type: String,
     required: true
   },
   birthday: {
-    type: String,
+    type: Date,
     required: true
   },
   address: {
@@ -33,12 +38,10 @@ const userSchema = new mongoose.Schema({  userId: { type: String, unique: true }
     required: true
   },
   roleId: {
-    type: String,
-    ref: 'Role',
-    required: true
+    type: String
   }
 }, {
   timestamps: true
 });
 
-module.exports =  mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", userSchema);

@@ -131,9 +131,10 @@ const getClassesByUserId = async (req, res) => {
 
 const getRegisterableClasses = async (req, res) => {
   // Test student enrolled jwt
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzI3MjIzMzRjZmRkODk4ZjY2MTQ4ZCIsInVzZXJOYW1lIjoicGhhbXRoaWQiLCJyb2xlIjoicjMiLCJpYXQiOjE3NTIzMzA4NDUsImV4cCI6MTc1MjkzNTY0NX0.C4zQVn0M5xMOBTjQ0SOzy-glMN18_j_5qxzSysIpCJ4
-// Test student not enrolled jwt
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzI3MjIzMzRjZmRkODk4ZjY2MTQ5MyIsInVzZXJOYW1lIjoidHJhbnRoaWoiLCJyb2xlIjoicjMiLCJpYXQiOjE3NTIzNzU4OTMsImV4cCI6MTc1Mjk4MDY5M30.42OQx_0fw9GffCFFz5FRQz7ShyiJdIKp-4bFCFXwcWg
+  // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzI3MjIzMzRjZmRkODk4ZjY2MTQ4ZCIsInVzZXJOYW1lIjoicGhhbXRoaWQiLCJyb2xlIjoicjMiLCJpYXQiOjE3NTIzMzA4NDUsImV4cCI6MTc1MjkzNTY0NX0.C4zQVn0M5xMOBTjQ0SOzy-glMN18_j_5qxzSysIpCJ4
+
+  // Test student not enrolled jwt
+  // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzI3MjIzMzRjZmRkODk4ZjY2MTQ5MyIsInVzZXJOYW1lIjoidHJhbnRoaWoiLCJyb2xlIjoicjMiLCJpYXQiOjE3NTIzNzU4OTMsImV4cCI6MTc1Mjk4MDY5M30.42OQx_0fw9GffCFFz5FRQz7ShyiJdIKp-4bFCFXwcWg
 
   try {
     const mongoUserId = req.user?.id;
@@ -145,6 +146,7 @@ const getRegisterableClasses = async (req, res) => {
       });
     }
 
+    // 1. Confirm student exists
     const user = await User.findById(mongoUserId).lean();
     if (!user) {
       return res.status(404).json({
@@ -153,18 +155,17 @@ const getRegisterableClasses = async (req, res) => {
       });
     }
 
-    const userObjectIdStr = mongoUserId.toString();
-
-    // Get all available classes (status filtered)
+    // 2. Find all "ongoing" or "upcoming" classes
     const allAvailableClasses = await Class.find({
       status: { $in: ["ongoing", "upcoming"] }
     }).lean();
 
-    // Filter out classes the student is already in
+    // 3. Filter out classes the student is already enrolled in
     const notEnrolledClasses = allAvailableClasses.filter(cls =>
-        !cls.students.some(s => s.toString() === userObjectIdStr)
+        !cls.students.some(s => s.toString() === mongoUserId)
     );
 
+    // 4. Return classes that can be registered
     res.status(200).json({
       success: true,
       message: "Registerable classes retrieved successfully",
@@ -184,7 +185,7 @@ const getRegisterableClasses = async (req, res) => {
 const enrollInClass = async (req, res) => {
   try {
     const mongoUserId = req.user?.id; // JWT user _id
-    const classId = req.params.classid;
+    const classId = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(mongoUserId) || !mongoose.Types.ObjectId.isValid(classId)) {
       return res.status(400).json({
@@ -231,7 +232,6 @@ const enrollInClass = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Successfully enrolled",
-      data: foundClass
     });
 
   } catch (error) {

@@ -125,7 +125,7 @@ const getAllStundentIdGrades = async (req, res) => {
             });
         }
 
-        // 1. Get the user to retrieve the app-level student ID (e.g., "u4")
+        // 1. Get the user to retrieve Mongo _id
         const user = await User.findById(mongoUserId).lean();
         if (!user) {
             return res.status(404).json({
@@ -134,28 +134,26 @@ const getAllStundentIdGrades = async (req, res) => {
             });
         }
 
-        const studentId = user.id; // this is like "u4"
+        const studentId = user._id; // ✅ now using ObjectId
 
-        // 2. Get all classes and check enrollment manually
+        // 2. Get all classes and check enrollment
         const allClasses = await Class.find().lean();
 
         const enrolledClassIds = allClasses
-            .filter(cls => cls.students?.some(s => s.toString() === mongoUserId))
-            .map(cls => new mongoose.Types.ObjectId(cls._id))
-
-
+            .filter(cls => cls.students?.some(s => s.toString() === studentId.toString()))
+            .map(cls => cls._id.toString());
 
         // 3. Get grades
         const allGrades = await Grades.find().lean();
 
         const grades = allGrades.filter(
             g =>
-                enrolledClassIds.some(cid => cid.toString() === g.classId.toString()) &&
-                g.studentId === studentId
+                enrolledClassIds.includes(g.classId.toString()) &&
+                g.studentId.toString() === studentId.toString()
         );
 
-        const classes = await Class.find().lean();
-        const classMap = Object.fromEntries(classes.map(cls => [cls._id.toString(), cls.name]));
+        // 4. Map class IDs to class names
+        const classMap = Object.fromEntries(allClasses.map(cls => [cls._id.toString(), cls.name]));
 
         const finalData = grades.map(grade => ({
             class: classMap[grade.classId.toString()] || "Unknown Class",
@@ -163,14 +161,6 @@ const getAllStundentIdGrades = async (req, res) => {
             comment: grade.comment
         }));
 
-        res.status(200).json({
-            success: true,
-            message: "Grades for the class retrieved successfully",
-            data: finalData
-        });
-
-
-        // 🔍 Return debug info for troubleshooting in Postman
         res.status(200).json({
             success: true,
             message: "Grades of student retrieved successfully",
@@ -190,13 +180,14 @@ const getAllStundentIdGrades = async (req, res) => {
 
 const getGradesByClassId = async (req, res) => {
     try {
-        const mongoUserId = req.user?.id;
+        const mongoUserId = req.user?.id; // Mongo _id from JWT
         const classIdParam = req.params.id;
 
-        if (!mongoose.Types.ObjectId.isValid(classIdParam)) {
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(mongoUserId) || !mongoose.Types.ObjectId.isValid(classIdParam)) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid class ID"
+                message: "Invalid user or class ID"
             });
         }
 
@@ -209,7 +200,7 @@ const getGradesByClassId = async (req, res) => {
             });
         }
 
-        const studentId = user.id;
+        const studentMongoId = user._id;
 
         // 2. Find class
         const enrolledClass = await Class.findById(classIdParam).lean();
@@ -220,8 +211,9 @@ const getGradesByClassId = async (req, res) => {
             });
         }
 
+        // 3. Check if the student is enrolled
         const isEnrolled = enrolledClass.students.some(
-            s => s.toString() === mongoUserId
+            s => s.toString() === studentMongoId.toString()
         );
 
         if (!isEnrolled) {
@@ -231,18 +223,18 @@ const getGradesByClassId = async (req, res) => {
             });
         }
 
-        // 3. Fetch and filter all grades manually
-        const allGrades = await Grades.find().lean();
+        // 4. Filter grades based on ObjectIds
+        const grades = await Grades.find({
+            classId: classIdParam,
+            studentId: studentMongoId
+        }).lean();
 
-        const filtered = allGrades.filter(g =>
-            g.classId?.toString() === classIdParam &&
-            g.studentId === studentId
-        );
+        // Optional: Map class name
+        const classMap = {
+            [enrolledClass._id.toString()]: enrolledClass.name
+        };
 
-        const classes = await Class.find().lean();
-        const classMap = Object.fromEntries(classes.map(cls => [cls._id.toString(), cls.name]));
-
-        const finalData = filtered.map(grade => ({
+        const finalData = grades.map(grade => ({
             class: classMap[grade.classId.toString()] || "Unknown Class",
             score: grade.score,
             comment: grade.comment
@@ -253,7 +245,6 @@ const getGradesByClassId = async (req, res) => {
             message: "Grades for the class retrieved successfully",
             data: finalData
         });
-
 
     } catch (error) {
         console.error("Error fetching grades:", error);

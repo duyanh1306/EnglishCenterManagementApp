@@ -1,40 +1,39 @@
 const mongoose = require("mongoose");
+const { Schema, Types } = mongoose;
 
-const gradeSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-    unique: true
-  },
+const gradeSchema = new Schema({
+
   studentId: {
-    type: String,
+    type: Types.ObjectId,
     ref: 'User',
     required: true
   },
   classId: {
-    type: String,
+    type: Types.ObjectId,
     ref: 'Class',
     required: true
   },
-  courseId: {
-    type: String,
-    ref: 'Course',
-    required: true
-  },
-  score: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 10
-  },
-  type: {
-    type: String,
-    enum: ['midterm', 'final'],
-    required: true
-  },
-  date: {
-    type: String,
-    required: true
+  "score":{
+    "listening": {
+      type: Number,
+      min: 0,
+      max: 10
+    },
+    "reading": {
+      type: Number,
+      min: 0,
+      max: 10
+    },
+    "writing": {
+      type: Number,
+      min: 0,
+      max: 10
+    },
+    "speaking": {
+      type: Number,
+      min: 0,
+      max: 10
+    }
   },
   comment: {
     type: String,
