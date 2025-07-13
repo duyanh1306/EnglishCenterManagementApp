@@ -9,7 +9,7 @@ const {
 } = require("../controllers/courseController");
 
 router.get("/", getAllCourses);
-router.post("/add", createCourse);
-router.put("/update/:id", updateCourse);
-router.delete("/delete/:id", deleteCourse);
+router.post("/add", authAdmin, createCourse);
+router.put("/update/:id", authAdmin, updateCourse);
+router.delete("/delete/:id", authAdmin, deleteCourse);
 module.exports = router;

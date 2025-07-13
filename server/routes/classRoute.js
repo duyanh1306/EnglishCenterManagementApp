@@ -1,9 +1,16 @@
-const express = require('express');
+const express = require("express");
 const classRouter = express.Router();
-const { jwtAuth } = require("../middlewares/auth");
-const { getAllClasses } = require('../controllers/classController');
+const { authAdmin } = require("../middlewares/authAdmin");
+const {
+  getAllClasses,
+  createClass,
+  updateClass,
+  deleteClass,
+} = require("../controllers/classController");
 
-
-classRouter.get('/',jwtAuth, getAllClasses);
+classRouter.get("/", getAllClasses);
+classRouter.post("/add", /* authAdmin, */ createClass);
+classRouter.put("/update/:id", /* authAdmin, */ updateClass);
+classRouter.delete("/delete/:id", /* authAdmin, */ deleteClass);
 
 module.exports = classRouter;
