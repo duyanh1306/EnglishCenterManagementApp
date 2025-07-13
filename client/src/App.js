@@ -22,7 +22,7 @@ import CourseManagement from "./pages/admin/CourseManagement";
 import ClassesManagement from "./pages/admin/ClassesManagement";
 import UserManagement from "./pages/admin/UserManagement";
 
-import LoginPage from "./auth/Login";
+import LoginPage from "./Login/Login";
 
 
 function App() {

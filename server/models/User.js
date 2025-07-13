@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
-  
+const userSchema = new mongoose.Schema({  userId: { type: String, unique: true },  // Your custom ID
+
   fullName: {
     type: String,
     required: true
