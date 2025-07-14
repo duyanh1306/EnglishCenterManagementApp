@@ -251,6 +251,16 @@ const addGradeToAStudent = async (req, res) => {
     const { classId, studentId } = req.params;
     const { score, comment } = req.body;
 
+    // Check if grade already exists for this student in this class
+    const existingGrade = await Grade.findOne({ classId, studentId });
+    
+    if (existingGrade) {
+      return res.status(409).json({
+        success: false,
+        message: "Grade already exists for this student in this class. Use update instead."
+      });
+    }
+
     const newGrade = new Grade({
       classId,
       studentId,
