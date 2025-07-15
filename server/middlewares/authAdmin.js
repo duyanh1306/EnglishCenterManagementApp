@@ -8,8 +8,8 @@ module.exports = function (req, res, next) {
   const token = authHeader.split(" ")[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_KEY);
-    if (decoded.role !== "r1") {
-      return res.status(403).json({ message: "Forbidden: Admins only" });
+    if (decoded.roleId != "r1") {
+      return res.status(403).json({ message: "Forbidden: Admin only" });
     }
     req.user = decoded;
     next();

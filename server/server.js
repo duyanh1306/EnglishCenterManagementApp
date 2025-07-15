@@ -23,8 +23,6 @@ app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to ExpressJS" });
 });
 
-// app.use('/api', require('./routes/blog.route'));
-
 const PORT = process.env.PORT || 9999;
 const HOSTNAME = "localhost";
 

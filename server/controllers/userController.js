@@ -43,7 +43,7 @@ exports.register = async (req, res, next) => {
   }
 };
 
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   try {
     const { userName, password } = req.body;
     const account = await userAccount.findOne({ userName });
@@ -59,7 +59,7 @@ exports.login = async (req, res) => {
       {
         id: account._id,
         userName: account.userName,
-        role: account.roleId,
+        roleId: account.roleId,
       },
       process.env.JWT_KEY,
       {
@@ -70,6 +70,9 @@ exports.login = async (req, res) => {
     res.status(200).json({
       message: "Login successfully",
       accessToken: accessToken,
+      // roleId: account.roleId || "NA",
+      
+
     });
   } catch (error) {
     next(error);

@@ -8,7 +8,7 @@ module.exports = function (req, res, next) {
   const token = authHeader.split(" ")[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_KEY);
-    if (decoded.role !== "r2") {
+    if (decoded.roleId != "r2") {
       return res.status(403).json({ message: "Forbidden: Teachers only" });
     }
     req.user = decoded;

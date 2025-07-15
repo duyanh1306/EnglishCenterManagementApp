@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authAdmin = require("../middlewares/authAdmin");
+const authTeacher = require("../middlewares/authTeacher");
 const {
   getAllCourses,
   createCourse,
@@ -8,8 +9,8 @@ const {
   deleteCourse,
 } = require("../controllers/courseController");
 
-router.get("/", getAllCourses);
+router.get("/", authAdmin, getAllCourses);
 router.post("/add", authAdmin, createCourse);
-router.put("/update/:id", authAdmin, updateCourse);
+router.put("/update/:id",  updateCourse);
 router.delete("/delete/:id", authAdmin, deleteCourse);
 module.exports = router;
