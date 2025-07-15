@@ -22,11 +22,7 @@ const Navbar = ({ user = { name: "John Doe", avatarUrl: "" }, onLogout, onToggle
                 
                 {/* Avatar + Name */}
                 <div className="flex items-center gap-2">
-                    <img
-                        src={user.avatarUrl || "https://via.placeholder.com/32"}
-                        alt="avatar"
-                        className="w-8 h-8 rounded-full object-cover"
-                    />
+                    
                     <span className="text-gray-700 font-medium">{user.name}</span>
                 </div>
 

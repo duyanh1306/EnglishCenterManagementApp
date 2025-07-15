@@ -16,7 +16,12 @@ const TeachingClassDetails = () => {
     const fetchClassData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/classes/${classId}`);
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/classes/${classId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
         console.log("Class Data Response:", response.data);
 
         if (response.data && response.data.success) {
@@ -33,7 +38,10 @@ const TeachingClassDetails = () => {
 
     const fetchGrades = async () => {
       try {
-        const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/classes/${classId}/grades`);
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/classes/${classId}/grades`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         console.log("Grades Response:", response.data);
 
         if (response.data && response.data.success) {

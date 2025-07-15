@@ -13,9 +13,12 @@ export default function TeachingClass() {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-         // You should get this from auth context or props
-        const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/classes`);
-        
+        const token = localStorage.getItem("token");
+        // You should get this from auth context or props
+        const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/classes`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
         if (response.data && response.data.success) {
           setAllClasses(response.data.data); // Store all classes
           setClasses(response.data.data); // Initially show all classes

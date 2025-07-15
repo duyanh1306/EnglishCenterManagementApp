@@ -6,48 +6,42 @@ export default function Courses() {
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Fetch courses data from CourseService
   useEffect(() => {
-    const fetchCourses = [
-      {
-        "id": "course_001",
-        "name": "English for Beginners",
-        "description": "Khóa học tiếng Anh cơ bản dành cho người mới bắt đầu.",
-        "image": "https://example.com/images/course_001.jpg",
-        "price": 1500000,
-        "status": "active",
-        "level": "beginner"
-      },
-      {
-        "id": "course_002",
-        "name": "IELTS Preparation",
-        "description": "Khóa học luyện thi IELTS cho trình độ trung cấp.",
-        "image": "https://example.com/images/course_002.jpg",
-        "price": 3500000,
-        "status": "active",
-        "level": "intermediate"
-      },
-      {
-        "id": "course_003",
-        "name": "Business English",
-        "description": "Khóa học tiếng Anh thương mại cho người đi làm.",
-        "image": "https://example.com/images/course_003.jpg",
-        "price": 3000000,
-        "status": "inactive",
-        "level": "advanced"
-      },
-      {
-        "id": "course_004",
-        "name": "English Speaking Club",
-        "description": "Câu lạc bộ nói tiếng Anh dành cho mọi trình độ.",
-        "image": "https://example.com/images/course_004.jpg",
-        "price": 1000000,
-        "status": "active",
-        "level": "beginner"
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const token = localStorage.getItem("token");
+        const response = await fetch("http://localhost:9999/api/courses", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch courses");
+        }
+        const data = await response.json();
+        if (data.success) {
+          setCourses(data.data);
+        } else {
+          console.error("Failed to fetch courses:", data.message);
+          setError(data.message || "Failed to fetch courses");
+          setCourses([]);
+        }
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+        setError(error.message);
+        setCourses([]);
+      } finally {
+        setLoading(false);
       }
-    ]
-    setCourses(fetchCourses);
+    };
+
+    fetchCourses(); // Actually call the function
   }, []);
 
   const filteredCourses = courses.filter((course) => {
@@ -57,6 +51,26 @@ export default function Courses() {
     const matchesStatus = status === "all" || course.status === status;
     return matchesSearch && matchesStatus;
   });
+
+  if (loading) {
+    return (
+      <div className="w-full p-8 bg-gray-50 min-h-screen">
+        <div className="text-center py-10">
+          <div className="text-gray-500">Loading courses...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full p-8 bg-gray-50 min-h-screen">
+        <div className="text-center py-10">
+          <div className="text-red-500">Error: {error}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -119,12 +133,14 @@ export default function Courses() {
                     : "text-red-800";
 
                 return (
-                  <tr key={course.id} className="border-b last:border-none">
+                  <tr key={course._id} className="border-b last:border-none">
                     <td className="py-4 px-4">
                       <div className="font-semibold">{course?.name}</div>
                     </td>
                     <td className="py-4 px-4">{course?.level}</td>
-                    <td className="py-4 px-4">{course?.price}</td>
+                    <td className="py-4 px-4">
+                      {course?.price?.toLocaleString('vi-VN')}
+                    </td>
                     <td className="py-4 px-4">
                       <span
                         className={`${bgColor} ${textColor} px-3 py-1 rounded-full text-xs font-semibold`}

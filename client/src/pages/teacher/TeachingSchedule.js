@@ -63,7 +63,6 @@ export default function TeachingSchedule() {
                     console.error("No token found in localStorage");
                     return;
                 }
-                console.log("Fetching schedule with token:", token);
                 const teacherId = "687139a34cdde4e0be2848f5";
                 const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/schedules`, {
                     headers: {
@@ -85,7 +84,12 @@ export default function TeachingSchedule() {
 
         const fetchSlots = async () => {
             try {
-                const response = await axios.get('http://localhost:9999/api/teacher/slots');
+                const token = localStorage.getItem("token");
+                const response = await axios.get('http://localhost:9999/api/teacher/slots', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
                 if (response.data && response.data.success && Array.isArray(response.data.data)) {
                     setSlots(response.data.data);
