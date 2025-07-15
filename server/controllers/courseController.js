@@ -1,5 +1,4 @@
-const Course = require("../models/course");
-
+const Course = require("../models/Course");
 // GET /api/courses
 const getAllCourses = async (req, res) => {
   try {
