@@ -1,30 +1,79 @@
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ClassDetails = () => {
+  const { classId } = useParams();
   const navigate = useNavigate();
+  const [classData, setClassData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Em có thể fetch dữ liệu từ API hoặc mock data trước
-  const classData = {
-    name: "English 101",
-    teacher: "Mr. John Smith",
-    schedule: "Mon - Wed, 13:00 - 14:30",
-    room: "Room A1",
-    status: "Ongoing",
-    sessions: [
-      {
-        date: "2025-06-01",
-        topic: "Unit 1: Introduction",
-        attendance: "Present",
-        note: "",
-      },
-      {
-        date: "2025-06-03",
-        topic: "Unit 2: Grammar",
-        attendance: "Absent",
-        note: "Sick leave",
-      },
-    ],
-  };
+  useEffect(() => {
+    const fetchClassDetails = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        setError("No token found");
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `http://localhost:9999/api/student/my-classes/${classId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log("Class Details Response (Full Schedule):", response.data);
+        setClassData(response.data);
+      } catch (error) {
+        console.error(
+          "Error fetching class details:",
+          error.response?.status,
+          error.response?.data
+        );
+        setError(
+          `Failed to fetch class details. Status: ${
+            error.response?.status || "Unknown"
+          }, Message: ${error.response?.data?.message || error.message}`
+        );
+        setClassData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClassDetails();
+  }, [classId]);
+
+  if (loading) {
+    return <div className="p-6 text-gray-600">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 text-red-500 text-center">
+        {error}.{" "}
+        <a href="/login" className="text-blue-600 hover:underline">
+          Log in again
+        </a>
+        . Check the console for details.
+      </div>
+    );
+  }
+
+  if (!classData) {
+    return <div className="p-6 text-gray-600">No class details found.</div>;
+  }
+
+  // Handle teacher as a string or array
+  const teachers =
+    typeof classData.teacher === "string"
+      ? classData.teacher.split(", ").map((name) => ({ fullName: name.trim() }))
+      : Array.isArray(classData.teachers)
+      ? classData.teachers
+      : [];
 
   return (
     <div className="p-6">
@@ -35,13 +84,28 @@ const ClassDetails = () => {
           <strong>Class:</strong> {classData.name}
         </p>
         <p>
-          <strong>Teacher:</strong> {classData.teacher}
+          <strong>Teacher:</strong>{" "}
+          {teachers.length > 0
+            ? teachers.map((t) => t.fullName).join(", ")
+            : "N/A"}
         </p>
+        <div>
+          <strong>Schedule:</strong>
+          {Array.isArray(classData.schedule) &&
+          classData.schedule.length > 0 ? (
+            <ul className="list-disc list-inside">
+              {classData.schedule.map((s, idx) => (
+                <li key={idx}>
+                  {s.weekday}: {s.from} - {s.to}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <span>No schedule</span>
+          )}
+        </div>
         <p>
-          <strong>Schedule:</strong> {classData.schedule}
-        </p>
-        <p>
-          <strong>Room:</strong> {classData.room}
+          <strong>Room:</strong> {classData.room || "N/A"}
         </p>
         <p>
           <strong>Status:</strong>{" "}
@@ -55,19 +119,35 @@ const ClassDetails = () => {
           <tr>
             <th className="border px-3 py-2 text-left">Date</th>
             <th className="border px-3 py-2 text-left">Topic</th>
-            <th className="border px-3 py-2 text-left">Attendance</th>
             <th className="border px-3 py-2 text-left">Note</th>
           </tr>
         </thead>
         <tbody>
-          {classData.sessions.map((session, index) => (
-            <tr key={index} className="hover:bg-gray-50">
-              <td className="border px-3 py-2">{session.date}</td>
-              <td className="border px-3 py-2">{session.topic}</td>
-              <td className="border px-3 py-2">{session.attendance}</td>
-              <td className="border px-3 py-2">{session.note}</td>
+          {Array.isArray(classData.sessions) &&
+          classData.sessions.length > 0 ? (
+            classData.sessions.map((session, index) => (
+              <tr key={index} className="hover:bg-gray-50">
+                <td className="border px-3 py-2">
+                  {session.date
+                    ? new Date(session.date).toLocaleString("en-US", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric",
+                      })
+                    : "No Date"}
+                </td>
+                <td className="border px-3 py-2">{session.topic || "N/A"}</td>
+                <td className="border px-3 py-2">{session.note || "N/A"}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td className="border px-3 py-2" colSpan="3">
+                No sessions available.
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 

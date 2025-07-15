@@ -1,13 +1,14 @@
 const mongoose = require("mongoose");
+const { Schema, Types } = mongoose;
 
-const classSchema = new mongoose.Schema(
+const classSchema = new Schema(
   {
     name: {
       type: String,
       required: true,
     },
     courseId: {
-      type: mongoose.SchemaTypes.ObjectId,
+      type: Types.ObjectId,
       ref: "Course",
       required: true,
     },
@@ -31,7 +32,7 @@ const classSchema = new mongoose.Schema(
           required: true,
         },
         slot: {
-          type: mongoose.SchemaTypes.ObjectId,
+          type: Types.ObjectId,
           ref: "Slot",
           required: true,
         },
@@ -45,14 +46,14 @@ const classSchema = new mongoose.Schema(
     },
     teachers: [
       {
-        type: mongoose.SchemaTypes.ObjectId,
+        type: Types.ObjectId,
         ref: "User",
         required: true,
       },
     ],
     students: [
       {
-        type: mongoose.SchemaTypes.ObjectId,
+        type: Types.ObjectId,
         ref: "User",
         required: true,
       },

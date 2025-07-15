@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function StudentSchedule() {
-  const [year, setYear] = useState(2025);
+  const [year, setYear] = useState(2025); // Mặc định năm 2025
   const [weeks, setWeeks] = useState([]);
   const [selectedWeek, setSelectedWeek] = useState(null);
+  // Đảm bảo schedule luôn là một mảng, khởi tạo với []
   const [schedule, setSchedule] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const daysOfWeek = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   const slotLabels = [
@@ -16,14 +20,24 @@ export default function StudentSchedule() {
     "Slot 5",
   ];
 
+  // Ánh xạ từ slot index (rowIdx) sang thời gian bắt đầu thực tế của slot
+  const slotStartTimes = [
+    "08:00", // Slot 0: 08:00 - 09:30
+    "09:40", // Slot 1: 09:40 - 11:10
+    "13:00", // Slot 2: 13:00 - 14:30
+    "14:40", // Slot 3: 14:40 - 16:10
+    "18:00", // Slot 4: 18:00 - 19:30
+    "19:40", // Slot 5: 19:40 - 21:10
+  ];
+
   const generateWeeksOfYear = (targetYear) => {
     const startDate = new Date(`${targetYear}-01-01`);
-    const weeks = [];
-
+    // Điều chỉnh để startDate là ngày thứ Hai đầu tiên của năm
     while (startDate.getDay() !== 1) {
       startDate.setDate(startDate.getDate() + 1);
     }
 
+    const weeks = [];
     for (let i = 0; i < 53; i++) {
       const weekStart = new Date(startDate);
       weekStart.setDate(startDate.getDate() + i * 7);
@@ -31,7 +45,8 @@ export default function StudentSchedule() {
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekStart.getDate() + 6);
 
-      if (weekStart.getFullYear() > targetYear) break;
+      // Ngừng nếu tuần bắt đầu trong năm tiếp theo và không phải tuần đầu tiên của năm đó
+      if (weekStart.getFullYear() > targetYear && i > 0) break;
 
       const label = `${weekStart.toLocaleDateString(
         "en-GB"
@@ -46,8 +61,8 @@ export default function StudentSchedule() {
   };
 
   const formatDate = (dateObj) => {
-    if (!(dateObj instanceof Date) || isNaN(dateObj)) return "";
-    return dateObj.toISOString().split("T")[0];
+    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) return "";
+    return dateObj.toISOString().split("T")[0]; // Trả về YYYY-MM-DD
   };
 
   const getDateByOffset = (startDate, offset) => {
@@ -57,47 +72,112 @@ export default function StudentSchedule() {
     return date;
   };
 
+  // Hàm này tìm kiếm trong mảng 'schedule'
+  // Bây giờ nó sẽ tìm dựa trên startTime và date từ dữ liệu backend
   const getScheduleItem = (slotId, dateStr) => {
-    return schedule.find(
-      (item) => item.slotId === slotId && item.date === dateStr
-    );
+    if (!Array.isArray(schedule)) {
+      console.error(
+        "Schedule state is not an array, cannot call find(). Current value:",
+        schedule
+      );
+      return null;
+    }
+
+    const expectedStartTime = slotStartTimes[parseInt(slotId, 10)]; // Lấy thời gian bắt đầu từ mảng ánh xạ
+
+    if (!expectedStartTime) {
+      console.warn(`No start time defined for slotId: ${slotId}`);
+      return null;
+    }
+
+    // Log các giá trị tìm kiếm để debug
+    // console.log(`--- Searching for item ---`);
+    // console.log(`  Target Date (dateStr): ${dateStr}`);
+    // console.log(`  Target Start Time (expectedStartTime): ${expectedStartTime}`);
+    // console.log(`  Current Schedule Array Length: ${schedule.length}`);
+
+    return schedule.find((item) => {
+      // Chắc chắn rằng item.date được định dạng YYYY-MM-DD từ ISO string của backend
+      const itemDateFormatted = item.date ? item.date.split("T")[0] : "";
+
+      // Log từng item để xem có khớp không (có thể gây ra nhiều log)
+      // console.log(`    Checking item: date=${item.date} (formatted=${itemDateFormatted}), from=${item.slotTime?.from}`);
+
+      return (
+        item.slotTime && // Đảm bảo item.slotTime tồn tại
+        item.slotTime.from === expectedStartTime && // So sánh với thời gian bắt đầu
+        itemDateFormatted === dateStr // So sánh chính xác chuỗi ngày tháng đã format
+      );
+    });
   };
 
+  // Effect để tạo các tuần khi năm thay đổi
   useEffect(() => {
     const newWeeks = generateWeeksOfYear(year);
     setWeeks(newWeeks);
-    setSelectedWeek(newWeeks[0]);
+    // Chọn tuần đầu tiên của năm đã chọn làm mặc định
+    setSelectedWeek(newWeeks.length > 0 ? newWeeks[0] : null);
   }, [year]);
 
+  // Effect để lấy dữ liệu lịch học
   useEffect(() => {
-    const fetchedSchedule = [
-      {
-        id: "1",
-        slotId: "1",
-        className: "A",
-        course: "TOEIC",
-        room: "R101",
-        date: "2025-07-08", // Tuesday
-      },
-      {
-        id: "2",
-        slotId: "2",
-        className: "A",
-        course: "TOEIC",
-        room: "R102",
-        date: "2025-07-10", // Thursday
-      },
-      {
-        id: "3",
-        slotId: "3",
-        className: "A",
-        course: "TOEIC",
-        room: "R103",
-        date: "2025-07-09", // Wednesday
-      },
-    ];
-    setSchedule(fetchedSchedule);
-  }, []);
+    const fetchSchedule = async () => {
+      setLoading(true);
+      setError(null); // Reset lỗi trước mỗi lần fetch
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        setError("No token found. Please log in again.");
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          "http://localhost:9999/api/student/schedule",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log("Schedule API Response:", response.data);
+
+        // Lấy đúng mảng từ thuộc tính 'data' của phản hồi
+        if (response.data && Array.isArray(response.data.data)) {
+          setSchedule(response.data.data);
+          console.log(
+            "Fetched Schedule Data (set to state):",
+            response.data.data
+          ); // Log dữ liệu sau khi set
+        } else {
+          console.warn(
+            "API response.data.data is not an array or is missing 'data' property:",
+            response.data
+          );
+          setError("Invalid schedule data format received from server.");
+          setSchedule([]); // Đảm bảo schedule là mảng rỗng để tránh lỗi
+        }
+      } catch (error) {
+        console.error(
+          "Error fetching schedule:",
+          error.response?.status,
+          error.response?.data
+        );
+        setError(
+          `Failed to fetch schedule. Status: ${
+            error.response?.status
+          }, Message: ${error.response?.data?.message || error.message}`
+        );
+        setSchedule([]); // Đặt lại là mảng rỗng khi có lỗi
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchedule();
+  }, []); // Dependency array rỗng, chỉ fetch 1 lần khi component mount
+
+  if (loading) return <div className="p-6">Loading schedule...</div>;
+  if (error) return <div className="p-6 text-red-600">{error}</div>;
 
   return (
     <div className="p-6 bg-white min-h-screen">
@@ -137,11 +217,14 @@ export default function StudentSchedule() {
               <th className="border border-gray-300 p-2 font-bold">WEEK</th>
               {daysOfWeek.map((day, idx) => {
                 const date = getDateByOffset(selectedWeek.start, idx);
+                const formattedDate = date
+                  ? date.toLocaleDateString("en-GB")
+                  : "";
                 return (
                   <th key={day} className="border border-gray-300 p-2">
                     {day}
                     <br />
-                    {date.toLocaleDateString("en-GB")}
+                    {formattedDate}
                   </th>
                 );
               })}
@@ -156,6 +239,7 @@ export default function StudentSchedule() {
                 {daysOfWeek.map((_, colIdx) => {
                   const date = getDateByOffset(selectedWeek.start, colIdx);
                   const dateStr = formatDate(date);
+                  // Lấy item lịch học dựa trên slotId (rowIdx) và ngày
                   const item = getScheduleItem(`${rowIdx}`, dateStr);
 
                   return (
@@ -169,13 +253,26 @@ export default function StudentSchedule() {
                             <span className="font-bold">Class:</span>{" "}
                             {item.className}
                           </div>
-                          <div>
-                            <span className="font-bold">Course:</span>{" "}
-                            {item.course}
-                          </div>
-                          <div>
-                            <span className="font-bold">Room:</span> {item.room}
-                          </div>
+                          {/* item.courseName và item.room cần có từ backend nếu muốn hiển thị */}
+                          {item.courseName && (
+                            <div>
+                              <span className="font-bold">Course:</span>{" "}
+                              {item.courseName}
+                            </div>
+                          )}
+                          {item.room && (
+                            <div>
+                              <span className="font-bold">Room:</span>{" "}
+                              {item.room}
+                            </div>
+                          )}
+                          {/* Hiển thị thời gian từ slotTime của backend */}
+                          {item.slotTime?.from && item.slotTime?.to && (
+                            <div>
+                              <span className="font-bold">Time:</span>{" "}
+                              {item.slotTime.from} - {item.slotTime.to}
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <span className="text-gray-400 text-xs">–</span>
@@ -188,7 +285,7 @@ export default function StudentSchedule() {
           </tbody>
         </table>
       ) : (
-        <p className="text-gray-500">Loading schedule...</p>
+        <p className="text-gray-500">No week selected or loading...</p>
       )}
     </div>
   );

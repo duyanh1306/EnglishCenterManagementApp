@@ -9,8 +9,8 @@ const {
   deleteCourse,
 } = require("../controllers/courseController");
 
-router.get("/", authAdmin, getAllCourses);
-router.post("/add", authAdmin, createCourse);
+router.get("/", getAllCourses);
+router.post("/add",  createCourse);
 router.put("/update/:id",  updateCourse);
-router.delete("/delete/:id", authAdmin, deleteCourse);
+router.delete("/delete/:id", deleteCourse);
 module.exports = router;

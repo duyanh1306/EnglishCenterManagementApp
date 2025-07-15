@@ -8,8 +8,8 @@ const {
   deleteClass,
 } = require("../controllers/classController");
 
-classRouter.get("/",authAdmin, getAllClasses);
-classRouter.post("/add",authAdmin, createClass);
+classRouter.get("/", getAllClasses);
+classRouter.post("/add", createClass);
 classRouter.put("/update/:id",  updateClass);
 classRouter.delete("/delete/:id", deleteClass);
 

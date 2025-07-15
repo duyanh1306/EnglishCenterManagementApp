@@ -4,19 +4,29 @@ const courseSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Course name is required"],
+      trim: true,
     },
     description: {
       type: String,
-      required: true,
+      required: [true, "Description is required"],
+      trim: true,
     },
     image: {
       type: String,
-      required: true,
+      required: [true, "Image URL is required"],
+      trim: true,
+      // validate: {
+      //   validator: function(v) {
+      //     return /^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(v);
+      //   },
+      //   message: props => `${props.value} is not a valid image URL!`
+      // }
     },
     price: {
       type: Number,
-      required: true,
+      required: [true, "Price is required"],
+      min: [0, "Price must be positive"],
     },
     status: {
       type: String,
@@ -26,7 +36,7 @@ const courseSchema = new mongoose.Schema(
     level: {
       type: String,
       enum: ["beginner", "intermediate", "advanced"],
-      required: true,
+      required: [true, "Level is required"],
     },
   },
   {
@@ -34,4 +44,5 @@ const courseSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Course", courseSchema);
+module.exports =
+  mongoose.models.Course || mongoose.model("Course", courseSchema);

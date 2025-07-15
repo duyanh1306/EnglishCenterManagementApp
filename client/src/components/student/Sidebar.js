@@ -5,9 +5,7 @@ import {
   FaCalendarAlt,
   FaClipboardList,
   FaGraduationCap,
-  FaBookOpen,
-  FaClipboardCheck,
-  FaClock,
+  FaBookOpen
 } from "react-icons/fa";
 
 const Sidebar = () => {
@@ -24,16 +22,6 @@ const Sidebar = () => {
       path: "/student/register-class",
     },
     { name: "Grade", icon: <FaGraduationCap />, path: "/student/grade" },
-    {
-      name: "Attendance",
-      icon: <FaClipboardCheck />,
-      path: "/student/attendance",
-    },
-    {
-      name: "Exam Schedule",
-      icon: <FaClock />,
-      path: "/student/exam-schedule",
-    },
   ];
 
   return (

@@ -1,120 +1,68 @@
-// src/pages/student/Grades.js
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Grades = () => {
   const [gradeList, setGradeList] = useState([]);
-  const [classes, setClasses] = useState([]);
-  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const mockGrades = [
-      {
-        id: "1",
-        studentId: "u4",
-        classId: "c1",
-        score: {
-          listening: 8.5,
-          reading: 7.0,
-          writing: 6.5,
-          speaking: 7.5,
-        },
-        comment: "Làm bài tốt, chú ý phần speaking.",
-      },
-      {
-        id: "2",
-        studentId: "u4",
-        classId: "c2",
-        score: {
-          listening: 9.0,
-          reading: 8.5,
-          writing: 8.0,
-          speaking: 8.5,
-        },
-        comment: "Rất tiến bộ.",
-      },
-      {
-        id: "3",
-        studentId: "u4",
-        classId: "c3",
-        score: {
-          listening: 6.5,
-          reading: 7.0,
-          writing: 7.5,
-          speaking: 7.0,
-        },
-        comment: "Nên cải thiện phần nghe.",
-      },
-      {
-        id: "4",
-        studentId: "u4",
-        classId: "c4",
-        score: {
-          listening: 8.8,
-          reading: 9.0,
-          writing: 9.2,
-          speaking: 8.7,
-        },
-        comment: "Excellent performance!",
-      },
-    ];
-
-    const mockClasses = [
-      {
-        id: "c1",
-        name: "Class A",
-        courseId: "course_001",
-      },
-      {
-        id: "c2",
-        name: "Class B",
-        courseId: "course_002",
-      },
-      {
-        id: "c3",
-        name: "Class C",
-        courseId: "course_003",
-      },
-      {
-        id: "c4",
-        name: "Class D",
-        courseId: "course_004",
-      },
-    ];
-
-    const mockCourses = [
-      { id: "course_001", name: "TOEIC B1" },
-      { id: "course_002", name: "IELTS Speaking" },
-      { id: "course_003", name: "IELTS Writing" },
-      { id: "course_004", name: "Academic English" },
-    ];
-
-    setGradeList(mockGrades);
-    setClasses(mockClasses);
-    setCourses(mockCourses);
-  }, []);
-
-  const handleViewDetails = (classId) => {
+  const viewDetailsHandler = (classId) => {
     navigate(`/student/grade/${classId}`);
   };
 
-  const getClassName = (classId) => {
-    const cls = classes.find((c) => c.id === classId);
-    return cls ? cls.name : classId;
-  };
+  useEffect(() => {
+    const fetchGrades = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const studentId = "687139a34cdde4e0be2848fc";
+        const response = await axios.get(
+          `http://localhost:9999/api/student/${studentId}/grades`
+        );
+        
+        // If API response is { data: [...] }, use response.data.data
+        // If API response is just [...], use response.data
+        const grades = Array.isArray(response.data)
+          ? response.data
+          : Array.isArray(response.data?.data)
+          ? response.data.data
+          : [];
+        
+        setGradeList(grades);
+      } catch (err) {
+        console.error("Error fetching grades:", err);
+        setError("Failed to load grades.");
+        setGradeList([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const getCourseName = (classId) => {
-    const cls = classes.find((c) => c.id === classId);
-    const course = cls && courses.find((c) => c.id === cls.courseId);
-    return course ? course.name : "Unknown";
-  };
+    fetchGrades();
+  }, []);
 
-  const getAverageScore = (scoreObj) => {
-    const values = Object.values(scoreObj);
-    const total = values.reduce((sum, s) => sum + s, 0);
-    return (total / values.length).toFixed(2);
-  };
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6 text-blue-800">My Grades</h1>
+        <div className="text-center py-10">Loading grades...</div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6 text-blue-800">My Grades</h1>
+        <div className="text-center py-10 text-red-500">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
@@ -124,42 +72,31 @@ const Grades = () => {
           <tr>
             <th className="p-2 border text-left">Class</th>
             <th className="p-2 border text-left">Course</th>
-            <th className="p-2 border text-left">Grades</th>
-            <th className="p-2 border text-left">Comment</th>
             <th className="p-2 border text-left">Action</th>
           </tr>
         </thead>
         <tbody>
-          {gradeList.map((grade) => (
-            <tr key={grade.id} className="hover:bg-gray-50">
-              <td className="p-2 border text-left">
-                {getClassName(grade.classId)}
-              </td>
-              <td className="p-2 border text-left">
-                {getCourseName(grade.classId)}
-              </td>
-              <td className="p-2 border text-left text-blue-600 font-semibold">
-                {getAverageScore(grade.score)}
-              </td>
-              <td className="p-2 border text-left italic text-gray-600">
-                {grade.comment || "-"}
-              </td>
-              <td className="p-2 border text-left">
-                <button
-                  onClick={() => handleViewDetails(grade.classId)}
-                  className="text-blue-600 hover:underline text-sm"
-                >
-                  View Details
-                </button>
-              </td>
-            </tr>
-          ))}
-          {gradeList.length === 0 && (
+          {Array.isArray(gradeList) && gradeList.length === 0 ? (
             <tr>
-              <td colSpan="5" className="text-center p-4 text-gray-500">
+              <td colSpan="3" className="text-center p-4 text-gray-500">
                 No grades available.
               </td>
             </tr>
+          ) : (
+            (Array.isArray(gradeList) ? gradeList : []).map((grade, idx) => (
+              <tr key={grade._id || idx} className="hover:bg-gray-50">
+                <td className="p-2 border text-left">{grade.className}</td>
+                <td className="p-2 border text-left">{grade.courseName}</td>
+                <td className="p-2 border text-left">
+                  <button
+                    className="text-blue-600 hover:underline text-sm"
+                    onClick={() => viewDetailsHandler(grade.classId)}
+                  >
+                    View Details
+                  </button>
+                </td>
+              </tr>
+            ))
           )}
         </tbody>
       </table>
