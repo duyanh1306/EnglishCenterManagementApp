@@ -104,10 +104,14 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
   const handleUpdate = async () => {
     if (!validate()) return;
     try {
+      const token = localStorage.getItem("token");
       const payload = { ...form, capacity: +form.capacity };
       const { data } = await axios.put(
         `http://localhost:9999/api/classes/update/${classData._id}`,
-        payload
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       if (data.success) {
         onUpdate(data.data);
