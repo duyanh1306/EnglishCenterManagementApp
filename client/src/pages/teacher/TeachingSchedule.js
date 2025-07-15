@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {getDecodedToken} from "../../middlewares/auth"
 
 export default function TeachingSchedule() {
     const [schedule, setSchedule] = useState([]);
@@ -59,9 +58,18 @@ export default function TeachingSchedule() {
         // Fetch schedule and slots
         const fetchSchedule = async () => {
             try {
-                const decoded = getDecodedToken();
-                const teacherId = decoded?.id || "";
-                const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/schedules`);
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    console.error("No token found in localStorage");
+                    return;
+                }
+                console.log("Fetching schedule with token:", token);
+                const teacherId = "687139a34cdde4e0be2848f5";
+                const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/schedules`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
                 if (response.data && response.data.success && Array.isArray(response.data.data)) {
                     setSchedule(response.data.data);

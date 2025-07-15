@@ -11,7 +11,7 @@ const GradeDetails = () => {
   useEffect(() => {
     const fetchGradeDetails = async () => {
       try {
-        const studentId = "687139a34cdde4e0be2848f9";
+        const studentId = "687139a34cdde4e0be2848f7";
         const response = await axios.get(
           `http://localhost:9999/api/student/${studentId}/grades/class/${classId}` // Use classId from URL params
         );

@@ -114,64 +114,71 @@ const deleteSchedule = async (req, res) => {
 
 const getStudentSchedule = async (req, res) => {
   try {
-    const mongoUserId = req.user?.id;
-
-    if (!mongoose.Types.ObjectId.isValid(mongoUserId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid user ID",
+    const { studentId } = req.params;
+    const schedules = await Schedule.find()
+      .populate('slotId', 'from to')
+      .populate('roomId', 'name location')
+      .populate({
+        path: 'classId',
+        select: 'name',
+        populate: [
+          {
+            path: 'courseId',
+            select: 'name'
+          },
+          {
+            path: 'teachers',
+            select: '_id fullName'
+          },
+          {
+            path: 'students',
+            select: '_id fullName'
+          }
+        ]
       });
-    }
 
-    const user = await User.findById(mongoUserId).lean();
-    if (!user) {
+    if (!schedules) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Schedule not found"
       });
     }
 
-    const allClasses = await Class.find().lean();
-    const enrolledClasses = allClasses.filter((cls) =>
-      cls.students?.some((s) => s.toString() === mongoUserId)
-    );
-
-    if (enrolledClasses.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No classes found for this student",
-      });
-    }
-
-    const enrolledClassIds = enrolledClasses.map((cls) => cls._id.toString());
-
-    const [allSchedules, slots, rooms] = await Promise.all([
-      Schedule.find().lean(),
-      Slot.find().lean(),
-    ]);
-
-    const scheduleFiltered = allSchedules.filter((s) =>
-      enrolledClassIds.includes(s.classId.toString())
-    );
-
-    const slotMap = Object.fromEntries(slots.map((slot) => [slot._id, slot]));
-    const classMap = Object.fromEntries(
-      enrolledClasses.map((cls) => [cls._id.toString(), cls])
-    );
-
-    const enrichedSchedule = scheduleFiltered.map((s) => ({
-      date: s.date,
-      meeting: s.meeting,
-      slotTime: slotMap[s.slotId]
-        ? { from: slotMap[s.slotId].from, to: slotMap[s.slotId].to }
-        : null,
-      className: classMap[s.classId.toString()]?.name || "",
+    const filteredSchedules = schedules.filter(item =>
+      item.classId?.students?.some(t => t._id.toString() === studentId)
+    ).map(item => ({
+      id: item._id,
+      slot: {
+        id: item.slotId._id,
+        from: item.slotId.from,
+        to: item.slotId.to
+      },
+      room: {
+        id: item.roomId._id,
+        name: item.roomId.name,
+        location: item.roomId.location
+      },
+      class: {
+        id: item.classId._id,
+        name: item.classId.name,
+        course: item.classId.courseId.name,
+        teachers: item.classId.teachers.map(teacher => ({
+          id: teacher._id,
+          name: teacher.fullName
+        })),
+        students: item.classId.students.map(student => ({
+          id: student._id,
+          name: student.fullName
+        }))
+      },
+      // Format date as YYYY-MM-DD
+      date: item.date.toISOString().split('T')[0]
     }));
 
     res.status(200).json({
       success: true,
-      message: "Student schedule retrieved successfully",
-      data: enrichedSchedule,
+      message: "Schedule retrieved successfully",
+      data: filteredSchedules
     });
   } catch (error) {
     console.error("Error fetching schedule:", error);

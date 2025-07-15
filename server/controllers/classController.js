@@ -1,7 +1,6 @@
 const Class = require("../models/Class");
 const Schedule = require("../models/Schedule");
 const User = require("../models/User");
-require("../models/course");
 const mongoose = require("mongoose");
 
 // GET /api/classes
@@ -155,41 +154,30 @@ const deleteClass = async (req, res) => {
 
 const getAllClassesByUserId = async (req, res) => {
   try {
-    const userId = req.user?.id;
+    const { studentId } = req.params;
 
-    const classes = await Class.find({ students: userId })
+    const classes = await Class.find()
       .populate("courseId", "name")
       .populate("teachers", "fullName")
+      .populate("schedule.slot", "from to")
       .lean();
 
-    // Lấy schedule cho tất cả các lớp trong danh sách
-    const classIds = classes.map((cls) => cls._id);
-    const allSchedules = await Schedule.find({ classId: { $in: classIds } })
-      .populate("slotId", "from to")
-      .lean();
-
-    // Gom lịch học theo classId
-    const schedulesByClass = {};
-    allSchedules.forEach((s) => {
-      const key = s.classId.toString();
-      if (!schedulesByClass[key]) schedulesByClass[key] = [];
-      schedulesByClass[key].push({
-        date: s.date,
-        from: s.slotId?.from,
-        to: s.slotId?.to,
-      });
-    });
-
-    // Gán schedule vào từng class
-    const classesWithSchedule = classes.map((cls) => ({
-      ...cls,
-      schedule: schedulesByClass[cls._id.toString()] || [],
+    const formattedClasses = classes.filter(cls =>
+      cls.students.some(s => s.toString() === studentId)
+    ).map((cls) => ({
+      _id: cls._id,
+      name: cls.name,
+      courseName: cls.courseId?.name || "N/A",
+      teachers: cls.teachers || [],
+      capacity: cls.capacity,
+      status: cls.status || "ongoing",
+      schedule: cls.schedule || []
     }));
 
     res.status(200).json({
       success: true,
       message: "Classes retrieved successfully",
-      data: classesWithSchedule,
+      data: formattedClasses,
     });
   } catch (error) {
     console.error("getAllClassesByUserId error:", error);
@@ -202,9 +190,9 @@ const getAllClassesByUserId = async (req, res) => {
 };
 
 const getClassesByUserId = async (req, res) => {
-  const { id } = req.params;
+  const { classId } = req.params;
   try {
-    const classData = await Class.findById(id)
+    const classData = await Class.findById(classId)
       .populate("teachers", "fullName")
       .populate({
         path: "schedule.slot",

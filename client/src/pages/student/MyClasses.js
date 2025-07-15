@@ -22,7 +22,7 @@ const MyClasses = () => {
 
       try {
         const response = await axios.get(
-          "http://localhost:9999/api/student/my-classes",
+          "http://localhost:9999/api/student/687139a34cdde4e0be2848f7/my-classes",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -62,6 +62,9 @@ const MyClasses = () => {
   }, []);
 
   const mapStatusForFilter = (status) => {
+    if (!status) {
+      return "ongoing"; // Default status if undefined
+    }
     if (status.toLowerCase() === "finished") {
       return "completed";
     }
@@ -132,7 +135,7 @@ const MyClasses = () => {
           <tbody>
             {filteredClasses.map((cls) => {
               const displayStatus =
-                cls.status === "finished" ? "Completed" : cls.status;
+                cls.status === "finished" ? "Completed" : (cls.status || "Ongoing");
 
               return (
                 <tr
@@ -154,9 +157,9 @@ const MyClasses = () => {
                       <div>
                         {cls.schedule.map((s, index) => (
                           <div key={index}>
-                            {new Date(s.date).toLocaleDateString()}:{" "}
-                            {s.from && s.to
-                              ? `${s.from} - ${s.to}`
+                            {s.weekday}: {" "}
+                            {s.slot?.from && s.slot?.to
+                              ? `${s.slot.from} - ${s.slot.to}`
                               : "Time N/A"}
                           </div>
                         ))}

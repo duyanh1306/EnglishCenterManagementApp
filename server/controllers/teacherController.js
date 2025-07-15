@@ -247,7 +247,7 @@ const getGradesOfAStudent = async (req, res) => {
 };
 
 const addGradeToAStudent = async (req, res) => {
-  try { 
+  try {
     const { classId, studentId } = req.params;
     const { score, comment } = req.body;
 

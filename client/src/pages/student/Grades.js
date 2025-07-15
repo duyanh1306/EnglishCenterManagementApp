@@ -18,7 +18,7 @@ const Grades = () => {
         setLoading(true);
         setError(null);
         
-        const studentId = "687139a34cdde4e0be2848fc";
+        const studentId = "687139a34cdde4e0be2848f7";
         const response = await axios.get(
           `http://localhost:9999/api/student/${studentId}/grades`
         );

@@ -13,7 +13,7 @@ const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { name: "Home", icon: <FaHome />, path: "/student/dashboard" },
+    { name: "Student Panel", icon: <FaHome />, path: "/student/dashboard" },
     { name: "My Classes", icon: <FaBookOpen />, path: "/student/my-classes" },
     { name: "Schedule", icon: <FaCalendarAlt />, path: "/student/schedule" },
     {
@@ -26,7 +26,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`bg-blue-800 text-white h-screen p-4 flex flex-col transition-all duration-300 ${
+      className={`bg-blue-900 text-white h-screen p-4 flex flex-col transition-all duration-300 ${
         isOpen ? "w-60" : "w-16"
       } md:w-60`}
     >

@@ -14,13 +14,13 @@ const {
   unenrollFromClass,
 } = require("../controllers/classController");
 
-router.get("/schedule", jwtAuth, getStudentSchedule);
-router.get("/:studentId/grades", jwtAuth, getAllGradesOfAStudentInAllClasses);
-router.get("/:studentId/grades/class/:classId", jwtAuth, getGradesOfAStudent);
-router.get("/my-classes", jwtAuth, getAllClassesByUserId);
-router.get("/my-classes/:id", jwtAuth, getClassesByUserId);
-router.get("/:studentId/registerable-classes", jwtAuth, getRegisterableClasses);
+router.get("/:studentId/schedule",  getStudentSchedule);
+router.get("/:studentId/grades",  getAllGradesOfAStudentInAllClasses);
+router.get("/:studentId/grades/class/:classId",  getGradesOfAStudent);
+router.get("/:studentId/my-classes",  getAllClassesByUserId);
+router.get("/my-classes/:classId",  getClassesByUserId);
+router.get("/:studentId/registerable-classes",  getRegisterableClasses);
 
-router.post("/register-class/:classid", jwtAuth, enrollInClass);
-router.delete("/register-class/:classid", jwtAuth, unenrollFromClass);
+router.post("/register-class/:classid",  enrollInClass);
+router.delete("/register-class/:classid",  unenrollFromClass);
 module.exports = router;

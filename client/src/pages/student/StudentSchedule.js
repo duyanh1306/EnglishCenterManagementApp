@@ -73,7 +73,7 @@ export default function StudentSchedule() {
   };
 
   // Hàm này tìm kiếm trong mảng 'schedule'
-  // Bây giờ nó sẽ tìm dựa trên startTime và date từ dữ liệu backend
+  // Bây giờ nó sẽ tìm dựa trên slot.from và date từ dữ liệu backend
   const getScheduleItem = (slotId, dateStr) => {
     if (!Array.isArray(schedule)) {
       console.error(
@@ -91,21 +91,21 @@ export default function StudentSchedule() {
     }
 
     // Log các giá trị tìm kiếm để debug
-    // console.log(`--- Searching for item ---`);
-    // console.log(`  Target Date (dateStr): ${dateStr}`);
-    // console.log(`  Target Start Time (expectedStartTime): ${expectedStartTime}`);
-    // console.log(`  Current Schedule Array Length: ${schedule.length}`);
+    console.log(`--- Searching for item ---`);
+    console.log(`  Target Date (dateStr): ${dateStr}`);
+    console.log(`  Target Start Time (expectedStartTime): ${expectedStartTime}`);
+    console.log(`  Current Schedule Array Length: ${schedule.length}`);
 
     return schedule.find((item) => {
       // Chắc chắn rằng item.date được định dạng YYYY-MM-DD từ ISO string của backend
       const itemDateFormatted = item.date ? item.date.split("T")[0] : "";
 
-      // Log từng item để xem có khớp không (có thể gây ra nhiều log)
-      // console.log(`    Checking item: date=${item.date} (formatted=${itemDateFormatted}), from=${item.slotTime?.from}`);
+      // Log từng item để xem có khớp không
+      console.log(`    Checking item: date=${item.date} (formatted=${itemDateFormatted}), from=${item.slot?.from}`);
 
       return (
-        item.slotTime && // Đảm bảo item.slotTime tồn tại
-        item.slotTime.from === expectedStartTime && // So sánh với thời gian bắt đầu
+        item.slot && // Đảm bảo item.slot tồn tại (thay vì item.slotTime)
+        item.slot.from === expectedStartTime && // So sánh với thời gian bắt đầu
         itemDateFormatted === dateStr // So sánh chính xác chuỗi ngày tháng đã format
       );
     });
@@ -115,8 +115,14 @@ export default function StudentSchedule() {
   useEffect(() => {
     const newWeeks = generateWeeksOfYear(year);
     setWeeks(newWeeks);
-    // Chọn tuần đầu tiên của năm đã chọn làm mặc định
-    setSelectedWeek(newWeeks.length > 0 ? newWeeks[0] : null);
+    // Tìm tuần hiện tại thay vì chọn tuần đầu tiên
+    const currentDate = new Date();
+    const currentWeek = newWeeks.find(week => 
+      currentDate >= week.start && currentDate <= week.end
+    );
+    setSelectedWeek(currentWeek || (newWeeks.length > 0 ? newWeeks[0] : null));
+    console.log("Generated weeks:", newWeeks);
+    console.log("Selected week:", currentWeek || newWeeks[0]);
   }, [year]);
 
   // Effect để lấy dữ liệu lịch học
@@ -134,7 +140,7 @@ export default function StudentSchedule() {
 
       try {
         const response = await axios.get(
-          "http://localhost:9999/api/student/schedule",
+          "http://localhost:9999/api/student/687139a34cdde4e0be2848f7/schedule",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -242,6 +248,14 @@ export default function StudentSchedule() {
                   // Lấy item lịch học dựa trên slotId (rowIdx) và ngày
                   const item = getScheduleItem(`${rowIdx}`, dateStr);
 
+                  // Debug log để kiểm tra
+                  if (rowIdx === 0 && colIdx === 0) {
+                    console.log(`Table cell debug - Row ${rowIdx}, Col ${colIdx}:`);
+                    console.log(`  Date object:`, date);
+                    console.log(`  Date string (dateStr):`, dateStr);
+                    console.log(`  Found item:`, item);
+                  }
+
                   return (
                     <td
                       key={colIdx}
@@ -251,26 +265,26 @@ export default function StudentSchedule() {
                         <div className="space-y-1">
                           <div>
                             <span className="font-bold">Class:</span>{" "}
-                            {item.className}
+                            {item.class?.name}
                           </div>
-                          {/* item.courseName và item.room cần có từ backend nếu muốn hiển thị */}
-                          {item.courseName && (
+                          {/* item.class.course từ backend */}
+                          {item.class?.course && (
                             <div>
                               <span className="font-bold">Course:</span>{" "}
-                              {item.courseName}
+                              {item.class.course}
                             </div>
                           )}
-                          {item.room && (
+                          {item.room?.name && (
                             <div>
                               <span className="font-bold">Room:</span>{" "}
-                              {item.room}
+                              {item.room.name}
                             </div>
                           )}
-                          {/* Hiển thị thời gian từ slotTime của backend */}
-                          {item.slotTime?.from && item.slotTime?.to && (
+                          {/* Hiển thị thời gian từ slot của backend */}
+                          {item.slot?.from && item.slot?.to && (
                             <div>
                               <span className="font-bold">Time:</span>{" "}
-                              {item.slotTime.from} - {item.slotTime.to}
+                              {item.slot.from} - {item.slot.to}
                             </div>
                           )}
                         </div>
