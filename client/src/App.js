@@ -28,14 +28,13 @@ import Dashboard from "./pages/admin/DashBoard";
 import CourseManagement from "./pages/admin/CourseManagement";
 import ClassesManagement from "./pages/admin/ClassesManagement";
 import UserManagement from "./pages/admin/UserManagement";
-// import LoginPage from "./Login/Login";
-// Common
+import LoginPage from "./Login/Login";
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route path="/login" element={<LoginPage />} /> */}
+        <Route path="/login" element={<LoginPage />} />
         {/* Teacher Layout */}
         <Route path="/teacher" element={<TeacherLayout />}>
           <Route path="courses" element={<Courses />} />

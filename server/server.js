@@ -1,18 +1,31 @@
 const express = require("express");
-const cors = require("cors");
 require("dotenv").config();
 const app = express();
+
+const cors = require("cors");
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+
 const connectDB = require("./connect/database");
 const classRoute = require("./routes/classRoute");
 const userRoute = require("./routes/userRoute");
 const roleRoute = require("./routes/roleRoute");
+const studentRoute = require("./routes/studentRoute");
 
-app.use(cors());
 app.use(express.json());
 app.use("/api/classes", classRoute);
 app.use("/api/users", userRoute);
 app.use("/api/roles", roleRoute);
-app.use("/api/teacher", require("./routes/teacherRoute"));
+
+app.use("/api/schedule", require("./routes/scheduleRoute"));
+
+app.use("/api/student", studentRoute);
+
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to ExpressJS" });
 });

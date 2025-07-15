@@ -13,12 +13,8 @@ const {
   enrollInClass,
   unenrollFromClass,
 } = require("../controllers/classController");
-const {
-  getAttendanceByClassId,
-  getAllAttendanceOfStudent,
-} = require("../controllers/attendanceController");
 
-router.get("/schedule/", jwtAuth, getStudentSchedule);
+router.get("/schedule", jwtAuth, getStudentSchedule);
 router.get("/:studentId/grades", getAllGradesOfAStudentInAllClasses);
 router.get("/:studentId/grades/class/:classId", getGradesOfAStudent);
 router.get("/my-classes", jwtAuth, getAllClassesByUserId);
