@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
 
 const pageTitles = {
   "/dashboard": "Home",
@@ -20,10 +19,14 @@ const pageTitles = {
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
   const pageTitle = pageTitles[currentPath] || "Student Portal";
 
-  const [user, setUser] = useState({ name: "John Doe" });
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   return (
     <nav className="bg-white shadow px-6 py-3 flex justify-between items-center relative">
@@ -31,14 +34,17 @@ const Navbar = () => {
       <div className="text-gray-600 text-base font-semibold">{pageTitle}</div>
 
       <div className="flex items-center gap-6">
-        {/* User */}
+        {/* Static user info */}
         <div className="flex items-center gap-2 text-gray-700 font-medium">
           <FaUserCircle className="text-2xl" />
-          <span>{user.name}</span>
+          <span>Student</span>
         </div>
 
         {/* Logout */}
-        <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+        <button
+          onClick={handleLogout}
+          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+        >
           Logout
         </button>
       </div>

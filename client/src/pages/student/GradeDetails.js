@@ -1,53 +1,74 @@
-// src/pages/student/GradeDetails.js
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const GradeDetails = () => {
   const { classId } = useParams();
   const [gradeDetails, setGradeDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Mock API response theo classId
-    const mockDetails = {
-      c1: {
-        className: "TOEIC B1",
-        skills: [
-          { name: "Listening", score: 8.5, comment: "Good" },
-          { name: "Speaking", score: 7.5, comment: "Improve pronunciation" },
-          { name: "Reading", score: 9.0, comment: "Excellent" },
-          { name: "Writing", score: 8.2, comment: "" },
-        ],
-      },
-      c2: {
-        className: "IELTS Prep",
-        skills: [
-          { name: "Listening", score: 8.0, comment: "Solid effort" },
-          { name: "Speaking", score: 8.5, comment: "Very clear" },
-          { name: "Reading", score: 8.9, comment: "" },
-          { name: "Writing", score: 8.8, comment: "Well-structured" },
-        ],
-      },
+    const fetchGradeDetails = async () => {
+      try {
+        const studentId = "687139a34cdde4e0be2848f9";
+        const response = await axios.get(
+          `http://localhost:9999/api/student/${studentId}/grades/class/${classId}` // Use classId from URL params
+        );
+        // Transform API response to match UI needs
+        const dataArr = response.data?.data;
+        if (Array.isArray(dataArr) && dataArr.length > 0) {
+          const grade = dataArr[0];
+          const skills = Object.entries(grade.score || {}).map(
+            ([name, score]) => ({
+              name,
+              score,
+            })
+          );
+          setGradeDetails({
+            className: grade.classId?.name || "",
+            courseName: grade.classId?.courseId?.name || "",
+            skills,
+            comment: grade.comment || [],
+          });
+        } else {
+          setGradeDetails(null);
+        }
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching grade details:", err);
+        setError("Failed to load grade details.");
+        setLoading(false);
+      }
     };
 
-    setGradeDetails(mockDetails[classId] || null);
+    fetchGradeDetails();
   }, [classId]);
 
+  if (loading) {
+    return <div className="p-6 text-gray-500">Loading grade details...</div>;
+  }
+  if (error) {
+    return <div className="p-6 text-red-500">{error}</div>;
+  }
   if (!gradeDetails) {
-    return <div className="p-6 text-gray-600">No grade details found.</div>;
+    return <div className="p-6 text-gray-500">No grade details found.</div>;
   }
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-blue-800">
-        Grade Details - {gradeDetails.className}
+        Grade Details - Class: {gradeDetails.className}
       </h1>
+      <h2 className="text-lg mb-2 text-gray-700">
+        Course: {gradeDetails.courseName}
+      </h2>
 
       <table className="w-full border text-sm">
         <thead className="bg-gray-100">
           <tr>
             <th className="border p-2">Skill</th>
             <th className="border p-2">Grades</th>
-            <th className="border p-2">Comment</th>
           </tr>
         </thead>
         <tbody>
@@ -55,13 +76,14 @@ const GradeDetails = () => {
             <tr key={index} className="hover:bg-gray-50">
               <td className="border p-2">{skill.name}</td>
               <td className="border p-2">{skill.score}</td>
-              <td className="border p-2 italic">
-                {skill.comment || "No comment"}
-              </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <div className="mt-4">
+        <h2 className="text-lg font-semibold">Comments</h2>
+        {gradeDetails.comment}
+      </div>
     </div>
   );
 };
