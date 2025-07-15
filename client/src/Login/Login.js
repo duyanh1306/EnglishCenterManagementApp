@@ -22,18 +22,18 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     // Client-side validation
     if (!formData.userName.trim()) {
       setError('Please enter your username');
       return;
     }
-    
+
     if (!formData.password) {
       setError('Please enter your password');
       return;
     }
-    
+
     setIsLoading(true);
 
     try {
@@ -57,15 +57,15 @@ const LoginPage = () => {
       // If login is successful
       if (response.ok && data.message === 'Login successfully') {
         // Store user data in localStorage
-        localStorage.setItem('token', JSON.stringify(data.accessToken));
-        
+        localStorage.setItem('token', data.accessToken);
+
         // Show success message
         setError('Login successful! Redirecting...');
-        
+
         // Redirect based on user role after a short delay
         setTimeout(() => {
 
-            navigate('/');
+          navigate('/');
 
         }, 1000);
       } else {
@@ -87,8 +87,8 @@ const LoginPage = () => {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <Link 
-            to="/register" 
+          <Link
+            to="/register"
             className="font-medium text-indigo-600 hover:text-indigo-500"
           >
             create a new account
@@ -112,7 +112,7 @@ const LoginPage = () => {
               </div>
             </div>
           )}
-          
+
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="userName" className="block text-sm font-medium text-gray-700">
@@ -189,8 +189,6 @@ const LoginPage = () => {
               </button>
             </div>
           </form>
-
-
         </div>
       </div>
     </div>
