@@ -1,62 +1,84 @@
-import React from "react";
-import {
-  Users,
-  GraduationCap,
-  UserCheck,
-  UserPlus,
-  BookOpen,
-  CalendarCheck,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Users, UserPlus, BookOpen, CalendarCheck } from "lucide-react";
 import AdminLayout from "../../layouts/AdminLayout";
 import { useNavigate } from "react-router-dom";
 
-const stats = [
-  {
-    label: "Total Users",
-    value: 1,
-    color: "bg-blue-600",
-    icon: <Users className="h-6 w-6 text-white" />,
-  },
-  {
-    label: "Teachers",
-    value: 0,
-    color: "bg-green-600",
-    icon: <UserCheck className="h-6 w-6 text-white" />,
-  },
-  {
-    label: "Students",
-    value: 0,
-    color: "bg-purple-600",
-    icon: <GraduationCap className="h-6 w-6 text-white" />,
-  },
-  {
-    label: "Parents",
-    value: 0,
-    color: "bg-orange-600",
-    icon: <Users className="h-6 w-6 text-white" />,
-  },
-];
+export default function Dashboard() {
+  const nav = useNavigate();
 
-const actions = [
-  {
-    label: "Add New User",
-    icon: <UserPlus className="h-5 w-5 text-blue-600" />,
-    link: "/admin/users",
-  },
-  {
-    label: "Create Course",
-    icon: <BookOpen className="h-5 w-5 text-blue-600" />,
-    link: "/admin/courses",
-  },
-  {
-    label: "Schedule Class",
-    icon: <CalendarCheck className="h-5 w-5 text-blue-600" />,
-    link: "/admin/classes",
-  },
-];
 
-const Dashboard = () => {
-  const navigate = useNavigate();
+  const [totals, setTotals] = useState({
+    users: 0,
+    teachers: 0,
+    students: 0,
+    courses: 0,
+    classes: 0,
+  });
+
+  useEffect(() => {
+    (async () => {
+      try {
+        // song song 3 request
+        const [uRes, cRes, clRes] = await Promise.all([
+          axios.get("http://localhost:9999/api/users"),
+          axios.get("http://localhost:9999/api/courses"),
+          axios.get("http://localhost:9999/api/classes"),
+        ]);
+
+        const users = uRes.data.data || [];
+
+        setTotals({
+          users: users.length,
+          courses: cRes.data.data.length,
+          classes: clRes.data.data.length,
+        });
+      } catch (err) {
+        console.error("Dashboard fetch failed", err);
+      }
+    })();
+  }, []);
+
+  /* ---------- cards & quick actions ---------- */
+  const stats = [
+    {
+      label: "Total Users",
+      value: totals.users,
+      color: "bg-blue-600",
+      icon: <Users className="h-6 w-6 text-white" />,
+    },
+    {
+      label: "Courses",
+      value: totals.courses,
+      color: "bg-orange-600",
+      icon: <BookOpen className="h-6 w-6 text-white" />,
+    },
+    {
+      label: "Classes",
+      value: totals.classes,
+      color: "bg-teal-600",
+      icon: <CalendarCheck className="h-6 w-6 text-white" />,
+    },
+  ];
+
+  const actions = [
+    {
+      label: "Add New User",
+      icon: <UserPlus className="h-5 w-5 text-blue-600" />,
+      link: "/admin/users",
+    },
+    {
+      label: "Create Course",
+      icon: <BookOpen className="h-5 w-5 text-blue-600" />,
+      link: "/admin/courses",
+    },
+    {
+      label: "Schedule Class",
+      icon: <CalendarCheck className="h-5 w-5 text-blue-600" />,
+      link: "/admin/classes",
+    },
+  ];
+
   return (
     <AdminLayout>
       <div className="px-6 py-8">
@@ -65,45 +87,41 @@ const Dashboard = () => {
           Overview of your learning management system
         </p>
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {stats.map((stat, index) => (
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          {stats.map((s) => (
             <div
-              key={index}
-              className={`rounded-lg p-4 flex items-center justify-between text-white shadow ${stat.color}`}
+              key={s.label}
+              className={`rounded-lg p-4 flex items-center justify-between shadow ${s.color}`}
             >
               <div>
-                <p className="text-sm">{stat.label}</p>
-                <p className="text-2xl font-bold">{stat.value}</p>
+                <p className="text-sm text-white/80">{s.label}</p>
+                <p className="text-2xl font-bold text-white">{s.value}</p>
               </div>
               <div className="bg-white bg-opacity-20 p-2 rounded-full">
-                {stat.icon}
+                {s.icon}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Quick Actions Section */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow border">
-            <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-            <ul className="space-y-4">
-              {actions.map((action, index) => (
-                <li
-                  key={index}
-                  className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition cursor-pointer"
-                  onClick={() => navigate(action.link)}
-                >
-                  <span className="mr-3">{action.icon}</span>
-                  <span className="text-sm font-medium">{action.label}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* Quick actions */}
+        <div className="bg-white p-6 rounded-lg shadow border max-w-xl">
+          <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+          <ul className="space-y-4">
+            {actions.map((a) => (
+              <li
+                key={a.label}
+                className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                onClick={() => nav(a.link)}
+              >
+                <span className="mr-3">{a.icon}</span>
+                <span className="text-sm font-medium">{a.label}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </AdminLayout>
   );
-};
-
-export default Dashboard;
+}

@@ -1,15 +1,12 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 
-/**
- * Props:
- *  - classData : full class doc (populated courseId.name, teachers, students)
- *  - onClose   : () => void
- */
 export default function ShowClassDetailModal({ classData, onClose }) {
   if (!classData) return null;
 
   const fmt = (d) => new Date(d).toLocaleDateString();
+
+  const capacityDisplay = `${classData.students.length}/${classData.capacity}`;
 
   return (
     <AnimatePresence>
@@ -42,7 +39,7 @@ export default function ShowClassDetailModal({ classData, onClose }) {
             <Detail label="Course" value={classData.courseId?.name || "-"} />
             <Detail label="Start Date" value={fmt(classData.startDate)} />
             <Detail label="End Date" value={fmt(classData.endDate)} />
-            <Detail label="Capacity" value={classData.capacity} />
+            <Detail label="Capacity" value={capacityDisplay} />
             <Detail label="Status" value={classData.status} />
           </div>
 
