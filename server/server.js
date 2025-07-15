@@ -23,7 +23,7 @@ app.use("/api/users", userRoute);
 app.use("/api/roles", roleRoute);
 
 app.use("/api/schedule", require("./routes/scheduleRoute"));
-
+app.use("/api/teacher", require("./routes/teacherRoute"));
 app.use("/api/student", studentRoute);
 
 app.get("/", (req, res) => {

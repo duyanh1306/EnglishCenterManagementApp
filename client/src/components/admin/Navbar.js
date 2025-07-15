@@ -1,5 +1,5 @@
 import React from "react";
-import { Bell, Menu } from "lucide-react"; // Lucide: bộ icon Tailwind-friendly
+import { Menu } from "lucide-react"; // Lucide: bộ icon Tailwind-friendly
 
 const Navbar = ({
   user = { name: "John Doe", avatarUrl: "" },

@@ -5,9 +5,7 @@ import {
   FaCalendarAlt,
   FaClipboardList,
   FaGraduationCap,
-  FaBookOpen,
-  FaClipboardCheck,
-  FaClock,
+  FaBookOpen
 } from "react-icons/fa";
 
 const Sidebar = () => {

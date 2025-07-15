@@ -19,6 +19,7 @@ const LoginPage = () => {
     }));
   };
 
+  // Hàm xử lý submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");

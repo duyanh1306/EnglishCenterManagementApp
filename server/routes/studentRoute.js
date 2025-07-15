@@ -15,11 +15,11 @@ const {
 } = require("../controllers/classController");
 
 router.get("/schedule", jwtAuth, getStudentSchedule);
-router.get("/:studentId/grades", getAllGradesOfAStudentInAllClasses);
-router.get("/:studentId/grades/class/:classId", getGradesOfAStudent);
+router.get("/:studentId/grades", jwtAuth, getAllGradesOfAStudentInAllClasses);
+router.get("/:studentId/grades/class/:classId", jwtAuth, getGradesOfAStudent);
 router.get("/my-classes", jwtAuth, getAllClassesByUserId);
 router.get("/my-classes/:id", jwtAuth, getClassesByUserId);
-router.get("/:studentId/registerable-classes", getRegisterableClasses); // chua co api co dinh
+router.get("/:studentId/registerable-classes", jwtAuth, getRegisterableClasses);
 
 router.post("/register-class/:classid", jwtAuth, enrollInClass);
 router.delete("/register-class/:classid", jwtAuth, unenrollFromClass);

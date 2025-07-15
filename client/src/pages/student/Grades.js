@@ -15,10 +15,14 @@ const Grades = () => {
   useEffect(() => {
     const fetchGrades = async () => {
       try {
+        setLoading(true);
+        setError(null);
+        
         const studentId = "687139a34cdde4e0be2848fc";
         const response = await axios.get(
           `http://localhost:9999/api/student/${studentId}/grades`
         );
+        
         // If API response is { data: [...] }, use response.data.data
         // If API response is just [...], use response.data
         const grades = Array.isArray(response.data)
@@ -26,17 +30,39 @@ const Grades = () => {
           : Array.isArray(response.data?.data)
           ? response.data.data
           : [];
+        
         setGradeList(grades);
-        setLoading(false);
       } catch (err) {
         console.error("Error fetching grades:", err);
         setError("Failed to load grades.");
+        setGradeList([]);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchGrades();
   }, []);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6 text-blue-800">My Grades</h1>
+        <div className="text-center py-10">Loading grades...</div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6 text-blue-800">My Grades</h1>
+        <div className="text-center py-10 text-red-500">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
@@ -52,7 +78,7 @@ const Grades = () => {
         <tbody>
           {Array.isArray(gradeList) && gradeList.length === 0 ? (
             <tr>
-              <td colSpan="5" className="text-center p-4 text-gray-500">
+              <td colSpan="3" className="text-center p-4 text-gray-500">
                 No grades available.
               </td>
             </tr>
@@ -64,7 +90,7 @@ const Grades = () => {
                 <td className="p-2 border text-left">
                   <button
                     className="text-blue-600 hover:underline text-sm"
-                    onClick={(e) => viewDetailsHandler(grade.classId)}
+                    onClick={() => viewDetailsHandler(grade.classId)}
                   >
                     View Details
                   </button>
