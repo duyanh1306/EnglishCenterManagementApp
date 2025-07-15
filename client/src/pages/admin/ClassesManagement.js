@@ -142,7 +142,9 @@ export default function ClassManagement() {
                   {new Date(cl.startDate).toLocaleDateString()} –{" "}
                   {new Date(cl.endDate).toLocaleDateString()}
                 </td>
-                <td className="py-4 px-4">{cl.capacity}</td>
+                <td className="py-4 px-4">
+                  {cl.students.length}/{cl.capacity}
+                </td>
                 <td className="py-4 px-4 capitalize">{cl.status}</td>
                 <td className="py-4 px-4">
                   <div className="flex gap-3">
