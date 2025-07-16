@@ -9,7 +9,7 @@ const {
   deleteCourse,
 } = require("../controllers/courseController");
 
-router.get("/", getAllCourses);
+router.get("/", authAdmin, getAllCourses);
 router.post("/add",  createCourse);
 router.put("/update/:id",  updateCourse);
 router.delete("/delete/:id", deleteCourse);

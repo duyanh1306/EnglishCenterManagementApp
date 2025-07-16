@@ -37,9 +37,7 @@ export default function ClassManagement() {
       const { data } = await axios.post(
         "http://localhost:9999/api/classes/add",
         payload,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+       
       );
       if (data.success) {
         await fetchClasses();
