@@ -27,7 +27,7 @@ import CourseManagement from "./pages/admin/CourseManagement";
 import ClassesManagement from "./pages/admin/ClassesManagement";
 import UserManagement from "./pages/admin/UserManagement";
 import LoginPage from "./Login/Login";
-
+import ProtectedRoute from "./Login/ProtectedRoute";
 function App() {
   return (
     <Router>
@@ -49,10 +49,38 @@ function App() {
         </Route>
 
         {/* Admin */}
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/admin/courses" element={<CourseManagement />} />
-        <Route path="/admin/classes" element={<ClassesManagement />} />
-        <Route path="/admin/users" element={<UserManagement />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/courses"
+          element={
+            <ProtectedRoute>
+              <CourseManagement />{" "}
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/classes"
+          element={
+            <ProtectedRoute>
+              <ClassesManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute>
+              <UserManagement />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Student Layout */}
         <Route path="/student" element={<StudentLayout />}>
@@ -62,7 +90,7 @@ function App() {
           <Route path="my-classes/:classId" element={<ClassDetails />} />
 
           <Route path="grade" element={<StudentGrades />} />
-          <Route path="grade/:classId" element={<GradeDetails />} />          
+          <Route path="grade/:classId" element={<GradeDetails />} />
           <Route path="dashboard" element={<StudentDashboard />} />
         </Route>
       </Routes>

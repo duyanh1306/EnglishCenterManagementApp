@@ -20,20 +20,29 @@ export default function UserManagement() {
   /* ---------------- Fetch data ---------------- */
   useEffect(() => {
     const fetchUsers = async () => {
-      const res = await axios.get("http://localhost:9999/api/users");
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:9999/api/users", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setUsers(res.data.data || []);
     };
+
     const fetchRoles = async () => {
       const res = await axios.get("http://localhost:9999/api/roles");
       setRoles(res.data.data || []);
     };
+
     fetchUsers();
     fetchRoles();
   }, []);
 
+  /* ---------- Lấy 1 user theo id ---------- */
   const fetchUserById = async (id) => {
     try {
-      const res = await axios.get(`http://localhost:9999/api/users/${id}`);
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`http://localhost:9999/api/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return res.data.data;
     } catch (e) {
       console.error(e);

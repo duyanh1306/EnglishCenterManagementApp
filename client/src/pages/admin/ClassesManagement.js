@@ -21,8 +21,11 @@ export default function ClassManagement() {
 
   const fetchClasses = async () => {
     try {
-      const { data } = await axios.get("http://localhost:9999/api/classes");
-      setClasses(data.data);
+      const token = localStorage.getItem("token");
+      const { data } = await axios.get("http://localhost:9999/api/classes", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) setClasses(data.data);
     } catch (e) {
       console.error(e);
     }
@@ -30,9 +33,11 @@ export default function ClassManagement() {
 
   const handleAdd = async (payload) => {
     try {
+      const token = localStorage.getItem("token");
       const { data } = await axios.post(
         "http://localhost:9999/api/classes/add",
-        payload
+        payload,
+       
       );
       if (data.success) {
         await fetchClasses();
@@ -46,8 +51,12 @@ export default function ClassManagement() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this class?")) return;
     try {
+      const token = localStorage.getItem("token");
       const { data } = await axios.delete(
-        `http://localhost:9999/api/classes/delete/${id}`
+        `http://localhost:9999/api/classes/delete/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       if (data.success) setClasses((p) => p.filter((c) => c._id !== id));
     } catch (e) {

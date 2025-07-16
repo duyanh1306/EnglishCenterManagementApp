@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 export default function Dashboard() {
   const nav = useNavigate();
 
-
   const [totals, setTotals] = useState({
     users: 0,
     teachers: 0,
@@ -20,10 +19,12 @@ export default function Dashboard() {
     (async () => {
       try {
         // song song 3 request
+        const token = localStorage.getItem("token");
+        const config = { headers: { Authorization: `Bearer ${token}` } };
         const [uRes, cRes, clRes] = await Promise.all([
-          axios.get("http://localhost:9999/api/users"),
-          axios.get("http://localhost:9999/api/courses"),
-          axios.get("http://localhost:9999/api/classes"),
+          axios.get("http://localhost:9999/api/users", config),
+          axios.get("http://localhost:9999/api/courses", config),
+          axios.get("http://localhost:9999/api/classes", config),
         ]);
 
         const users = uRes.data.data || [];

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// Using fetch API instead of axios
+import {jwtDecode} from 'jwt-decode';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -54,22 +54,30 @@ const LoginPage = () => {
 
       const data = await response.json();
       console.log(data);
-      // If login is successful
       if (response.ok && data.message === 'Login successfully') {
-        // Store user data in localStorage
         localStorage.setItem('token', data.accessToken);
-
+        // localStorage.setItem("id", jwtDecode(data.accessToken).id);
+        // localStorage.setItem("roleId", jwtDecode(data.accessToken).roleId);
         // Show success message
         setError('Login successful! Redirecting...');
 
-        // Redirect based on user role after a short delay
         setTimeout(() => {
-
-          navigate('/');
-
+        switch (jwtDecode(data.accessToken).roleId) {
+          case "r1":
+            navigate('/admin/dashboard');
+            break;
+          case "r2":
+            navigate('/teacher');
+            break;
+          case "r3":
+            navigate('/student');
+            break;
+          default:
+            navigate('/login');
+            break;
+        }
         }, 1000);
       } else {
-        // Use the error message from server or default message
         setError(data.message || 'Invalid username or password');
       }
     } catch (err) {
