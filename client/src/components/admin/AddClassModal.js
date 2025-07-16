@@ -90,20 +90,8 @@ export default function AddClassModal({ onClose, onCreate }) {
 
   /* ───────── submit ───────── */
   const handleSubmit = async () => {
-    if (!validate()) return;
-    try {
-      const payload = { ...form, capacity: +form.capacity };
-      const { data } = await axios.post(
-        "http://localhost:9999/api/classes/add",
-        payload
-      );
-      if (data.success) {
-        onCreate(data.data);
-        onClose();
-      }
-    } catch (e) {
-      console.error("Create class failed", e);
-    }
+    onCreate({ ...form, capacity: +form.capacity });
+    onClose();
   };
 
   /* ───────── modal UI ───────── */

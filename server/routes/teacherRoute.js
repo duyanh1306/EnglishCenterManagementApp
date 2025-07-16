@@ -15,19 +15,19 @@ const {
 const authTeacher = require("../middlewares/authTeacher");
 
 // Get teaching schedule for a specific teacher
-router.get("/:teacherId/schedules", authTeacher, getTeachingSchedule);
+router.get("/:teacherId/schedules", getTeachingSchedule);
 
 // Get teaching slots
-router.get("/slots", authTeacher, getTeachingSlots);
+router.get("/slots", getTeachingSlots);
 
 // Get teaching classes
-router.get("/:teacherId/classes", authTeacher, getTeachingClasses);
+router.get("/:teacherId/classes",  getTeachingClasses);
 
 // Get teaching class details
-router.get("/:teacherId/classes/:classId", authTeacher, getTeachingClassDetails);
+router.get("/:teacherId/classes/:classId",  getTeachingClassDetails);
 
 //Get courses
-router.get("/:teacherId/courses", authTeacher, getCourses);
+router.get("/:teacherId/courses", getCourses);
 
 //Get course details
 router.get("/:teacherId/courses/:courseId", authTeacher, getCourseDetails);

@@ -1,14 +1,19 @@
 import React from "react";
-import { Menu } from "lucide-react"; // Lucide: bộ icon Tailwind-friendly
+import { Menu, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const Navbar = ({
-  user = { name: "John Doe", avatarUrl: "" },
-  onLogout,
-  onToggleSidebar,
-}) => {
+export default function Navbar({ user = { name: "Admin" }, onToggleSidebar }) {
+  const navigate = useNavigate();
+
+  /* ----- xử lý logout ----- */
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login", { replace: true }); // chuyển sang trang login
+  };
+
   return (
-    <div className="w-full bg-gray-300 px-4 py-2 shadow-md flex items-center justify-between">
-      {/* Left: Toggle + Title */}
+    <header className="w-full bg-gray-300 px-4 py-2 shadow-md flex items-center justify-between">
+      {/* -------- Left: Toggle + Title -------- */}
       <div className="flex items-center gap-4">
         <button
           onClick={onToggleSidebar}
@@ -19,33 +24,22 @@ const Navbar = ({
         <h1 className="text-xl font-semibold text-gray-800">English Center</h1>
       </div>
 
-      {/* Center */}
-      <div className="flex-1 px-4"></div>
-
-      {/* Right: Notification + Avatar + Name + Logout */}
+      {/* -------- Right: User + Logout -------- */}
       <div className="flex items-center gap-4">
-        
-
-        {/* Avatar + Name */}
+        {/* User icon + name */}
         <div className="flex items-center gap-2">
-          <img
-            src={user.avatarUrl || "https://via.placeholder.com/32"}
-            alt="avatar"
-            className="w-8 h-8 rounded-full object-cover"
-          />
+          <User className="w-8 h-8 text-gray-700" /> {/* icon mặc định */}
           <span className="text-gray-700 font-medium">{user.name}</span>
         </div>
 
         {/* Logout */}
         <button
-          onClick={onLogout}
+          onClick={handleLogout}
           className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-md"
         >
           Logout
         </button>
       </div>
-    </div>
+    </header>
   );
-};
-
-export default Navbar;
+}
