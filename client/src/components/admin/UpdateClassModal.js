@@ -23,15 +23,16 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
   });
   const [errors, setErrors] = useState({});
 
-  /* ---------------- fetch dropdown data once ---------------- */
   useEffect(() => {
     (async () => {
       try {
+        const token = localStorage.getItem("token");
+        const config = { headers: { Authorization: `Bearer ${token}` } };
         const [cRes, sRes, tRes, stuRes] = await Promise.all([
-          axios.get("http://localhost:9999/api/courses"),
-          axios.get("http://localhost:9999/api/slots"),
-          axios.get("http://localhost:9999/api/users?role=teacher"),
-          axios.get("http://localhost:9999/api/users?role=student"),
+          axios.get("http://localhost:9999/api/courses", config),
+          axios.get("http://localhost:9999/api/slots", config),
+          axios.get("http://localhost:9999/api/users?role=teacher", config),
+          axios.get("http://localhost:9999/api/users?role=student", config),
         ]);
         setCourses(cRes.data.data);
         setSlots(sRes.data.data);
@@ -43,7 +44,6 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
     })();
   }, []);
 
-  /* ---------------- prefill form ---------------- */
   useEffect(() => {
     if (!classData) return;
     setForm({
@@ -53,7 +53,12 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
       endDate: classData.endDate ? classData.endDate.slice(0, 10) : "",
       capacity: classData.capacity,
       status: classData.status,
-      schedule: classData.schedule.map((s) => ({ ...s })),
+      schedule: classData.schedule.map((s) => ({
+        weekday: s.weekday,
+        slot:
+          typeof s.slot === "object" && s.slot !== null ? s.slot._id : s.slot,
+      })),
+
       teachers: classData.teachers.map((t) =>
         typeof t === "string" ? t : t._id
       ),
@@ -65,7 +70,6 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
 
   const setField = (k, v) => setForm((prev) => ({ ...prev, [k]: v }));
 
-  /* ---------------- validation ---------------- */
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = "Class name required";
@@ -73,13 +77,28 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
     if (!form.startDate) e.startDate = "Start date required";
     if (!form.endDate) e.endDate = "End date required";
     if (!form.capacity || isNaN(form.capacity) || form.capacity < 1)
-      e.capacity = "Capacity > 0";
-    if (form.students.length > +form.capacity) e.students = "Over capacity!";
+      e.capacity = "Capacity must be > 0";
+
+    if (form.students.length === 0) {
+      e.students = "At least 1 student required";
+    } else if (form.students.length > +form.capacity) {
+      e.students = "Over capacity!";
+    }
+
+    if (form.teachers.length === 0) {
+      e.teachers = "At least 1 teacher required";
+    }
+
+    if (form.schedule.length === 0) {
+      e.schedule = "Please add at least one schedule";
+    } else if (form.schedule.some((s) => !s.slot)) {
+      e.schedule = "Each schedule must have a slot selected";
+    }
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
-  /* -------------- handlers -------------- */
   const handleMulti = (e) => {
     const { name, options } = e.target;
     const arr = Array.from(options)
@@ -100,7 +119,6 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
       form.schedule.filter((_, idx) => idx !== i)
     );
 
-  /* ---------------- submit ---------------- */
   const handleUpdate = async () => {
     if (!validate()) return;
     try {
@@ -263,9 +281,11 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
                   </button>
                 </div>
               ))}
+              {errors.schedule && (
+                <p className="text-red-500 text-sm mt-1">{errors.schedule}</p>
+              )}
             </div>
 
-            {/* teachers & students */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div>
                 <label className="text-sm font-medium">Teachers</label>
@@ -282,6 +302,9 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
                     </option>
                   ))}
                 </select>
+                {errors.teachers && (
+                  <p className="text-red-500 text-sm mt-1">{errors.teachers}</p>
+                )}
               </div>
               <div>
                 <label className="text-sm font-medium">Students</label>

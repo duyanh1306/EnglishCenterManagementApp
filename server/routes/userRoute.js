@@ -15,4 +15,5 @@ userRouter.post("/login", login);
 userRouter.put("/:id", updateUserById);
 userRouter.get("/:id", getUserById);
 userRouter.get("/", getAllUser);
+
 module.exports = userRouter;  
