@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode"; // Ensure you have this package installed 
 
 const RegisterClass = () => {
   const [classes, setClasses] = useState([]);
@@ -8,7 +9,8 @@ const RegisterClass = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const studentId = "687139a34cdde4e0be2848fc"; 
+    const token = localStorage.getItem("token");
+    const studentId = jwtDecode(token).id;
 
     const fetchClasses = async () => {
       try {

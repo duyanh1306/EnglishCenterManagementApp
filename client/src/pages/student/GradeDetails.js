@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode"; // Ensure you have this package installed
 
 const GradeDetails = () => {
   const { classId } = useParams();
@@ -11,7 +12,8 @@ const GradeDetails = () => {
   useEffect(() => {
     const fetchGradeDetails = async () => {
       try {
-        const studentId = "687139a34cdde4e0be2848f7";
+        const token = localStorage.getItem("token");
+        const studentId = jwtDecode(token).id;
         const response = await axios.get(
           `http://localhost:9999/api/student/${studentId}/grades/class/${classId}` // Use classId from URL params
         );

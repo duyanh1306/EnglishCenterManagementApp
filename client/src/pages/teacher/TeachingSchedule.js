@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import {jwtDecode} from "jwt-decode";
 
 export default function TeachingSchedule() {
     const [schedule, setSchedule] = useState([]);
@@ -63,7 +64,8 @@ export default function TeachingSchedule() {
                     console.error("No token found in localStorage");
                     return;
                 }
-                const teacherId = "687139a34cdde4e0be2848f5";
+                const teacherId = jwtDecode(token).id;
+                console.log("Fetching schedule for teacher ID:", teacherId);
                 const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/schedules`, {
                     headers: {
                         Authorization: `Bearer ${token}`

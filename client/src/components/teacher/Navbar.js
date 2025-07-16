@@ -1,7 +1,14 @@
 import React from "react";
-import { Menu} from "lucide-react"; // Lucide: bộ icon Tailwind-friendly
+import { Menu } from "lucide-react"; // Lucide: bộ icon Tailwind-friendly
+import { useNavigate } from "react-router-dom";
 
 const Navbar = ({ user = { name: "John Doe", avatarUrl: "" }, onLogout, onToggleSidebar }) => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+    };
     return (
         <div className="w-full bg-gray-300 px-4 py-2 shadow-md flex items-center justify-between">
             {/* Left: Toggle + Title */}
@@ -19,16 +26,16 @@ const Navbar = ({ user = { name: "John Doe", avatarUrl: "" }, onLogout, onToggle
 
             {/* Right: Notification + Avatar + Name + Logout */}
             <div className="flex items-center gap-4">
-                
+
                 {/* Avatar + Name */}
                 <div className="flex items-center gap-2">
-                    
+
                     <span className="text-gray-700 font-medium">{user.name}</span>
                 </div>
 
                 {/* Logout */}
                 <button
-                    onClick={onLogout}
+                    onClick={handleLogout}
                     className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-md"
                 >
                     Logout

@@ -3,12 +3,15 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { NotebookTabs } from "lucide-react";
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 export default function TeachingClass() {
   const [classes, setClasses] = useState([]);
   const [allClasses, setAllClasses] = useState([]); // Store all classes
   const [statusFilter, setStatusFilter] = useState("All");
-  const teacherId = "687139a34cdde4e0be2848f5"; // You should get this from auth context or props
+
+  const token = localStorage.getItem("token");
+  const teacherId = jwtDecode(token).id; // You should get this from auth context or props
   // Fetch classes from API (only once on component mount)
   useEffect(() => {
     const fetchClasses = async () => {
@@ -35,7 +38,7 @@ export default function TeachingClass() {
     };
 
     fetchClasses();
-  }, []); // Empty dependency array - fetch only once
+  }, [teacherId]); // Empty dependency array - fetch only once
 
   // Filter classes when statusFilter changes
   useEffect(() => {

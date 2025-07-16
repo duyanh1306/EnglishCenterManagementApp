@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// Using fetch API instead of axios
+import {jwtDecode} from 'jwt-decode';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -22,18 +22,18 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
+    
     // Client-side validation
     if (!formData.userName.trim()) {
       setError('Please enter your username');
       return;
     }
-
+    
     if (!formData.password) {
       setError('Please enter your password');
       return;
     }
-
+    
     setIsLoading(true);
 
     try {
@@ -54,22 +54,30 @@ const LoginPage = () => {
 
       const data = await response.json();
       console.log(data);
-      // If login is successful
       if (response.ok && data.message === 'Login successfully') {
-        // Store user data in localStorage
         localStorage.setItem('token', data.accessToken);
-
+        // localStorage.setItem("id", jwtDecode(data.accessToken).id);
+        // localStorage.setItem("roleId", jwtDecode(data.accessToken).roleId);
         // Show success message
         setError('Login successful! Redirecting...');
 
-        // Redirect based on user role after a short delay
         setTimeout(() => {
-
-          navigate('/');
-
+        switch (jwtDecode(data.accessToken).roleId) {
+          case "r1":
+            navigate('/admin/dashboard');
+            break;
+          case "r2":
+            navigate('/teacher');
+            break;
+          case "r3":
+            navigate('/student');
+            break;
+          default:
+            navigate('/login');
+            break;
+        }
         }, 1000);
       } else {
-        // Use the error message from server or default message
         setError(data.message || 'Invalid username or password');
       }
     } catch (err) {
@@ -87,8 +95,8 @@ const LoginPage = () => {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <Link
-            to="/register"
+          <Link 
+            to="/register" 
             className="font-medium text-indigo-600 hover:text-indigo-500"
           >
             create a new account
@@ -112,7 +120,7 @@ const LoginPage = () => {
               </div>
             </div>
           )}
-
+          
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="userName" className="block text-sm font-medium text-gray-700">
@@ -189,6 +197,8 @@ const LoginPage = () => {
               </button>
             </div>
           </form>
+
+
         </div>
       </div>
     </div>

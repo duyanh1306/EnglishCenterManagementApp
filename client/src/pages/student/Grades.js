@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode"; // Ensure you have this package installed
 
 const Grades = () => {
   const [gradeList, setGradeList] = useState([]);
@@ -18,7 +19,8 @@ const Grades = () => {
         setLoading(true);
         setError(null);
         
-        const studentId = "687139a34cdde4e0be2848f7";
+        const token = localStorage.getItem("token");
+        const studentId = jwtDecode(token).id;
         const response = await axios.get(
           `http://localhost:9999/api/student/${studentId}/grades`
         );
