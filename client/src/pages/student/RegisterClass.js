@@ -59,45 +59,46 @@ const RegisterClass = () => {
               key={cls._id}
               className="p-4 border rounded shadow hover:shadow-lg transition-shadow"
             >
-              <h2 className="text-xl font-semibold">{cls.name}</h2>
-              <p>
-                <strong>Course:</strong> {cls.courseName}
-              </p>
-              <p>
-                <strong>Teachers:</strong> {cls.teachers}
-              </p>
-              <p>
-                <strong>Schedule:</strong>{" "}
-                {Array.isArray(cls.schedule) && cls.schedule.length > 0 ? (
-                  <ul className="list-disc list-inside">
-                    {cls.schedule.map((s, idx) => (
-                      <li key={idx}>
-                        {s.weekday}: {s.from} - {s.to}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <span>No schedule</span>
-                )}
-              </p>
-              <p>
-                <strong>Capacity:</strong> {cls.capacity} (Registered Students:{" "}
-                {cls.studentsCount})
-              </p>
-              <p>
-                <strong>Status:</strong> {cls.status}
-              </p>
+              <div className="mb-4 min-h-[200px]">
+                <h2 className="text-xl font-semibold">{cls.name}</h2>
+                <p>
+                  <strong>Course:</strong> {cls.courseName}
+                </p>
+                <p>
+                  <strong>Teachers:</strong> {cls.teachers}
+                </p>
+                <p>
+                  <strong>Schedule:</strong>{" "}
+                  {Array.isArray(cls.schedule) && cls.schedule.length > 0 ? (
+                    <ul className="list-disc list-inside">
+                      {cls.schedule.map((s, idx) => (
+                        <li key={idx}>
+                          {s.weekday}: {s.from} - {s.to}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span>No schedule</span>
+                  )}
+                </p>
+                <p>
+                  <strong>Capacity:</strong> {cls.capacity} (Registered Students:{" "}
+                  {cls.studentsCount})
+                </p>
+                <p className="mb-4">
+                  <strong>Status:</strong> {cls.status}
+                </p>
+              </div>
               {cls.registered ? (
                 <button
-                  className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                  type="button"
+                  className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
                   onClick={() => alert(`you are registered for this class`)}
                 >
                   Enrolled
                 </button>
               ) : (
                 <button
-                  className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="left-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                   onClick={() => alert(`Enrolled in ${cls.name}`)}
                 >
                   Enroll

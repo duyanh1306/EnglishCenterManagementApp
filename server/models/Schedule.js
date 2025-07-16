@@ -28,10 +28,6 @@ const scheduleSchema = new Schema(
   }
 );
 
-// Compound index to prevent double booking of rooms
-scheduleSchema.index({ roomId: 1, date: 1, slotId: 1 }, { unique: true });
 
-// Compound index to prevent double booking of classes
-scheduleSchema.index({ classId: 1, date: 1, slotId: 1 }, { unique: true });
 
 module.exports = mongoose.model("Schedules", scheduleSchema);
