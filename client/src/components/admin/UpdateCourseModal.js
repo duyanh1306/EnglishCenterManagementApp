@@ -62,8 +62,8 @@ export default function UpdateCourseModal({ onClose, course, onUpdate }) {
       const token = localStorage.getItem("token");
       const res = await axios.put(
         `http://localhost:9999/api/courses/update/${course._id}`,
-        { ...form }
-        // { headers: { Authorization: `Bearer ${token}` } }
+        { ...form },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.status === 200 && res.data.success) {
         onUpdate(res.data.data);

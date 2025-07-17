@@ -95,11 +95,12 @@ export default function UpdateUserModal({ onClose, user, onUpdate }) {
     const payload = { ...form };
     if (!payload.password) delete payload.password; // giữ mật khẩu cũ
     try {
+      const token = localStorage.getItem("token");
       const res = await axios.put(
         `http://localhost:9999/api/users/${user._id}`,
         payload,
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       if (res.status === 200) {

@@ -17,21 +17,22 @@ export default function AddClassModal({ onClose, onCreate }) {
     endDate: "",
     capacity: "",
     status: "ongoing",
-    schedule: [], // each item { weekday, slot }
+    schedule: [],
     teachers: [],
     students: [],
   });
   const [errors, setErrors] = useState({});
 
-  /* ───────── fetch dropdown data ───────── */
   useEffect(() => {
     (async () => {
       try {
+        const token = localStorage.getItem("token");
+        const config = { headers: { Authorization: `Bearer ${token}` } };
         const [cRes, sRes, tRes, stuRes] = await Promise.all([
-          axios.get("http://localhost:9999/api/courses"),
-          axios.get("http://localhost:9999/api/slots"),
-          axios.get("http://localhost:9999/api/users?role=teacher"),
-          axios.get("http://localhost:9999/api/users?role=student"),
+          axios.get("http://localhost:9999/api/courses", config),
+          axios.get("http://localhost:9999/api/slots", config),
+          axios.get("http://localhost:9999/api/users?role=teacher", config),
+          axios.get("http://localhost:9999/api/users?role=student", config),
         ]);
         setCourses(cRes.data.data);
         setSlots(sRes.data.data);
@@ -43,11 +44,9 @@ export default function AddClassModal({ onClose, onCreate }) {
     })();
   }, []);
 
-  /* ───────── utility ───────── */
   const setField = (name, value) =>
     setForm((prev) => ({ ...prev, [name]: value }));
 
-  /* ───────── validation ───────── */
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = "Class name required";
@@ -57,15 +56,26 @@ export default function AddClassModal({ onClose, onCreate }) {
     if (!form.capacity || isNaN(form.capacity) || form.capacity < 1)
       e.capacity = "Capacity must be > 0";
 
-    /* over‑capacity check */
-    if (form.students.length > +form.capacity)
+    if (form.students.length === 0) {
+      e.students = "At least 1 student required";
+    } else if (form.students.length > +form.capacity) {
       e.students = "Class is full / over capacity";
+    }
+    if (form.teachers.length === 0) {
+      e.teachers = "At least 1 teacher required";
+    }
+    if (form.schedule.length === 0) {
+      e.schedule = "You must add at least one schedule";
+    } else {
+      const emptySlot = form.schedule.some((s) => !s.slot);
+      if (emptySlot)
+        e.schedule = "Each schedule must have a valid slot selected";
+    }
 
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
-  /* ───────── handlers ───────── */
   const handleMulti = (e) => {
     const { options, name } = e.target;
     const arr = Array.from(options)
@@ -74,39 +84,27 @@ export default function AddClassModal({ onClose, onCreate }) {
     setField(name, arr);
   };
 
-  // schedule select: choose weekday + slot
   const addScheduleRow = () =>
     setField("schedule", [...form.schedule, { weekday: "Mon", slot: "" }]);
+
   const updateSchedule = (idx, key, val) => {
     const copy = [...form.schedule];
     copy[idx][key] = val;
     setField("schedule", copy);
   };
+
   const removeScheduleRow = (idx) =>
     setField(
       "schedule",
       form.schedule.filter((_, i) => i !== idx)
     );
 
-  /* ───────── submit ───────── */
   const handleSubmit = async () => {
     if (!validate()) return;
-    try {
-      const payload = { ...form, capacity: +form.capacity };
-      const { data } = await axios.post(
-        "http://localhost:9999/api/classes/add",
-        payload
-      );
-      if (data.success) {
-        onCreate(data.data);
-        onClose();
-      }
-    } catch (e) {
-      console.error("Create class failed", e);
-    }
+    onCreate({ ...form, capacity: +form.capacity });
+    onClose();
   };
 
-  /* ───────── modal UI ───────── */
   return (
     <AnimatePresence>
       <Dialog open={true} onClose={onClose} className="relative z-50">
@@ -130,7 +128,6 @@ export default function AddClassModal({ onClose, onCreate }) {
               Add New Class
             </DialogTitle>
 
-            {/* main inputs */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
                 <label className="text-sm font-medium">Class Name</label>
@@ -215,7 +212,6 @@ export default function AddClassModal({ onClose, onCreate }) {
               </div>
             </div>
 
-            {/* Schedule rows */}
             <div className="mt-4">
               <div className="flex justify-between items-center mb-2">
                 <p className="font-medium">Schedule</p>
@@ -265,9 +261,11 @@ export default function AddClassModal({ onClose, onCreate }) {
                   </button>
                 </div>
               ))}
+              {errors.schedule && (
+                <p className="text-red-500 text-sm mt-1">{errors.schedule}</p>
+              )}
             </div>
 
-            {/* teachers & students */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div>
                 <label className="text-sm font-medium">Teachers</label>
@@ -284,6 +282,9 @@ export default function AddClassModal({ onClose, onCreate }) {
                     </option>
                   ))}
                 </select>
+                {errors.teachers && (
+                  <p className="text-red-500 text-sm mt-1">{errors.teachers}</p>
+                )}
               </div>
               <div>
                 <label className="text-sm font-medium">Students</label>

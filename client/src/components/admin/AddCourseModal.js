@@ -35,11 +35,11 @@ export default function AddCourseModal({ onClose, onCreate }) {
       level,
     };
     try {
-      // const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
       const { data } = await axios.post(
         "http://localhost:9999/api/courses/add",
-        courseData
-        // { headers: { Authorization: `Bearer ${token}` } }
+        courseData,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (data.success) {
         onCreate(data.data);

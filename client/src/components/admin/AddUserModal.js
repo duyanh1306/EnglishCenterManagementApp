@@ -45,8 +45,8 @@ export default function AddUserModal({ onClose, onCreate }) {
       valid = false;
     }
 
-    if (!form.password || form.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+    if (!form.password || form.password.length < 3) {
+      newErrors.password = "Password must be at least 3 characters";
       valid = false;
     }
 
