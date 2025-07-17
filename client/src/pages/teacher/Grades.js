@@ -45,16 +45,16 @@ const Grades = ({ grades }) => {
                   {grade.student.name}
                 </td>
                 <td className="border px-4 py-3 text-center">
-                  {grade.score.listening}
+                  {grade?.score?.listening ? grade.score.listening : 0}
                 </td>
                 <td className="border px-4 py-3 text-center">
-                  {grade.score.reading}
+                  {grade?.score?.reading ? grade.score.reading : 0}
                 </td>
                 <td className="border px-4 py-3 text-center">
-                  {grade.score.writing}
+                  {grade?.score?.writing ? grade.score.writing : 0}
                 </td>
                 <td className="border px-4 py-3 text-center">
-                  {grade.score.speaking}
+                  {grade?.score?.speaking ? grade.score.speaking : 0}
                 </td>
                 <td className="border px-4 py-3 text-center">
                   <span className={`px-2 py-1 rounded font-medium ${getGradeColor(average)}`}>

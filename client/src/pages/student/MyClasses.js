@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode"; // Ensure you have this package installed
 
 const MyClasses = () => {
   const [classes, setClasses] = useState([]);
@@ -21,8 +22,10 @@ const MyClasses = () => {
       }
 
       try {
+        const token = localStorage.getItem("token");
+        const studentId = jwtDecode(token).id; // Decode token to get student ID
         const response = await axios.get(
-          "http://localhost:9999/api/student/687139a34cdde4e0be2848f7/my-classes",
+          `http://localhost:9999/api/student/${studentId}/my-classes`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

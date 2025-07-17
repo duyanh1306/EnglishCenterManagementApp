@@ -1,31 +1,55 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 export default function TeachingSchedule() {
+    const [year, setYear] = useState(new Date().getFullYear());
+    const [weeks, setWeeks] = useState([]);
+    const [selectedWeek, setSelectedWeek] = useState(null);
     const [schedule, setSchedule] = useState([]);
     const [slots, setSlots] = useState([]);
     const [weekdays, setWeekdays] = useState([]);
 
-    // Function to get current week dates (Monday to Sunday)
-    const getCurrentWeekDates = () => {
-        const today = new Date();
-        const currentDayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    // Generate all weeks for a given year
+    const generateWeeksOfYear = (targetYear) => {
+        const startDate = new Date(`${targetYear}-01-01`);
+        // Adjust to get the first Monday of the year
+        while (startDate.getDay() !== 1) {
+            startDate.setDate(startDate.getDate() + 1);
+        }
 
-        // Calculate the difference to get Monday (start of week)
-        // For Saturday (6), we want to go back 5 days to get Monday
-        // For Sunday (0), we want to go back 6 days to get Monday
-        const daysToMonday = currentDayOfWeek === 0 ? -6 : -(currentDayOfWeek - 1);
-        const monday = new Date(today);
-        monday.setDate(today.getDate() + daysToMonday);
+        const weeks = [];
+        for (let i = 0; i < 53; i++) {
+            const weekStart = new Date(startDate);
+            weekStart.setDate(startDate.getDate() + i * 7);
+
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+
+            // Stop if week starts in next year and it's not the first week of that year
+            if (weekStart.getFullYear() > targetYear && i > 0) break;
+
+            const label = `${weekStart.toLocaleDateString('en-GB')} To ${weekEnd.toLocaleDateString('en-GB')}`;
+            weeks.push({
+                label,
+                start: new Date(weekStart),
+                end: new Date(weekEnd),
+            });
+        }
+        return weeks;
+    };
+
+    // Function to get week dates from selected week
+    const getWeekDatesFromSelectedWeek = (selectedWeek) => {
+        if (!selectedWeek) return [];
 
         const weekDates = [];
         const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
         const targetDays = [1, 2, 3, 4, 5, 6, 0]; // Monday=1, Tuesday=2, ..., Sunday=0
 
         for (let i = 0; i < 7; i++) {
-            const date = new Date(monday);
-            date.setDate(monday.getDate() + i);
+            const date = new Date(selectedWeek.start);
+            date.setDate(selectedWeek.start.getDate() + i);
 
             weekDates.push({
                 label: dayNames[i],
@@ -37,7 +61,7 @@ export default function TeachingSchedule() {
         return weekDates;
     };
 
-    // Function to format week range for display in real time
+    // Function to format week range for display
     const getWeekRange = (weekDates) => {
         if (weekDates.length === 0) return "";
 
@@ -51,11 +75,31 @@ export default function TeachingSchedule() {
         return `Week of ${formatDate(firstDate)} - ${formatDate(lastDate)}`;
     };
 
+    // Effect to generate weeks when year changes
     useEffect(() => {
-        // Set current week dates
-        const currentWeekDates = getCurrentWeekDates();
-        setWeekdays(currentWeekDates);
+        const newWeeks = generateWeeksOfYear(year);
+        setWeeks(newWeeks);
 
+        // Find current week instead of selecting first week
+        const currentDate = new Date();
+        const currentWeek = newWeeks.find(week =>
+            currentDate >= week.start && currentDate <= week.end
+        );
+        setSelectedWeek(currentWeek || (newWeeks.length > 0 ? newWeeks[0] : null));
+
+        console.log("Generated weeks:", newWeeks);
+        console.log("Selected current week:", currentWeek || newWeeks[0]);
+    }, [year]);
+
+    // Effect to update weekdays when selected week changes
+    useEffect(() => {
+        if (selectedWeek) {
+            const weekDates = getWeekDatesFromSelectedWeek(selectedWeek);
+            setWeekdays(weekDates);
+        }
+    }, [selectedWeek]);
+
+    useEffect(() => {
         // Fetch schedule and slots
         const fetchSchedule = async () => {
             try {
@@ -110,10 +154,24 @@ export default function TeachingSchedule() {
         fetchSlots();
     }, []);
 
-    // Group schedule items by slot ID
+    // Group schedule items by slot ID and filter by selected week
     const groupedSchedule = {};
-    if (Array.isArray(schedule)) {
-        schedule.forEach(item => {
+    if (Array.isArray(schedule) && selectedWeek) {
+        console.log("Selected week:", selectedWeek);
+        console.log("All schedule items:", schedule);
+
+        // Filter schedule items to only include those in the selected week
+        const filteredSchedule = schedule.filter(item => {
+            const itemDate = new Date(item.date);
+            const isInWeek = itemDate >= selectedWeek.start && itemDate <= selectedWeek.end;
+            console.log(`Item date: ${item.date}, In selected week: ${isInWeek}`);
+            return isInWeek;
+        });
+
+        console.log("Filtered schedule for selected week:", filteredSchedule);
+
+        // Group the filtered schedule by slot ID
+        filteredSchedule.forEach(item => {
             const slotId = item.slot.id;
             if (!groupedSchedule[slotId]) {
                 groupedSchedule[slotId] = [];
@@ -131,6 +189,43 @@ export default function TeachingSchedule() {
                         <p className="text-gray-500">{getWeekRange(weekdays)}</p>
                     </div>
                 </div>
+
+                {/* Week Selection Controls */}
+                <div className="flex items-center gap-4 mb-6 bg-white p-4 rounded-lg shadow">
+                    <label className="text-sm font-semibold text-gray-700">YEAR:</label>
+                    <select
+                        value={year}
+                        onChange={(e) => setYear(+e.target.value)}
+                        className="border border-gray-300 px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        {[2023, 2024, 2025, 2026, 2027].map(yearOption => (
+                            <option key={yearOption} value={yearOption}>{yearOption}</option>
+                        ))}
+                    </select>
+
+                    <label className="text-sm font-semibold text-gray-700">WEEK:</label>
+                    <select
+                        value={selectedWeek?.label || ""}
+                        onChange={(e) => {
+                            const week = weeks.find((w) => w.label === e.target.value);
+                            setSelectedWeek(week);
+                        }}
+                        className="border border-gray-300 px-3 py-2 rounded text-sm max-w-[300px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        {weeks.map((week) => (
+                            <option key={week.label} value={week.label}>
+                                {week.label}
+                            </option>
+                        ))}
+                    </select>
+
+                    {selectedWeek && (
+                        <span className="text-sm text-blue-600 font-medium">
+                            ({selectedWeek.start.toDateString()} - {selectedWeek.end.toDateString()})
+                        </span>
+                    )}
+                </div>
+
                 <div className="rounded-lg shadow-lg">
                     <table className="max-w-full min-w-[600px] bg-white shadow-md border border-gray-200">
                         <thead>
@@ -168,8 +263,11 @@ export default function TeachingSchedule() {
                                         </td>
                                         {weekdays.map(day => {
                                             const scheduleForDay = itemsForSlot.find(item => {
-                                                const date = new Date(item.date);
-                                                return date.getDay() === day.targetDay;
+                                                const itemDate = new Date(item.date);
+                                                const dayDate = new Date(day.date);
+
+                                                // Compare dates directly instead of using day of week
+                                                return itemDate.toDateString() === dayDate.toDateString();
                                             });
                                             return (
                                                 <td
@@ -193,7 +291,7 @@ export default function TeachingSchedule() {
                                                             <div>
                                                                 <span className="pr-2 font-semibold text-blue-500">Room:</span>
                                                                 <span className="text-blue-800 cursor-pointer">
-                                                                    {scheduleForDay.room.name }
+                                                                    {scheduleForDay.room.name}
                                                                 </span>
                                                             </div>
                                                             <div>
@@ -201,7 +299,6 @@ export default function TeachingSchedule() {
                                                                     {scheduleForDay.room.location}
                                                                 </span>
                                                             </div>
-
                                                         </>
                                                     ) : null}
                                                 </td>

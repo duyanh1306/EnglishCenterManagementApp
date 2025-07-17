@@ -18,21 +18,25 @@ const gradeSchema = new Schema(
         type: Number,
         min: 0,
         max: 10,
+        default: 0,
       },
       reading: {
         type: Number,
         min: 0,
         max: 10,
+        default: 0,
       },
       writing: {
         type: Number,
         min: 0,
         max: 10,
+        default: 0,
       },
       speaking: {
         type: Number,
         min: 0,
         max: 10,
+        default: 0,
       },
     },
     comment: {

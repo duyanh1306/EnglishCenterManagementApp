@@ -191,24 +191,88 @@ const getTeachingClassDetails = async (req, res) => {
 const getGradesOfAClass = async (req, res) => {
   try {
     const { classId } = req.params;
-    // Convert string to ObjectId for proper MongoDB comparison
-    const grades = await Grade.find({
-      classId
-    })
-      .populate('studentId', 'fullName')
 
-    const formattedGrades = grades
-      .map(g => ({
-        id: g._id,
-        student: { id: g.studentId._id, name: g.studentId.fullName },
-        score: g.score,
-        comment: g.comment,
-      }));
+    // First, get the class with all students
+    const classDetails = await Class.findById(classId).populate('students', 'fullName');
+    
+    if (!classDetails) {
+      return res.status(404).json({
+        success: false,
+        message: "Class not found"
+      });
+    }
+
+    // Get existing grades for this class
+    const existingGrades = await Grade.find({ classId: classId })
+      .populate('studentId', 'fullName');
+
+    // Create a map of existing grades by studentId
+    const existingGradesMap = new Map();
+    existingGrades.forEach(grade => {
+      existingGradesMap.set(grade.studentId._id.toString(), grade);
+    });
+
+    // Prepare grades array - create new grades for students who don't have them
+    const gradesToCreate = [];
+    const allGrades = [];
+
+    for (const student of classDetails.students) {
+      const studentId = student._id.toString();
+      
+      if (existingGradesMap.has(studentId)) {
+        // Student already has a grade
+        const existingGrade = existingGradesMap.get(studentId);
+        allGrades.push({
+          id: existingGrade._id,
+          student: { 
+            id: existingGrade.studentId._id, 
+            name: existingGrade.studentId.fullName 
+          },
+          score: existingGrade.score,
+          comment: existingGrade.comment,
+        });
+      } else {
+        // Student doesn't have a grade, prepare to create one
+        gradesToCreate.push({
+          classId: classId,
+          studentId: student._id,
+          score: {
+            listening: 0,
+            speaking: 0,
+            reading: 0,
+            writing: 0
+          }, // Default null score
+          comment: '' // Default empty comment
+        });
+      }
+    }
+
+    // Create new grades for students who don't have them
+    if (gradesToCreate.length > 0) {
+      const newGrades = await Grade.insertMany(gradesToCreate);
+      
+      // Add the newly created grades to the response
+      newGrades.forEach(grade => {
+        const student = classDetails.students.find(s => s._id.toString() === grade.studentId.toString());
+        allGrades.push({
+          id: grade._id,
+          student: { 
+            id: grade.studentId, 
+            name: student.fullName 
+          },
+          score: grade.score,
+          comment: grade.comment,
+        });
+      });
+    }
+
+    // Sort grades by student name for consistent ordering
+    allGrades.sort((a, b) => a.student.name.localeCompare(b.student.name));
 
     res.status(200).json({
       success: true,
       message: "Grades retrieved successfully",
-      data: formattedGrades
+      data: allGrades
     });
   } catch (error) {
     console.error('Error getting grades:', error);

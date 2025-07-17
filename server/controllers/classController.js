@@ -220,6 +220,8 @@ const getClassesByUserId = async (req, res) => {
   try {
     const classData = await Class.findById(classId)
       .populate("teachers", "fullName")
+      .populate("courseId", "name")
+      .populate("students", "fullName email birthday")
       .populate({
         path: "schedule.slot",
         model: "Slot",
@@ -236,14 +238,7 @@ const getClassesByUserId = async (req, res) => {
       to: item.slot?.to || "N/A",
     }));
 
-    const mockSessions = [
-      {
-        date: "2025-07-01",
-        topic: "Introduction",
-        attendance: "Present",
-        note: "Good start",
-      },
-    ];
+    
 
     res.json({
       _id: classData._id,
@@ -252,7 +247,13 @@ const getClassesByUserId = async (req, res) => {
       schedule: scheduleFormatted,
       room: "Room 101",
       status: classData.status,
-      sessions: mockSessions,
+      courseName: classData.courseId?.name || "N/A",
+      students: classData.students.map((s) => ({
+        id: s._id,
+        name: s.fullName,
+        email: s.email,
+        birthday: s.birthday ? s.birthday.toISOString().split("T")[0] : "N/A",
+      })),
     });
   } catch (error) {
     console.error("Failed to fetch class details:", error);
