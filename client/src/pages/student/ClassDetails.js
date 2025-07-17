@@ -9,6 +9,8 @@ const ClassDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [students, setStudents] = useState([]);
+
   useEffect(() => {
     const fetchClassDetails = async () => {
       const token = localStorage.getItem("token");
@@ -25,8 +27,8 @@ const ClassDetails = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log("Class Details Response (Full Schedule):", response.data);
         setClassData(response.data);
+        setStudents(response.data.students || []);
       } catch (error) {
         console.error(
           "Error fetching class details:",
@@ -34,8 +36,7 @@ const ClassDetails = () => {
           error.response?.data
         );
         setError(
-          `Failed to fetch class details. Status: ${
-            error.response?.status || "Unknown"
+          `Failed to fetch class details. Status: ${error.response?.status || "Unknown"
           }, Message: ${error.response?.data?.message || error.message}`
         );
         setClassData(null);
@@ -72,8 +73,8 @@ const ClassDetails = () => {
     typeof classData.teacher === "string"
       ? classData.teacher.split(", ").map((name) => ({ fullName: name.trim() }))
       : Array.isArray(classData.teachers)
-      ? classData.teachers
-      : [];
+        ? classData.teachers
+        : [];
 
   return (
     <div className="p-6">
@@ -92,7 +93,7 @@ const ClassDetails = () => {
         <div>
           <strong>Schedule:</strong>
           {Array.isArray(classData.schedule) &&
-          classData.schedule.length > 0 ? (
+            classData.schedule.length > 0 ? (
             <ul className="list-disc list-inside">
               {classData.schedule.map((s, idx) => (
                 <li key={idx}>
@@ -113,43 +114,29 @@ const ClassDetails = () => {
         </p>
       </div>
 
-      <h2 className="text-xl font-semibold mb-2">Sessions</h2>
-      <table className="w-full border">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border px-3 py-2 text-left">Date</th>
-            <th className="border px-3 py-2 text-left">Topic</th>
-            <th className="border px-3 py-2 text-left">Note</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.isArray(classData.sessions) &&
-          classData.sessions.length > 0 ? (
-            classData.sessions.map((session, index) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="border px-3 py-2">
-                  {session.date
-                    ? new Date(session.date).toLocaleString("en-US", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "numeric",
-                        day: "numeric",
-                      })
-                    : "No Date"}
-                </td>
-                <td className="border px-3 py-2">{session.topic || "N/A"}</td>
-                <td className="border px-3 py-2">{session.note || "N/A"}</td>
-              </tr>
-            ))
-          ) : (
+      <h2 className="text-xl font-semibold mb-2">Student List</h2>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse border border-gray-200 text-sm">
+          <thead className="bg-gray-100">
             <tr>
-              <td className="border px-3 py-2" colSpan="3">
-                No sessions available.
-              </td>
+              <th className="border px-4 py-3 text-left">Name</th>
+              <th className="border px-4 py-3 text-left">Email</th>
+              <th className="border px-4 py-3 text-left">Birth Date</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {students.map((student) => (
+              <tr key={student.id} className="hover:bg-gray-50">
+                <td className="border px-4 py-3 font-semibold text-blue-700">
+                  {student.name}
+                </td>
+                <td className="border px-4 py-3">{student.email}</td>
+                <td className="border px-4 py-3">{student.birthday}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <button
         onClick={() => navigate("/student/my-classes")}
