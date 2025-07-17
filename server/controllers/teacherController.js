@@ -237,10 +237,10 @@ const getGradesOfAClass = async (req, res) => {
           classId: classId,
           studentId: student._id,
           score: {
-            listening: null,
-            speaking: null,
-            reading: null,
-            writing: null
+            listening: 0,
+            speaking: 0,
+            reading: 0,
+            writing: 0
           }, // Default null score
           comment: '' // Default empty comment
         });
