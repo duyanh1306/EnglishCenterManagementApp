@@ -1,10 +1,13 @@
 // src/pages/student/GradeDetails.js
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const TeachingGradeDetails = () => {
   const { classId } = useParams();
   const [gradeDetails, setGradeDetails] = useState(null);
+  const token = localStorage.getItem("token");
+  const studentId = jwtDecode(token).id;
 
   useEffect(() => {
     // Mock API response theo classId
