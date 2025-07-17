@@ -24,11 +24,10 @@ app.use("/api/users", userRoute);
 app.use("/api/roles", roleRoute);
 app.use("/api/courses", courseRoute);
 app.use("/api/slots", slotRoute);
-
+app.use("/api/rooms", require("./routes/roomRoute"));
 app.use("/api/teacher", require("./routes/teacherRoute"));
 const studentRoute = require("./routes/studentRoute");
 
-app.use(express.json());
 app.use("/api/classes", classRoute);
 app.use("/api/users", userRoute);
 app.use("/api/roles", roleRoute);

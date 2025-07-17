@@ -9,6 +9,7 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
   const [slots, setSlots] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [students, setStudents] = useState([]);
+  const [rooms, setRooms] = useState([]);
 
   const [form, setForm] = useState({
     name: "",
@@ -28,18 +29,39 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
       try {
         const token = localStorage.getItem("token");
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const [cRes, sRes, tRes, stuRes] = await Promise.all([
-          axios.get("http://localhost:9999/api/courses", config),
-          axios.get("http://localhost:9999/api/slots", config),
-          axios.get("http://localhost:9999/api/users?role=teacher", config),
-          axios.get("http://localhost:9999/api/users?role=student", config),
-        ]);
-        setCourses(cRes.data.data);
-        setSlots(sRes.data.data);
-        setTeachers(tRes.data.data);
-        setStudents(stuRes.data.data);
-      } catch (e) {
-        console.error("Dropdown fetch failed", e);
+
+        const cRes = await axios.get(
+          "http://localhost:9999/api/courses",
+          config
+        );
+        setCourses(cRes?.data?.data || []);
+
+        const sRes = await axios.get("http://localhost:9999/api/slots", config);
+        setSlots(sRes?.data?.data || []);
+
+        const tRes = await axios.get(
+          "http://localhost:9999/api/users?role=teacher",
+          config
+        );
+        setTeachers(tRes?.data?.data || []);
+
+        const stuRes = await axios.get(
+          "http://localhost:9999/api/users?role=student",
+          config
+        );
+        setStudents(stuRes?.data?.data || []);
+
+        const rRes = await axios.get("http://localhost:9999/api/rooms", config);
+        const roomData = rRes?.data?.data;
+        console.log("Fetched rooms:", roomData);
+        if (Array.isArray(roomData)) {
+          setRooms(roomData);
+        } else {
+          console.warn("Room data is not array:", roomData);
+          setRooms([]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
     })();
   }, []);
@@ -57,6 +79,7 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
         weekday: s.weekday,
         slot:
           typeof s.slot === "object" && s.slot !== null ? s.slot._id : s.slot,
+        room: s.room?._id || s.room || "",
       })),
 
       teachers: classData.teachers.map((t) =>
@@ -93,6 +116,8 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
       e.schedule = "Please add at least one schedule";
     } else if (form.schedule.some((s) => !s.slot)) {
       e.schedule = "Each schedule must have a slot selected";
+    } else if (form.schedule.some((s) => !s.room)) {
+      e.schedule = "Each schedule must have a room selected";
     }
 
     setErrors(e);
@@ -247,7 +272,7 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
                 </button>
               </div>
               {form.schedule.map((r, i) => (
-                <div key={i} className="grid grid-cols-3 gap-2 mb-2">
+                <div key={i} className="grid grid-cols-4 gap-2 mb-2">
                   <select
                     value={r.weekday}
                     onChange={(e) => editRow(i, "weekday", e.target.value)}
@@ -264,12 +289,24 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
                   <select
                     value={r.slot}
                     onChange={(e) => editRow(i, "slot", e.target.value)}
-                    className="border rounded px-2 py-1 col-span-2"
+                    className="border rounded px-2 py-1"
                   >
                     <option value="">-- Select Slot --</option>
                     {slots.map((s) => (
                       <option key={s._id} value={s._id}>
                         {s.from}-{s.to}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={r.room}
+                    onChange={(e) => editRow(i, "room", e.target.value)}
+                    className="border rounded px-2 py-1"
+                  >
+                    <option value="">-- Select Room --</option>
+                    {rooms.map((room) => (
+                      <option key={room._id} value={room._id}>
+                        {room.name}
                       </option>
                     ))}
                   </select>

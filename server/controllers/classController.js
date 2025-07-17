@@ -9,10 +9,10 @@ const getAllClasses = async (req, res) => {
     const classes = await Class.find()
 
       .populate("courseId", "name")
-
       .populate("teachers", "fullName email")
       .populate("students", "fullName email")
-      .populate("schedule.slot", "from to");
+      .populate("schedule.slot", "from to")
+      .populate("schedule.room", "name location type");
     res.status(200).json({
       success: true,
       message: "Classes retrieved successfully",
@@ -38,67 +38,78 @@ const createClass = async (req, res) => {
       startDate,
       endDate,
       capacity,
-      schedule,
       status,
       teachers,
       students,
+      schedule,
     } = req.body;
 
-    // Kiểm tra các trường bắt buộc
-    if (
-      !name ||
-      !courseId ||
-      !startDate ||
-      !endDate ||
-      !capacity ||
-      !Array.isArray(schedule) ||
-      schedule.length === 0 ||
-      !Array.isArray(teachers) ||
-      teachers.length === 0 ||
-      !Array.isArray(students)
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing required fields",
-      });
+    if (!Array.isArray(schedule) || schedule.length === 0) {
+      return res.status(400).json({ error: "Schedule is required" });
     }
 
-    // Kiểm tra giới hạn học sinh
-    if (students.length > capacity) {
-      return res.status(400).json({
-        success: false,
-        message: "Class is over capacity",
-      });
+    for (let s of schedule) {
+      if (!s.weekday || !s.slot || !s.room) {
+        return res.status(400).json({
+          error: "Each schedule item must include weekday, slot, and room",
+        });
+      }
     }
 
+    // 1. Tạo lớp học
     const newClass = new Class({
       name,
       courseId,
       startDate,
       endDate,
       capacity,
-      schedule,
-      status: status || "ongoing",
+      status,
       teachers,
       students,
+      schedule, // lưu vào embedded array
     });
 
-    const savedClass = await newClass.save();
+    await newClass.save();
 
-    res.status(201).json({
-      success: true,
-      message: "Class created successfully",
-      data: savedClass,
-    });
+    // 2. Đồng bộ dữ liệu sang bảng Schedules
+    const scheduleDocs = schedule.map((s) => ({
+      slotId: s.slot,
+      roomId: s.room,
+      date: getNextDateFromWeekday(s.weekday, startDate), // Tự tính ngày bắt đầu gần nhất theo thứ
+      classId: newClass._id,
+    }));
+
+    await Schedule.insertMany(scheduleDocs);
+
+    return res
+      .status(201)
+      .json({ message: "Class and schedules created", class: newClass });
   } catch (error) {
-    console.error("Error creating class:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
+    console.error("Error creating class and schedules:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
+function getNextDateFromWeekday(weekday, startDateStr) {
+  const startDate = new Date(startDateStr);
+  const weekdays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const targetDay = weekdays.indexOf(weekday);
+
+  if (targetDay === -1) return startDate;
+
+  const currentDay = startDate.getDay();
+  const diff = (targetDay - currentDay + 7) % 7;
+  startDate.setDate(startDate.getDate() + diff);
+
+  return startDate;
+}
 
 // PUT /api/classes/update/:id
 const updateClass = async (req, res) => {
@@ -109,11 +120,23 @@ const updateClass = async (req, res) => {
       new: true,
       runValidators: true,
     }).populate("courseId", "name");
-
     if (!updated)
       return res
         .status(404)
         .json({ success: false, message: "Class not found" });
+
+    // Xóa các schedule cũ liên quan tới class
+    await Schedule.deleteMany({ classId: id });
+
+    // Tạo mới lại các schedule
+    const schedules = req.body.schedule.map((s) => ({
+      classId: updated._id,
+      slotId: s.slot,
+      roomId: s.room,
+      date: getNextDateFromWeekday(s.weekday, req.body.startDate),
+    }));
+
+    await Schedule.insertMany(schedules);
 
     res.status(200).json({
       success: true,
@@ -136,6 +159,9 @@ const deleteClass = async (req, res) => {
     const { id } = req.params;
 
     const deleted = await Class.findByIdAndDelete(id);
+
+    // Xóa các schedule cũ liên quan tới class
+    await Schedule.deleteMany({ classId: id });
 
     if (!deleted)
       return res
@@ -162,17 +188,17 @@ const getAllClassesByUserId = async (req, res) => {
       .populate("schedule.slot", "from to")
       .lean();
 
-    const formattedClasses = classes.filter(cls =>
-      cls.students.some(s => s.toString() === studentId)
-    ).map((cls) => ({
-      _id: cls._id,
-      name: cls.name,
-      courseName: cls.courseId?.name || "N/A",
-      teachers: cls.teachers || [],
-      capacity: cls.capacity,
-      status: cls.status || "ongoing",
-      schedule: cls.schedule || []
-    }));
+    const formattedClasses = classes
+      .filter((cls) => cls.students.some((s) => s.toString() === studentId))
+      .map((cls) => ({
+        _id: cls._id,
+        name: cls.name,
+        courseName: cls.courseId?.name || "N/A",
+        teachers: cls.teachers || [],
+        capacity: cls.capacity,
+        status: cls.status || "ongoing",
+        schedule: cls.schedule || [],
+      }));
 
     res.status(200).json({
       success: true,

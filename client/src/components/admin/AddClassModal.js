@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function AddClassModal({ onClose, onCreate }) {
   const [courses, setCourses] = useState([]);
   const [slots, setSlots] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [teachersList, setTeachersList] = useState([]);
   const [studentsList, setStudentsList] = useState([]);
 
@@ -17,9 +18,9 @@ export default function AddClassModal({ onClose, onCreate }) {
     endDate: "",
     capacity: "",
     status: "ongoing",
-    schedule: [],
     teachers: [],
     students: [],
+    schedule: [],
   });
   const [errors, setErrors] = useState({});
 
@@ -28,14 +29,16 @@ export default function AddClassModal({ onClose, onCreate }) {
       try {
         const token = localStorage.getItem("token");
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const [cRes, sRes, tRes, stuRes] = await Promise.all([
+        const [cRes, sRes, rRes, tRes, stuRes] = await Promise.all([
           axios.get("http://localhost:9999/api/courses", config),
           axios.get("http://localhost:9999/api/slots", config),
+          axios.get("http://localhost:9999/api/rooms", config),
           axios.get("http://localhost:9999/api/users?role=teacher", config),
           axios.get("http://localhost:9999/api/users?role=student", config),
         ]);
         setCourses(cRes.data.data);
         setSlots(sRes.data.data);
+        setRooms(rRes.data.data);
         setTeachersList(tRes.data.data);
         setStudentsList(stuRes.data.data);
       } catch (e) {
@@ -55,21 +58,20 @@ export default function AddClassModal({ onClose, onCreate }) {
     if (!form.endDate) e.endDate = "End date required";
     if (!form.capacity || isNaN(form.capacity) || form.capacity < 1)
       e.capacity = "Capacity must be > 0";
-
+    if (form.teachers.length === 0) e.teachers = "At least 1 teacher required";
     if (form.students.length === 0) {
       e.students = "At least 1 student required";
     } else if (form.students.length > +form.capacity) {
-      e.students = "Class is full / over capacity";
-    }
-    if (form.teachers.length === 0) {
-      e.teachers = "At least 1 teacher required";
+      e.students = "Class is full or exceeds capacity";
     }
     if (form.schedule.length === 0) {
-      e.schedule = "You must add at least one schedule";
+      e.schedule = "At least one schedule is required";
     } else {
-      const emptySlot = form.schedule.some((s) => !s.slot);
-      if (emptySlot)
-        e.schedule = "Each schedule must have a valid slot selected";
+      const hasInvalid = form.schedule.some(
+        (s) => !s.slotId || !s.roomId || !s.weekday
+      );
+      if (hasInvalid)
+        e.schedule = "Each schedule must include weekday, slot, and room";
     }
 
     setErrors(e);
@@ -77,32 +79,60 @@ export default function AddClassModal({ onClose, onCreate }) {
   };
 
   const handleMulti = (e) => {
-    const { options, name } = e.target;
-    const arr = Array.from(options)
+    const { name, options } = e.target;
+    const values = Array.from(options)
       .filter((o) => o.selected)
       .map((o) => o.value);
-    setField(name, arr);
+    setField(name, values);
   };
 
   const addScheduleRow = () =>
-    setField("schedule", [...form.schedule, { weekday: "Mon", slot: "" }]);
+    setField("schedule", [
+      ...form.schedule,
+      { weekday: "Monday", slotId: "", roomId: "" },
+    ]);
 
   const updateSchedule = (idx, key, val) => {
-    const copy = [...form.schedule];
-    copy[idx][key] = val;
-    setField("schedule", copy);
+    const updated = [...form.schedule];
+    updated[idx][key] = val;
+    setField("schedule", updated);
   };
 
-  const removeScheduleRow = (idx) =>
-    setField(
-      "schedule",
-      form.schedule.filter((_, i) => i !== idx)
-    );
+  const removeScheduleRow = (idx) => {
+    const updated = [...form.schedule];
+    updated.splice(idx, 1);
+    setField("schedule", updated);
+  };
 
   const handleSubmit = async () => {
     if (!validate()) return;
-    onCreate({ ...form, capacity: +form.capacity });
-    onClose();
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const payload = {
+        ...form,
+        capacity: Number(form.capacity),
+        schedule: form.schedule.map((s) => ({
+          slot: s.slotId,
+          room: s.roomId,
+          weekday: s.weekday,
+        })),
+      };
+
+      const { data } = await axios.post(
+        "http://localhost:9999/api/classes/add",
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      onCreate(data.data);
+      onClose();
+    } catch (err) {
+      console.error("Failed to create class", err);
+    }
   };
 
   return (
@@ -116,7 +146,7 @@ export default function AddClassModal({ onClose, onCreate }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
             transition={{ duration: 0.3 }}
-            className="bg-white w-full max-w-3xl max-h-[80vh] overflow-y-auto rounded-2xl shadow-xl p-6 relative"
+            className="bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl p-6 relative"
           >
             <button
               onClick={onClose}
@@ -140,7 +170,6 @@ export default function AddClassModal({ onClose, onCreate }) {
                   <p className="text-red-500 text-sm">{errors.name}</p>
                 )}
               </div>
-
               <div>
                 <label className="text-sm font-medium">Course</label>
                 <select
@@ -148,7 +177,7 @@ export default function AddClassModal({ onClose, onCreate }) {
                   value={form.courseId}
                   onChange={(e) => setField("courseId", e.target.value)}
                 >
-                  <option value="">-- Select --</option>
+                  <option value="">-- Select Course --</option>
                   {courses.map((c) => (
                     <option key={c._id} value={c._id}>
                       {c.name}
@@ -159,7 +188,6 @@ export default function AddClassModal({ onClose, onCreate }) {
                   <p className="text-red-500 text-sm">{errors.courseId}</p>
                 )}
               </div>
-
               <div>
                 <label className="text-sm font-medium">Capacity</label>
                 <input
@@ -172,7 +200,6 @@ export default function AddClassModal({ onClose, onCreate }) {
                   <p className="text-red-500 text-sm">{errors.capacity}</p>
                 )}
               </div>
-
               <div>
                 <label className="text-sm font-medium">Start Date</label>
                 <input
@@ -197,19 +224,6 @@ export default function AddClassModal({ onClose, onCreate }) {
                   <p className="text-red-500 text-sm">{errors.endDate}</p>
                 )}
               </div>
-
-              <div>
-                <label className="text-sm font-medium">Status</label>
-                <select
-                  value={form.status}
-                  onChange={(e) => setField("status", e.target.value)}
-                  className="w-full border rounded px-3 py-2 mt-1"
-                >
-                  <option value="ongoing">Ongoing</option>
-                  <option value="finished">Finished</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-              </div>
             </div>
 
             <div className="mt-4">
@@ -219,11 +233,11 @@ export default function AddClassModal({ onClose, onCreate }) {
                   className="text-sm text-blue-600"
                   onClick={addScheduleRow}
                 >
-                  + Add day
+                  + Add Schedule
                 </button>
               </div>
               {form.schedule.map((row, idx) => (
-                <div key={idx} className="grid grid-cols-3 gap-2 mb-2">
+                <div key={idx} className="grid grid-cols-4 gap-2 mb-2">
                   <select
                     value={row.weekday}
                     onChange={(e) =>
@@ -231,38 +245,58 @@ export default function AddClassModal({ onClose, onCreate }) {
                     }
                     className="border rounded px-2 py-1"
                   >
-                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-                      (d) => (
-                        <option key={d} value={d}>
-                          {d}
-                        </option>
-                      )
-                    )}
+                    {[
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                      "Sunday",
+                    ].map((d) => (
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
+                    ))}
                   </select>
                   <select
-                    value={row.slot}
+                    value={row.slotId}
                     onChange={(e) =>
-                      updateSchedule(idx, "slot", e.target.value)
+                      updateSchedule(idx, "slotId", e.target.value)
                     }
-                    className="border rounded px-2 py-1 col-span-2"
+                    className="border rounded px-2 py-1"
                   >
-                    <option value="">-- Select Slot --</option>
+                    <option value="">-- Slot --</option>
                     {slots.map((s) => (
                       <option key={s._id} value={s._id}>
-                        {s.from}‑{s.to}
+                        {s.from} - {s.to}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={row.roomId}
+                    onChange={(e) =>
+                      updateSchedule(idx, "roomId", e.target.value)
+                    }
+                    className="border rounded px-2 py-1"
+                  >
+                    <option value="">-- Room --</option>
+                    {rooms.map((r) => (
+                      <option key={r._id} value={r._id}>
+                        {r.name}
                       </option>
                     ))}
                   </select>
                   <button
-                    className="text-red-500 text-xs"
                     onClick={() => removeScheduleRow(idx)}
+                    className="text-red-500 text-xs"
                   >
                     Remove
                   </button>
                 </div>
               ))}
               {errors.schedule && (
-                <p className="text-red-500 text-sm mt-1">{errors.schedule}</p>
+                <p className="text-red-500 text-sm">{errors.schedule}</p>
               )}
             </div>
 
@@ -283,7 +317,7 @@ export default function AddClassModal({ onClose, onCreate }) {
                   ))}
                 </select>
                 {errors.teachers && (
-                  <p className="text-red-500 text-sm mt-1">{errors.teachers}</p>
+                  <p className="text-red-500 text-sm">{errors.teachers}</p>
                 )}
               </div>
               <div>
@@ -302,7 +336,7 @@ export default function AddClassModal({ onClose, onCreate }) {
                   ))}
                 </select>
                 {errors.students && (
-                  <p className="text-red-500 text-sm mt-1">{errors.students}</p>
+                  <p className="text-red-500 text-sm">{errors.students}</p>
                 )}
               </div>
             </div>

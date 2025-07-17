@@ -36,6 +36,11 @@ const classSchema = new Schema(
           ref: "Slot",
           required: true,
         },
+        room: {
+          type: Types.ObjectId,
+          ref: "Room",
+          required: true,
+        },
       },
     ],
     status: {
