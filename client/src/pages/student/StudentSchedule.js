@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode"; // Ensure you have this package installed
 
 export default function StudentSchedule() {
   const [year, setYear] = useState(2025); // Mặc định năm 2025
@@ -138,9 +139,11 @@ export default function StudentSchedule() {
         return;
       }
 
+      const studentId = jwtDecode(token).id; // Lấy ID học sinh từ token
+
       try {
         const response = await axios.get(
-          "http://localhost:9999/api/student/687139a34cdde4e0be2848f7/schedule",
+          `http://localhost:9999/api/student/${studentId}/schedule`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

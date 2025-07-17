@@ -1,14 +1,19 @@
 import React from "react";
 import { Menu } from "lucide-react"; // Lucide: bộ icon Tailwind-friendly
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
-const Navbar = ({ user = { name: "John Doe", avatarUrl: "" }, onLogout, onToggleSidebar }) => {
+const Navbar = ({ onToggleSidebar }) => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         navigate("/login");
     };
+
+    const token = localStorage.getItem("token");
+    const userName = token ? jwtDecode(token).userName : "Guest";
+
     return (
         <div className="w-full bg-gray-300 px-4 py-2 shadow-md flex items-center justify-between">
             {/* Left: Toggle + Title */}
@@ -30,7 +35,7 @@ const Navbar = ({ user = { name: "John Doe", avatarUrl: "" }, onLogout, onToggle
                 {/* Avatar + Name */}
                 <div className="flex items-center gap-2">
 
-                    <span className="text-gray-700 font-medium">{user.name}</span>
+                    <span className="text-gray-700 font-medium">{userName}</span>
                 </div>
 
                 {/* Logout */}
