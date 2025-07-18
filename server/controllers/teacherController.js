@@ -341,11 +341,11 @@ const addGradeToAStudent = async (req, res) => {
 
 const updateGradesOfAStudent = async (req, res) => {
   try {
-    const { classId, studentId } = req.params;
+    const { gradeId } = req.params;
     const { score, comment } = req.body;
 
     const updatedGrade = await Grade.findOneAndUpdate(
-      { classId, studentId },
+      { _id: gradeId },
       { score, comment },
       { new: true }
     );

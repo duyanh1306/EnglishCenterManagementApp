@@ -42,6 +42,6 @@ router.get("/:teacherId/classes/:classId/grades/student/:studentId", getGradesOf
 router.post("/:teacherId/classes/:classId/grades/student/:studentId", addGradeToAStudent);
 
 // Update grades for a specific student in a class
-router.patch("/:teacherId/classes/:classId/grades/student/:studentId", updateGradesOfAStudent);
+router.patch("/grades/:gradeId", updateGradesOfAStudent);
 
 module.exports = router; 
