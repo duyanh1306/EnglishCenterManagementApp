@@ -38,78 +38,67 @@ const createClass = async (req, res) => {
       startDate,
       endDate,
       capacity,
+      schedule,
       status,
       teachers,
       students,
-      schedule,
     } = req.body;
 
-    if (!Array.isArray(schedule) || schedule.length === 0) {
-      return res.status(400).json({ error: "Schedule is required" });
+    // Kiểm tra các trường bắt buộc
+    if (
+      !name ||
+      !courseId ||
+      !startDate ||
+      !endDate ||
+      !capacity ||
+      !Array.isArray(schedule) ||
+      schedule.length === 0 ||
+      !Array.isArray(teachers) ||
+      teachers.length === 0 ||
+      !Array.isArray(students)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
     }
 
-    for (let s of schedule) {
-      if (!s.weekday || !s.slot || !s.room) {
-        return res.status(400).json({
-          error: "Each schedule item must include weekday, slot, and room",
-        });
-      }
+    // Kiểm tra giới hạn học sinh
+    if (students.length > capacity) {
+      return res.status(400).json({
+        success: false,
+        message: "Class is over capacity",
+      });
     }
 
-    // 1. Tạo lớp học
     const newClass = new Class({
       name,
       courseId,
       startDate,
       endDate,
       capacity,
-      status,
+      schedule,
+      status: status || "ongoing",
       teachers,
       students,
-      schedule, // lưu vào embedded array
     });
 
-    await newClass.save();
+    const savedClass = await newClass.save();
 
-    // 2. Đồng bộ dữ liệu sang bảng Schedules
-    const scheduleDocs = schedule.map((s) => ({
-      slotId: s.slot,
-      roomId: s.room,
-      date: getNextDateFromWeekday(s.weekday, startDate), // Tự tính ngày bắt đầu gần nhất theo thứ
-      classId: newClass._id,
-    }));
-
-    await Schedule.insertMany(scheduleDocs);
-
-    return res
-      .status(201)
-      .json({ message: "Class and schedules created", class: newClass });
+    res.status(201).json({
+      success: true,
+      message: "Class created successfully",
+      data: savedClass,
+    });
   } catch (error) {
-    console.error("Error creating class and schedules:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    console.error("Error creating class:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
-function getNextDateFromWeekday(weekday, startDateStr) {
-  const startDate = new Date(startDateStr);
-  const weekdays = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  const targetDay = weekdays.indexOf(weekday);
-
-  if (targetDay === -1) return startDate;
-
-  const currentDay = startDate.getDay();
-  const diff = (targetDay - currentDay + 7) % 7;
-  startDate.setDate(startDate.getDate() + diff);
-
-  return startDate;
-}
 
 // PUT /api/classes/update/:id
 const updateClass = async (req, res) => {
@@ -133,7 +122,7 @@ const updateClass = async (req, res) => {
       classId: updated._id,
       slotId: s.slot,
       roomId: s.room,
-      date: getNextDateFromWeekday(s.weekday, req.body.startDate),
+      date: s.date, // Ngày bắt đầu gần nhất theo thứ
     }));
 
     await Schedule.insertMany(schedules);
@@ -237,8 +226,6 @@ const getClassesByUserId = async (req, res) => {
       from: item.slot?.from || "N/A",
       to: item.slot?.to || "N/A",
     }));
-
-    
 
     res.json({
       _id: classData._id,

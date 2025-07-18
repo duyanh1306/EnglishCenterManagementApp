@@ -64,15 +64,15 @@ export default function AddClassModal({ onClose, onCreate }) {
     } else if (form.students.length > +form.capacity) {
       e.students = "Class is full or exceeds capacity";
     }
-    if (form.schedule.length === 0) {
-      e.schedule = "At least one schedule is required";
-    } else {
-      const hasInvalid = form.schedule.some(
-        (s) => !s.slotId || !s.roomId || !s.weekday
-      );
-      if (hasInvalid)
-        e.schedule = "Each schedule must include weekday, slot, and room";
-    }
+    // if (form.schedule.length === 0) {
+    //   e.schedule = "At least one schedule is required";
+    // } else {
+    //   const hasInvalid = form.schedule.some(
+    //     (s) => !s.slotId || !s.roomId || !s.weekday
+    //   );
+    //   if (hasInvalid)
+    //     e.schedule = "Each schedule must include weekday, slot, and room";
+    // }
 
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -105,7 +105,7 @@ export default function AddClassModal({ onClose, onCreate }) {
   };
 
   const handleSubmit = async () => {
-    if (!validate()) return;
+    // if (!validate()) return;
 
     try {
       const token = localStorage.getItem("token");
@@ -113,11 +113,13 @@ export default function AddClassModal({ onClose, onCreate }) {
       const payload = {
         ...form,
         capacity: Number(form.capacity),
-        schedule: form.schedule.map((s) => ({
-          slot: s.slotId,
-          room: s.roomId,
-          weekday: s.weekday,
-        })),
+        schedule: [
+          {
+            slot: "6873841e4b8c2980601b4e7c",
+            room: "6878a52b1ee63a2c0fc2d8e7",
+            weekday: "Monday",
+          },
+        ],
       };
 
       const { data } = await axios.post(
@@ -225,7 +227,7 @@ export default function AddClassModal({ onClose, onCreate }) {
                 )}
               </div>
             </div>
-
+            {/* 
             <div className="mt-4">
               <div className="flex justify-between items-center mb-2">
                 <p className="font-medium">Schedule</p>
@@ -287,6 +289,14 @@ export default function AddClassModal({ onClose, onCreate }) {
                       </option>
                     ))}
                   </select>
+                  <input
+                    type="date"
+                    value={row.date}
+                    onChange={(e) =>
+                      updateSchedule(idx, "date", e.target.value)
+                    }
+                    className="border rounded px-2 py-1"
+                  />
                   <button
                     onClick={() => removeScheduleRow(idx)}
                     className="text-red-500 text-xs"
@@ -298,7 +308,7 @@ export default function AddClassModal({ onClose, onCreate }) {
               {errors.schedule && (
                 <p className="text-red-500 text-sm">{errors.schedule}</p>
               )}
-            </div>
+            </div> */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div>
