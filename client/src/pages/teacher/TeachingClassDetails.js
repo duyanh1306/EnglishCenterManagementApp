@@ -5,57 +5,62 @@ import { useParams } from "react-router-dom";
 import { ClipboardPenLine, UsersRound } from "lucide-react";
 import axios from "axios";
 
-
 const TeachingClassDetails = () => {
   const [activeTab, setActiveTab] = useState("students");
   const [classData, setClassData] = useState(null);
   const [grades, setGrades] = useState([]);
   const [loading, setLoading] = useState(true);
   const { classId, teacherId } = useParams();
-  useEffect(() => {
-    const fetchClassData = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/classes/${classId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-        console.log("Class Data Response:", response.data);
 
-        if (response.data && response.data.success) {
-          setClassData(response.data.data);
-        } else {
-          console.error("Failed to fetch class data:", response.data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching class data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchGrades = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/classes/${classId}/grades`, {
+  const fetchClassData = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/classes/${classId}`,
+        {
           headers: { Authorization: `Bearer ${token}` }
-        });
-        console.log("Grades Response:", response.data);
-
-        if (response.data && response.data.success) {
-          setGrades(response.data.data);
-        } else {
-          console.error("Failed to fetch grades:", response.data.message);
-          setGrades([]);
         }
-      } catch (error) {
-        console.error("Error fetching grades:", error);
+      );
+      console.log("Class Data Response:", response.data);
+
+      if (response.data && response.data.success) {
+        setClassData(response.data.data);
+      } else {
+        console.error("Failed to fetch class data:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching class data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchGrades = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/classes/${classId}/grades`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log("Grades Response:", response.data);
+
+      if (response.data && response.data.success) {
+        setGrades(response.data.data);
+      } else {
+        console.error("Failed to fetch grades:", response.data.message);
         setGrades([]);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching grades:", error);
+      setGrades([]);
+    }
+  };
 
+  // Callback function to refresh grades after update
+  const handleGradeUpdate = () => {
+    fetchGrades();
+  };
+
+  useEffect(() => {
     if (classId) {
       fetchClassData();
       fetchGrades();
@@ -70,6 +75,7 @@ const TeachingClassDetails = () => {
       </div>
     );
   }
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Class Details</h1>
@@ -122,7 +128,7 @@ const TeachingClassDetails = () => {
       )}
 
       {activeTab === "grades" && (
-        <Grades grades={grades} />
+        <Grades grades={grades} onGradeUpdate={handleGradeUpdate} />
       )}
     </div>
   );
