@@ -6,10 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function UpdateClassModal({ classData, onClose, onUpdate }) {
   const [courses, setCourses] = useState([]);
-  const [slots, setSlots] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [students, setStudents] = useState([]);
-  const [rooms, setRooms] = useState([]);
 
   const [form, setForm] = useState({
     name: "",
@@ -36,30 +34,17 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
         );
         setCourses(cRes?.data?.data || []);
 
-        const sRes = await axios.get("http://localhost:9999/api/slots", config);
-        setSlots(sRes?.data?.data || []);
-
         const tRes = await axios.get(
-          "http://localhost:9999/api/users?role=teacher",
+          "http://localhost:9999/api/users?roleId=r2",
           config
         );
         setTeachers(tRes?.data?.data || []);
 
         const stuRes = await axios.get(
-          "http://localhost:9999/api/users?role=student",
+          "http://localhost:9999/api/users?roleId=r3",
           config
         );
         setStudents(stuRes?.data?.data || []);
-
-        const rRes = await axios.get("http://localhost:9999/api/rooms", config);
-        const roomData = rRes?.data?.data;
-        console.log("Fetched rooms:", roomData);
-        if (Array.isArray(roomData)) {
-          setRooms(roomData);
-        } else {
-          console.warn("Room data is not array:", roomData);
-          setRooms([]);
-        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -111,15 +96,6 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
     if (form.teachers.length === 0) {
       e.teachers = "At least 1 teacher required";
     }
-
-    if (form.schedule.length === 0) {
-      e.schedule = "Please add at least one schedule";
-    } else if (form.schedule.some((s) => !s.slot)) {
-      e.schedule = "Each schedule must have a slot selected";
-    } else if (form.schedule.some((s) => !s.room)) {
-      e.schedule = "Each schedule must have a room selected";
-    }
-
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -131,24 +107,21 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
       .map((o) => o.value);
     setField(name, arr);
   };
-  const addRow = () =>
-    setField("schedule", [...form.schedule, { weekday: "Mon", slot: "" }]);
-  const editRow = (i, k, v) => {
-    const copy = [...form.schedule];
-    copy[i][k] = v;
-    setField("schedule", copy);
-  };
-  const delRow = (i) =>
-    setField(
-      "schedule",
-      form.schedule.filter((_, idx) => idx !== i)
-    );
-
   const handleUpdate = async () => {
     if (!validate()) return;
     try {
       const token = localStorage.getItem("token");
-      const payload = { ...form, capacity: +form.capacity };
+      const payload = {
+        ...form,
+        capacity: +form.capacity,
+        schedule: [
+          {
+            slot: "6873841e4b8c2980601b4e7c",
+            room: "6878a52b1ee63a2c0fc2d8e7",
+            weekday: "Monday",
+          },
+        ],
+      };
       const { data } = await axios.put(
         `http://localhost:9999/api/classes/update/${classData._id}`,
         payload,
@@ -261,66 +234,6 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
                   <option value="cancelled">Cancelled</option>
                 </select>
               </div>
-            </div>
-
-            {/* schedule */}
-            <div className="mt-4">
-              <div className="flex justify-between items-center mb-2">
-                <p className="font-medium">Schedule</p>
-                <button className="text-sm text-blue-600" onClick={addRow}>
-                  + Add day
-                </button>
-              </div>
-              {form.schedule.map((r, i) => (
-                <div key={i} className="grid grid-cols-4 gap-2 mb-2">
-                  <select
-                    value={r.weekday}
-                    onChange={(e) => editRow(i, "weekday", e.target.value)}
-                    className="border rounded px-2 py-1"
-                  >
-                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-                      (d) => (
-                        <option key={d} value={d}>
-                          {d}
-                        </option>
-                      )
-                    )}
-                  </select>
-                  <select
-                    value={r.slot}
-                    onChange={(e) => editRow(i, "slot", e.target.value)}
-                    className="border rounded px-2 py-1"
-                  >
-                    <option value="">-- Select Slot --</option>
-                    {slots.map((s) => (
-                      <option key={s._id} value={s._id}>
-                        {s.from}-{s.to}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={r.room}
-                    onChange={(e) => editRow(i, "room", e.target.value)}
-                    className="border rounded px-2 py-1"
-                  >
-                    <option value="">-- Select Room --</option>
-                    {rooms.map((room) => (
-                      <option key={room._id} value={room._id}>
-                        {room.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    className="text-red-500 text-xs"
-                    onClick={() => delRow(i)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              {errors.schedule && (
-                <p className="text-red-500 text-sm mt-1">{errors.schedule}</p>
-              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">

@@ -6,8 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function AddClassModal({ onClose, onCreate }) {
   const [courses, setCourses] = useState([]);
-  const [slots, setSlots] = useState([]);
-  const [rooms, setRooms] = useState([]);
   const [teachersList, setTeachersList] = useState([]);
   const [studentsList, setStudentsList] = useState([]);
 
@@ -29,16 +27,13 @@ export default function AddClassModal({ onClose, onCreate }) {
       try {
         const token = localStorage.getItem("token");
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const [cRes, sRes, rRes, tRes, stuRes] = await Promise.all([
+        const [cRes, tRes, stuRes] = await Promise.all([
           axios.get("http://localhost:9999/api/courses", config),
-          axios.get("http://localhost:9999/api/slots", config),
-          axios.get("http://localhost:9999/api/rooms", config),
-          axios.get("http://localhost:9999/api/users?role=teacher", config),
-          axios.get("http://localhost:9999/api/users?role=student", config),
+          axios.get("http://localhost:9999/api/users?roleId=r2", config),
+          axios.get("http://localhost:9999/api/users?roleId=r3", config),
         ]);
         setCourses(cRes.data.data);
-        setSlots(sRes.data.data);
-        setRooms(rRes.data.data);
+
         setTeachersList(tRes.data.data);
         setStudentsList(stuRes.data.data);
       } catch (e) {
@@ -64,15 +59,6 @@ export default function AddClassModal({ onClose, onCreate }) {
     } else if (form.students.length > +form.capacity) {
       e.students = "Class is full or exceeds capacity";
     }
-    // if (form.schedule.length === 0) {
-    //   e.schedule = "At least one schedule is required";
-    // } else {
-    //   const hasInvalid = form.schedule.some(
-    //     (s) => !s.slotId || !s.roomId || !s.weekday
-    //   );
-    //   if (hasInvalid)
-    //     e.schedule = "Each schedule must include weekday, slot, and room";
-    // }
 
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -86,26 +72,8 @@ export default function AddClassModal({ onClose, onCreate }) {
     setField(name, values);
   };
 
-  const addScheduleRow = () =>
-    setField("schedule", [
-      ...form.schedule,
-      { weekday: "Monday", slotId: "", roomId: "" },
-    ]);
-
-  const updateSchedule = (idx, key, val) => {
-    const updated = [...form.schedule];
-    updated[idx][key] = val;
-    setField("schedule", updated);
-  };
-
-  const removeScheduleRow = (idx) => {
-    const updated = [...form.schedule];
-    updated.splice(idx, 1);
-    setField("schedule", updated);
-  };
-
   const handleSubmit = async () => {
-    // if (!validate()) return;
+    if (!validate()) return;
 
     try {
       const token = localStorage.getItem("token");
@@ -130,7 +98,7 @@ export default function AddClassModal({ onClose, onCreate }) {
         }
       );
 
-      onCreate(data.data);
+      onCreate();
       onClose();
     } catch (err) {
       console.error("Failed to create class", err);
@@ -227,89 +195,6 @@ export default function AddClassModal({ onClose, onCreate }) {
                 )}
               </div>
             </div>
-            {/* 
-            <div className="mt-4">
-              <div className="flex justify-between items-center mb-2">
-                <p className="font-medium">Schedule</p>
-                <button
-                  className="text-sm text-blue-600"
-                  onClick={addScheduleRow}
-                >
-                  + Add Schedule
-                </button>
-              </div>
-              {form.schedule.map((row, idx) => (
-                <div key={idx} className="grid grid-cols-4 gap-2 mb-2">
-                  <select
-                    value={row.weekday}
-                    onChange={(e) =>
-                      updateSchedule(idx, "weekday", e.target.value)
-                    }
-                    className="border rounded px-2 py-1"
-                  >
-                    {[
-                      "Monday",
-                      "Tuesday",
-                      "Wednesday",
-                      "Thursday",
-                      "Friday",
-                      "Saturday",
-                      "Sunday",
-                    ].map((d) => (
-                      <option key={d} value={d}>
-                        {d}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={row.slotId}
-                    onChange={(e) =>
-                      updateSchedule(idx, "slotId", e.target.value)
-                    }
-                    className="border rounded px-2 py-1"
-                  >
-                    <option value="">-- Slot --</option>
-                    {slots.map((s) => (
-                      <option key={s._id} value={s._id}>
-                        {s.from} - {s.to}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={row.roomId}
-                    onChange={(e) =>
-                      updateSchedule(idx, "roomId", e.target.value)
-                    }
-                    className="border rounded px-2 py-1"
-                  >
-                    <option value="">-- Room --</option>
-                    {rooms.map((r) => (
-                      <option key={r._id} value={r._id}>
-                        {r.name}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    type="date"
-                    value={row.date}
-                    onChange={(e) =>
-                      updateSchedule(idx, "date", e.target.value)
-                    }
-                    className="border rounded px-2 py-1"
-                  />
-                  <button
-                    onClick={() => removeScheduleRow(idx)}
-                    className="text-red-500 text-xs"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              {errors.schedule && (
-                <p className="text-red-500 text-sm">{errors.schedule}</p>
-              )}
-            </div> */}
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div>
                 <label className="text-sm font-medium">Teachers</label>

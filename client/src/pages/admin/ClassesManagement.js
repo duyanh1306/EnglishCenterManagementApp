@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Plus, Search, Eye, Trash2, X, Edit } from "lucide-react";
+import { Plus, Search, Eye, Trash2, X, Edit, CalendarPlus } from "lucide-react";
 import AdminLayout from "../../layouts/AdminLayout";
 import AddClassModal from "../../components/admin/AddClassModal";
 import UpdateClassModal from "../../components/admin/UpdateClassModal";
 import ShowClassDetailModal from "../../components/admin/ShowClassDetailModal";
+import AddScheduleModal from "../../components/admin/AddScheduleModal";
 
 export default function ClassManagement() {
   const [classes, setClasses] = useState([]);
@@ -14,6 +15,8 @@ export default function ClassManagement() {
   const [showUpdate, setShowUpdate] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [selectedClassId, setSelectedClassId] = useState(null);
+  const [openScheduleModal, setOpenScheduleModal] = useState(false);
 
   useEffect(() => {
     fetchClasses();
@@ -40,7 +43,6 @@ export default function ClassManagement() {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
         }
       );
@@ -182,6 +184,16 @@ export default function ClassManagement() {
                       <Eye className="w-5 h-5" />
                     </button>
                     <button
+                      className="text-gray-600 hover:text-green-600"
+                      title="Add Schedule"
+                      onClick={() => {
+                        setSelectedClassId(cl._id);
+                        setOpenScheduleModal(true);
+                      }}
+                    >
+                      <CalendarPlus className="w-5 h-5" />
+                    </button>
+                    <button
                       className="text-gray-600 hover:text-red-500"
                       onClick={() => handleDelete(cl._id)}
                     >
@@ -227,6 +239,11 @@ export default function ClassManagement() {
           }}
         />
       )}
+      <AddScheduleModal
+        isOpen={openScheduleModal}
+        onClose={() => setOpenScheduleModal(false)}
+        classId={selectedClassId}
+      />
     </AdminLayout>
   );
 }

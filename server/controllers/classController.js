@@ -114,19 +114,6 @@ const updateClass = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Class not found" });
 
-    // Xóa các schedule cũ liên quan tới class
-    await Schedule.deleteMany({ classId: id });
-
-    // Tạo mới lại các schedule
-    const schedules = req.body.schedule.map((s) => ({
-      classId: updated._id,
-      slotId: s.slot,
-      roomId: s.room,
-      date: s.date, // Ngày bắt đầu gần nhất theo thứ
-    }));
-
-    await Schedule.insertMany(schedules);
-
     res.status(200).json({
       success: true,
       message: "Class updated successfully",
