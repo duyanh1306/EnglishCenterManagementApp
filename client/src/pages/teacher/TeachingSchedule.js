@@ -9,6 +9,7 @@ export default function TeachingSchedule() {
     const [schedule, setSchedule] = useState([]);
     const [slots, setSlots] = useState([]);
     const [weekdays, setWeekdays] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // Generate all weeks for a given year
     const generateWeeksOfYear = (targetYear) => {
@@ -75,6 +76,59 @@ export default function TeachingSchedule() {
         return `Week of ${formatDate(firstDate)} - ${formatDate(lastDate)}`;
     };
 
+    // Fetch schedule data
+    const fetchSchedule = async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("No token found in localStorage");
+                return;
+            }
+            const teacherId = jwtDecode(token).id;
+            console.log("Fetching schedule for teacher ID:", teacherId);
+            const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/schedules`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (response.data && response.data.success && Array.isArray(response.data.data)) {
+                setSchedule(response.data.data);
+            } else {
+                console.error("Unexpected schedule response structure:", response.data);
+                setSchedule([]);
+            }
+        } catch (error) {
+            console.error("Error fetching schedule:", error);
+            setSchedule([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch slots data
+    const fetchSlots = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get('http://localhost:9999/api/teacher/slots', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (response.data && response.data.success && Array.isArray(response.data.data)) {
+                setSlots(response.data.data);
+            } else {
+                console.error("Unexpected slots response structure:", response.data);
+                setSlots([]);
+            }
+        } catch (error) {
+            console.error("Error fetching slots:", error);
+            setSlots([]);
+        }
+    };
+
     // Effect to generate weeks when year changes
     useEffect(() => {
         const newWeeks = generateWeeksOfYear(year);
@@ -82,12 +136,19 @@ export default function TeachingSchedule() {
 
         // Find current week instead of selecting first week
         const currentDate = new Date();
-        const currentWeek = newWeeks.find(week =>
-            currentDate >= week.start && currentDate <= week.end
-        );
+        const currentWeek = newWeeks.find(week => {
+            // Reset time to midnight for accurate date comparison
+            const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+            const weekStart = new Date(week.start.getFullYear(), week.start.getMonth(), week.start.getDate());
+            const weekEnd = new Date(week.end.getFullYear(), week.end.getMonth(), week.end.getDate());
+
+            return currentDateOnly >= weekStart && currentDateOnly <= weekEnd;
+        });
+
         setSelectedWeek(currentWeek || (newWeeks.length > 0 ? newWeeks[0] : null));
 
         console.log("Generated weeks:", newWeeks);
+        console.log("Current date:", currentDate);
         console.log("Selected current week:", currentWeek || newWeeks[0]);
     }, [year]);
 
@@ -99,60 +160,33 @@ export default function TeachingSchedule() {
         }
     }, [selectedWeek]);
 
+    // Effect to fetch initial data
     useEffect(() => {
-        // Fetch schedule and slots
-        const fetchSchedule = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    console.error("No token found in localStorage");
-                    return;
-                }
-                const teacherId = jwtDecode(token).id;
-                console.log("Fetching schedule for teacher ID:", teacherId);
-                const response = await axios.get(`http://localhost:9999/api/teacher/${teacherId}/schedules`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-
-                if (response.data && response.data.success && Array.isArray(response.data.data)) {
-                    setSchedule(response.data.data);
-                } else {
-                    console.error("Unexpected schedule response structure:", response.data);
-                    setSchedule([]);
-                }
-            } catch (error) {
-                console.error("Error fetching schedule:", error);
-                setSchedule([]);
-            }
-        };
-
-        const fetchSlots = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                const response = await axios.get('http://localhost:9999/api/teacher/slots', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-
-                if (response.data && response.data.success && Array.isArray(response.data.data)) {
-                    setSlots(response.data.data);
-                } else {
-                    console.error("Unexpected slots response structure:", response.data);
-                    setSlots([]);
-                }
-            } catch (error) {
-                console.error("Error fetching slots:", error);
-                setSlots([]);
-            }
-        };
-
-        // Call the async functions
-        fetchSchedule();
         fetchSlots();
+        fetchSchedule();
     }, []);
+
+    // Effect to refresh schedule when selectedWeek changes (optional - for real-time updates)
+    useEffect(() => {
+        if (selectedWeek) {
+            fetchSchedule();
+        }
+    }, [selectedWeek]);
+
+    // Set up auto-refresh every 30 seconds for real-time updates
+    useEffect(() => {
+        const interval = setInterval(() => {
+            console.log("Auto-refreshing schedule data...");
+            fetchSchedule();
+        }, 30000); // Refresh every 30 seconds
+
+        return () => clearInterval(interval); // Cleanup on unmount
+    }, []);
+
+    // Add manual refresh button functionality
+    const handleRefresh = () => {
+        fetchSchedule();
+    };
 
     // Group schedule items by slot ID and filter by selected week
     const groupedSchedule = {};
@@ -188,6 +222,14 @@ export default function TeachingSchedule() {
                         <h2 className="text-2xl font-bold text-gray-900">Teaching Schedule</h2>
                         <p className="text-gray-500">{getWeekRange(weekdays)}</p>
                     </div>
+                    {/* Add refresh button */}
+                    <button
+                        onClick={handleRefresh}
+                        disabled={loading}
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                    >
+                        {loading ? 'Refreshing...' : 'Refresh'}
+                    </button>
                 </div>
 
                 {/* Week Selection Controls */}
@@ -252,7 +294,14 @@ export default function TeachingSchedule() {
                             </tr>
                         </thead>
                         <tbody className="text-gray-700 text-sm">
-                            {slots.map((slot, index) => {
+                            {loading && (
+                                <tr>
+                                    <td colSpan={8} className="text-center py-4">
+                                        Loading schedule...
+                                    </td>
+                                </tr>
+                            )}
+                            {!loading && slots.map((slot, index) => {
                                 const slotId = slot._id;
                                 const itemsForSlot = groupedSchedule[slotId] || [];
                                 return (
