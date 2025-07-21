@@ -35,13 +35,13 @@ export default function UpdateClassModal({ classData, onClose, onUpdate }) {
         setCourses(cRes?.data?.data || []);
 
         const tRes = await axios.get(
-          "http://localhost:9999/api/users?roleId=r2",
+          "http://localhost:9999/api/users/by-role?roleId=r2",
           config
         );
         setTeachers(tRes?.data?.data || []);
 
         const stuRes = await axios.get(
-          "http://localhost:9999/api/users?roleId=r3",
+          "http://localhost:9999/api/users/by-role?roleId=r3",
           config
         );
         setStudents(stuRes?.data?.data || []);

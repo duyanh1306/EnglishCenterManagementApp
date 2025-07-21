@@ -29,8 +29,14 @@ export default function AddClassModal({ onClose, onCreate }) {
         const config = { headers: { Authorization: `Bearer ${token}` } };
         const [cRes, tRes, stuRes] = await Promise.all([
           axios.get("http://localhost:9999/api/courses", config),
-          axios.get("http://localhost:9999/api/users?roleId=r2", config),
-          axios.get("http://localhost:9999/api/users?roleId=r3", config),
+          axios.get(
+            "http://localhost:9999/api/users/by-role?roleId=r2",
+            config
+          ),
+          axios.get(
+            "http://localhost:9999/api/users/by-role?roleId=r3",
+            config
+          ),
         ]);
         setCourses(cRes.data.data);
 

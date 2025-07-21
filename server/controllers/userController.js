@@ -71,8 +71,6 @@ exports.login = async (req, res, next) => {
       message: "Login successfully",
       accessToken: accessToken,
       // roleId: account.roleId || "NA",
-      
-
     });
   } catch (error) {
     next(error);
@@ -169,6 +167,25 @@ exports.updateUserById = async (req, res) => {
     });
   } catch (error) {
     console.error("Update error:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+exports.GetUserByRoleId = async (req, res) => {
+  try {
+    const { roleId } = req.query;
+    if (!roleId) {
+      return res.status(400).json({ message: "Role ID is required" });
+    }
+
+    const users = await userAccount.find({ roleId }).select("-password");
+
+    res.status(200).json({
+      message: "Users fetched successfully",
+      data: users,
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
     res.status(500).json({ message: "Server error", error });
   }
 };
