@@ -13,7 +13,7 @@ const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { name: "Student Panel", icon: <FaHome />, path: "/student/dashboard" },
+    // { name: "Student Panel", icon: <FaHome />, path: "/student/dashboard" },
     { name: "My Classes", icon: <FaBookOpen />, path: "/student/my-classes" },
     { name: "Schedule", icon: <FaCalendarAlt />, path: "/student/schedule" },
     {
@@ -36,7 +36,9 @@ const Sidebar = () => {
       >
         {isOpen ? "✖" : "☰"}
       </button>
-
+      <div className="hidden md:block">
+        <h2 className="text-lg font-semibold">Student Panel</h2>
+      </div>
       <ul className="flex flex-col gap-2">
         {menuItems.map((item) => (
           <li key={item.path}>
