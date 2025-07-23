@@ -91,7 +91,6 @@ function App() {
 
           <Route path="grade" element={<StudentGrades />} />
           <Route path="grade/:classId" element={<GradeDetails />} />
-          <Route path="dashboard" element={<StudentDashboard />} />
         </Route>
       </Routes>
     </Router>

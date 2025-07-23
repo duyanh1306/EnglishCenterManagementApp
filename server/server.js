@@ -15,6 +15,8 @@ const userRoute = require("./routes/userRoute");
 const roleRoute = require("./routes/roleRoute");
 const courseRoute = require("./routes/courseRoute");
 const slotRoute = require("./routes/slotRoute");
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -35,6 +37,7 @@ app.use("/api/roles", roleRoute);
 app.use("/api/schedule", require("./routes/scheduleRoute"));
 app.use("/api/teacher", require("./routes/teacherRoute"));
 app.use("/api/student", studentRoute);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to ExpressJS" });
@@ -45,5 +48,6 @@ const HOSTNAME = "0.0.0.0";
 
 app.listen(PORT, HOSTNAME, () => {
   console.log(`✅ Server is running at http://${HOSTNAME}:${PORT}`);
+  console.log(`✅ Swagger is running at http://localhost:${PORT}/api-docs`);
   connectDB();
 });

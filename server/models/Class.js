@@ -29,17 +29,17 @@ const classSchema = new Schema(
       {
         weekday: {
           type: String,
-          required: true,
+      
         },
         slot: {
           type: Types.ObjectId,
           ref: "Slot",
-          required: true,
+          
         },
         room: {
           type: Types.ObjectId,
           ref: "Room",
-          required: true,
+        
         },
       },
     ],
